@@ -87,20 +87,20 @@ const unduhan = [
   ["lingkungan.csv", "Ringkasan 88 lingkungan dan indeks prioritas sapaan pastoral"],
   ["wilayah.csv", "Sebaran jumlah umat di 19 wilayah"],
   ["piramida_usia.csv", "Data piramida usia umat dalam kelompok lima tahunan"],
-  ["ukuran_rumah_tangga.csv", "Sebaran susunan dan jumlah anggota dalam keluarga"],
+  ["ukuran_rumah_tangga.csv", "Sebaran jumlah anggota keluarga"],
   ["pendidikan.csv", "Jenjang pendidikan formal yang ditamatkan umat"],
   ["pekerjaan.csv", "Daftar lengkap 74 kategori profesi dan karya umat"],
   ["bidang_studi.csv", "Daftar lengkap 66 rumpun bidang studi keilmuan umat"],
-  ["suku.csv", "Keragaman latar belakang suku warga paroki"],
-  ["status_perkawinan.csv", "Sebaran status perkawinan kanonik umat"],
+  ["suku.csv", "Keragaman latar belakang suku umat paroki"],
+  ["status_perkawinan.csv", "Sebaran status perkawinan umat menurut hukum Gereja"],
   ["status_gereja.csv", "Tingkat keaktifan umat di gereja paroki dan lingkungan"],
-  ["status_kesehatan.csv", "Catatan kebutuhan kesehatan khusus warga"],
+  ["status_kesehatan.csv", "Catatan kebutuhan kesehatan khusus umat"],
   ["golongan_darah.csv", "Distribusi golongan darah untuk kesiapsiagaan kemanusiaan"],
-  ["waktu_baptis.csv", "Latar waktu dan jalur penerimaan Sakramen Baptis"],
+  ["waktu_baptis.csv", "Waktu dan jalur penerimaan Sakramen Baptis"],
   ["agama.csv", "Komposisi agama seluruh anggota keluarga"],
   ["keterlibatan.csv", "Ragam keterlibatan tugas pelayanan pastoral"],
   ["tempat_tinggal.csv", "Persebaran tempat tinggal dan domisili perantauan umat"],
-  ["ekonomi_keluarga.csv", "Kondisi kesejahteraan ekonomi keluarga menurut pencatatan sensus"],
+  ["ekonomi_keluarga.csv", "Kondisi ekonomi keluarga menurut pencatatan sensus"],
 ];
 ---
 
@@ -152,7 +152,7 @@ const unduhan = [
       />
       <TabelAlt
         slot="tabel"
-        judul="data profil dasar paroki"
+        judul="profil dasar demografi paroki"
         keterangan={a("1.1").caption}
         kolom={[{ judul: "Indikator" }, { judul: "Nilai", num: true }]}
         baris={[
@@ -218,7 +218,7 @@ const unduhan = [
       />
       <TabelAlt
         slot="tabel"
-        judul="sebaran jumlah anggota per keluarga"
+        judul="sebaran jumlah anggota keluarga"
         keterangan={a("1.4").caption}
         kolom={[{ judul: "Jumlah anggota keluarga" }, { judul: "Keluarga", num: true }, { judul: "Persen", num: true }]}
         baris={tabelBaris(adegan("1.4").rows)}
@@ -237,7 +237,7 @@ const unduhan = [
           sisa: { label: "Laki-laki", n: nilai("1.5", "Laki-laki"), pct: pctBaris("1.5", "Laki-laki") },
           penyebutLabel: `dari ${n(angka("1.5", "penyebut"))} kepala keluarga yang jenis kelaminnya tercatat`,
           satuan: "kepala keluarga",
-          keterangan: `${n(angka("1.5", "tidak_tercatat"))} kepala keluarga tanpa catatan jenis kelamin belum masuk hitungan.`,
+          keterangan: `${n(angka("1.5", "tidak_tercatat"))} kepala keluarga belum tercatat jenis kelaminnya.`,
         }]}
       />
       <TabelAlt
@@ -259,7 +259,7 @@ const unduhan = [
         label={a("1.6").label}
         total={{ label: "Umat terdaftar", n: meta.umat_total }}
         dominan={{ label: `Suku ${sukuTerbesar.label}`, n: sukuTerbesar.n }}
-        fokus={{ label: "suku lain dan belum tercatat", n: meta.umat_total - sukuTerbesar.n }}
+        fokus={{ label: "suku lainnya dan belum tercatat", n: meta.umat_total - sukuTerbesar.n }}
         rincian={rincianSuku}
         rincianPenyebut={PENYEBUT_UMAT}
         sorot={rincianSuku[0] ? [rincianSuku[0].label] : []}
@@ -308,7 +308,7 @@ const unduhan = [
       />
       <TabelAlt
         slot="tabel"
-        judul="komposisi tiga kelompok usia"
+        judul="komposisi kelompok usia dan rasio ketergantungan"
         keterangan={a("2.2").caption}
         kolom={KOLOM_BAKU}
         baris={[
@@ -356,7 +356,7 @@ const unduhan = [
       />
       <TabelAlt
         slot="tabel"
-        judul="komposisi kelompok kaum muda (15–29 tahun)"
+        judul="komposisi kelompok usia muda (15–29 tahun)"
         keterangan={a("2.4").caption}
         kolom={KOLOM_BAKU}
         baris={[
@@ -372,7 +372,7 @@ const unduhan = [
       <Dumbbell rows={pyramidRows("2.5")} caption={a("2.5").caption} label={a("2.5").label} />
       <TabelAlt
         slot="tabel"
-        judul="profil warga lanjut usia (65 tahun ke atas)"
+        judul="profil umat lanjut usia (65 tahun ke atas)"
         keterangan={a("2.5").caption}
         kolom={[{ judul: "Rentang usia" }, { judul: "Laki-laki", num: true }, { judul: "Perempuan", num: true }, { judul: "Belum tercatat", num: true }]}
         baris={[
@@ -425,7 +425,7 @@ const unduhan = [
         label={a("3.1").label}
         penyebut={meta.umat_total}
         penyebutLabel={PENYEBUT_UMAT}
-        catatan={`${n(angka("3.1", "tidak_tercatat"))} umat belum memiliki catatan kelengkapan setelah baptis, sehingga berada di luar kategori "sudah" maupun "belum".`}
+        catatan={`${n(angka("3.1", "tidak_tercatat"))} umat belum memiliki catatan kelengkapan sakramen lanjutan.`}
         tahap={[
           { label: "Baptis", sudah: nilai("3.1", "Dibaptis"), belum: 0, tidakTercatat: 0 },
           { label: "Komuni Pertama", sudah: nilai("3.1", "Sudah menerima Komuni Pertama"), belum: angka("3.1", "komuni_belum"), tidakTercatat: angka("3.1", "tidak_tercatat") },
@@ -460,7 +460,7 @@ const unduhan = [
             ket: `termasuk ${JALAN_LAIN_32.slice(1).join(", ").toLowerCase().replace("kristen", "Kristen")}` },
           { label: "Tidak tercatat", n: nilai("3.2", "Tidak tercatat"), celah: true },
         ]}
-        catatan={SAMAR_32.length ? `${SAMAR_32.join(", ")}: 1–4 jiwa, disamarkan dan tidak ikut digambar.` : undefined}
+        catatan={SAMAR_32.length ? `${SAMAR_32.join(", ")}: 1–4 jiwa, disamarkan dan tidak disertakan dalam visualisasi.` : undefined}
       />
       <TabelAlt slot="tabel" judul="waktu dan jalur penerimaan Sakramen Baptis" keterangan={a("3.2").caption}
         kolom={KOLOM_BAKU} baris={tabelBaris(adegan("3.2").rows)} />
@@ -511,8 +511,8 @@ const unduhan = [
         caption={a("3.6").caption}
         label={a("3.6").label}
         kepala={[
-          { nilai: n(angka("3.6", "total_pelayan")), label: "umat mengemban tugas pelayanan tercatat" },
-          { nilai: `1 : ${d(angka("3.6", "umat_per_pelayan"), 1)}`, label: "satu pelayan berbanding umat" },
+          { nilai: n(angka("3.6", "total_pelayan")), label: "umat yang mengemban tugas pelayanan" },
+          { nilai: `1 : ${d(angka("3.6", "umat_per_pelayan"), 1)}`, label: "rasio pelayan terhadap umat" },
         ]}
         total={{ label: "Umat terdaftar", n: meta.umat_total }}
         dominan={{ label: "Tanpa tugas pelayanan tercatat", n: meta.umat_total - angka("3.6", "total_pelayan") }}
@@ -528,7 +528,7 @@ const unduhan = [
 
     <Adegan id="3.7" pertanyaan={a("3.7").pertanyaan} tafsir={a("3.7").tafsir} sumber={s("3.7")}>
       <StatCards
-        judul="Keluarga lintas iman"
+        judul="Keluarga dengan anggota non-Katolik"
         kartu={[
           { nilai: angka("3.7", "bukan_katolik"), label: "anggota keluarga non-Katolik", sorot: true },
           { nilai: angka("3.7", "keluarga_lintas_iman"), label: "keluarga dengan anggota non-Katolik",
@@ -548,7 +548,7 @@ const unduhan = [
         sorot={["Katekumen"]}
       />
       <TabelAlt slot="tabel" judul="komposisi agama anggota keluarga non-Katolik" keterangan={a("3.7").caption}
-        kolom={[{ judul: "Agama" }, { judul: "Jiwa", num: true }, { judul: "Persen dari 654", num: true }]}
+        kolom={[{ judul: "Agama" }, { judul: "Jiwa", num: true }, { judul: `Persen dari ${n(angka("3.7", "bukan_katolik"))}`, num: true }]}
         baris={tabelBaris(adegan("3.7").rows)} />
     </Adegan>
   </Pilar>
@@ -619,7 +619,7 @@ const unduhan = [
         tengah={{ label: "Biasa atau cukup", n: nilai("4.5", "Biasa atau cukup"), pct: pctBaris("4.5", "Biasa atau cukup") }}
         kanan={{ label: "Memerlukan bantuan", n: nilai("4.5", "Memerlukan bantuan"), pct: pctBaris("4.5", "Memerlukan bantuan") }}
         penyebutLabel={`dari ${n(angka("4.5", "penyebut"))} keluarga yang tercatat`}
-        catatan={`${n(angka("4.5", "tidak_tercatat"))} keluarga tanpa catatan kondisi ekonomi tidak digambar.`}
+        catatan={`${n(angka("4.5", "tidak_tercatat"))} keluarga tanpa catatan kondisi ekonomi tidak disertakan dalam visualisasi batang ini.`}
       />
       <TabelAlt slot="tabel" judul="klasifikasi kondisi ekonomi keluarga umat" keterangan={a("4.5").caption}
         kolom={[{ judul: "Kategori" }, { judul: "Keluarga", num: true }, { judul: "Persen", num: true }]}
@@ -642,7 +642,7 @@ const unduhan = [
         sorot={["Pengurus RT, RW, atau desa"]}
       />
       <TabelAlt slot="tabel" judul="ragam peran publik kemasyarakatan yang diemban umat" keterangan={a("4.6").caption}
-        kolom={[{ judul: "Peran" }, { judul: "Jiwa", num: true }, { judul: "Persen dari 563", num: true }]}
+        kolom={[{ judul: "Peran" }, { judul: "Jiwa", num: true }, { judul: `Persen dari ${n(angka("4.6", "total"))}`, num: true }]}
         baris={tabelBaris(adegan("4.6").rows)} />
     </Adegan>
   </Pilar>
@@ -663,7 +663,7 @@ const unduhan = [
         sorot="Sakit menahun" umatTotal={meta.umat_total}
         penyebutLabel={`dari ${n(angka("5.1", "total"))} jiwa bercatatan khusus`} />
       <TabelAlt slot="tabel" judul="catatan kebutuhan kesehatan khusus" keterangan={a("5.1").caption}
-        kolom={[{ judul: "Catatan" }, { judul: "Jiwa", num: true }, { judul: "Persen dari 286", num: true }]}
+        kolom={[{ judul: "Catatan" }, { judul: "Jiwa", num: true }, { judul: `Persen dari ${n(angka("5.1", "total"))}`, num: true }]}
         baris={[
           ...tabelBaris(adegan("5.1").rows),
           ["Kondisi sehat umum tanpa catatan khusus", n(angka("5.1", "normal")), "–"],
@@ -705,7 +705,7 @@ const unduhan = [
       <HorizontalBar rows={adegan("5.4").rows} caption={a("5.4").caption} label={a("5.4").label}
         sorot="Jakarta" penyebutLabel={`dari ${n(angka("5.4", "total"))} jiwa yang tinggal di luar wilayah paroki`} />
       <TabelAlt slot="tabel" judul="persebaran domisili di luar wilayah paroki" keterangan={a("5.4").caption}
-        kolom={[{ judul: "Tempat" }, { judul: "Jiwa", num: true }, { judul: "Persen dari 373", num: true }]}
+        kolom={[{ judul: "Tempat" }, { judul: "Jiwa", num: true }, { judul: `Persen dari ${n(angka("5.4", "total"))}`, num: true }]}
         baris={[
           ...tabelBaris(adegan("5.4").rows),
           ["Indekos di dalam wilayah paroki", n(angka("5.4", "indekos")), "–"],
@@ -735,8 +735,8 @@ const unduhan = [
         kosong={angka("5.6", "tidak_tercatat")}
         dari={meta.umat_total}
         pct={angka("5.6", "tidak_tercatat_pct")}
-        akibat={`Catatan golongan darah saat ini baru terisi pada ${n(angka("5.6", "tercatat"))} jiwa. Untuk warga selebihnya, paroki belum memiliki data kesiapsiagaan pencarian pendonor darah yang cocok secara cepat dalam situasi darurat kemanusiaan.`}
-        usul="Pencatatan golongan darah dianjurkan untuk dilengkapi secara bertahap melalui pendataan di tingkat lingkungan karena manfaat kemanusiaannya yang nyata dan langsung."
+        akibat={`Catatan golongan darah saat ini baru terdata pada ${n(angka("5.6", "tercatat"))} jiwa. Untuk warga selebihnya, paroki belum memiliki data kesiapsiagaan pencarian pendonor darah secara cepat saat terjadi situasi darurat kemanusiaan.`}
+        usul="Pencatatan golongan darah dianjurkan untuk dilengkapi secara bertahap melalui pendataan di tingkat lingkungan demi kesiapsiagaan aksi kemanusiaan paroki."
       />
       <TabelAlt slot="tabel" judul="distribusi golongan darah umat" keterangan={a("5.6").caption}
         kolom={KOLOM_BAKU} baris={tabelBaris(adegan("5.6").rows)} />
