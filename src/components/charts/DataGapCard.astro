@@ -29,10 +29,10 @@ const persen = pct ?? (dari > 0 ? (100 * kosong) / dari : null);
       <line x1="12" y1="9" x2="12" y2="13"></line>
       <line x1="12" y1="17" x2="12.01" y2="17"></line>
     </svg>
-    <span class="celah__title">Celah data — {judul}</span>
+    <span class="celah__title">Catatan kelengkapan data — {judul}</span>
   </div>
 
   <span class="celah__n">{n(kosong)}<span class="stat__unit">dari {n(dari)}{persen !== null ? ` \u00b7 ${p(persen)}` : ""}</span></span>
   <p>{akibat}</p>
-  {usul && <p><b>Yang perlu dilakukan pada sensus berikutnya:</b> {usul}</p>}
+  {usul && <p><b>Langkah penyempurnaan pada pembaruan data berikutnya:</b> {usul}</p>}
 </aside>

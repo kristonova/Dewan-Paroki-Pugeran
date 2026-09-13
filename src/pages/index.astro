@@ -82,25 +82,25 @@ const AGAMA_SEBELUMNYA = adegan("3.2").rows
 const JALAN_LAIN_32 = ["Jalan lain", "Masih katekumen", "Belum dibaptis", "Diterima dari gereja Kristen lain"];
 const SAMAR_32 = adegan("3.2").rows.filter((r) => r.n === null).map((r) => r.label);
 
-// Berkas unduhan data agregat untuk perencanaan karya pastoral Dewan Paroki.
+// Berkas unduhan data agregat untuk perencanaan karya reksa pastoral Dewan Paroki.
 const unduhan = [
-  ["lingkungan.csv", "Ringkasan 88 lingkungan dan indeks prioritas kunjungan pastoral"],
+  ["lingkungan.csv", "Ringkasan 88 lingkungan dan indeks prioritas sapaan pastoral"],
   ["wilayah.csv", "Sebaran jumlah umat di 19 wilayah"],
   ["piramida_usia.csv", "Data piramida usia umat dalam kelompok lima tahunan"],
-  ["ukuran_rumah_tangga.csv", "Distribusi ukuran susunan keluarga"],
-  ["pendidikan.csv", "Tingkat pendidikan formal umat"],
-  ["pekerjaan.csv", "Daftar lengkap 74 kategori profesi dan pekerjaan umat"],
+  ["ukuran_rumah_tangga.csv", "Sebaran susunan dan jumlah anggota dalam keluarga"],
+  ["pendidikan.csv", "Jenjang pendidikan formal yang ditamatkan umat"],
+  ["pekerjaan.csv", "Daftar lengkap 74 kategori profesi dan karya umat"],
   ["bidang_studi.csv", "Daftar lengkap 66 rumpun bidang studi keilmuan umat"],
-  ["suku.csv", "Keragaman latar belakang suku umat"],
-  ["status_perkawinan.csv", "Sebaran status perkawinan umat"],
-  ["status_gereja.csv", "Tingkat keaktifan umat di paroki dan lingkungan"],
-  ["status_kesehatan.csv", "Catatan kebutuhan kesehatan khusus umat"],
-  ["golongan_darah.csv", "Distribusi golongan darah umat"],
+  ["suku.csv", "Keragaman latar belakang suku warga paroki"],
+  ["status_perkawinan.csv", "Sebaran status perkawinan kanonik umat"],
+  ["status_gereja.csv", "Tingkat keaktifan umat di gereja paroki dan lingkungan"],
+  ["status_kesehatan.csv", "Catatan kebutuhan kesehatan khusus warga"],
+  ["golongan_darah.csv", "Distribusi golongan darah untuk kesiapsiagaan kemanusiaan"],
   ["waktu_baptis.csv", "Latar waktu dan jalur penerimaan Sakramen Baptis"],
-  ["agama.csv", "Agama seluruh anggota keluarga, termasuk yang Katolik"],
+  ["agama.csv", "Komposisi agama seluruh anggota keluarga"],
   ["keterlibatan.csv", "Ragam keterlibatan tugas pelayanan pastoral"],
-  ["tempat_tinggal.csv", "Persebaran tempat tinggal dan domisili umat"],
-  ["ekonomi_keluarga.csv", "Kondisi kesejahteraan ekonomi keluarga menurut catatan sensus"],
+  ["tempat_tinggal.csv", "Persebaran tempat tinggal dan domisili perantauan umat"],
+  ["ekonomi_keluarga.csv", "Kondisi kesejahteraan ekonomi keluarga menurut pencatatan sensus"],
 ];
 ---
 
@@ -145,22 +145,22 @@ const unduhan = [
         kartu={[
           { nilai: meta.umat_total, label: "jiwa terdaftar", sorot: true },
           { nilai: meta.keluarga_total, label: "keluarga" },
-          { nilai: d(angka("1.1", "rata_rata_per_keluarga"), 2), label: "rata-rata jiwa per keluarga",
-            sub: `median ${d(angka("1.1", "median_per_keluarga"), 0)}` },
-          { nilai: angka("1.1", "terbesar"), label: "jiwa pada keluarga terbesar" },
+          { nilai: d(angka("1.1", "rata_rata_per_keluarga"), 2), label: "rata-rata anggota per keluarga",
+            sub: `nilai tengah (median) ${d(angka("1.1", "median_per_keluarga"), 0)}` },
+          { nilai: angka("1.1", "terbesar"), label: "anggota pada keluarga terbesar" },
         ]}
       />
       <TabelAlt
         slot="tabel"
-        judul="data skala dasar paroki"
+        judul="data profil dasar paroki"
         keterangan={a("1.1").caption}
-        kolom={[{ judul: "Ukuran" }, { judul: "Nilai", num: true }]}
+        kolom={[{ judul: "Indikator" }, { judul: "Nilai", num: true }]}
         baris={[
           ["Jiwa terdaftar", n(meta.umat_total)],
           ["Jumlah keluarga", n(meta.keluarga_total)],
           ["Rata-rata anggota per keluarga", d(angka("1.1", "rata_rata_per_keluarga"), 2)],
-          ["Median anggota per keluarga", d(angka("1.1", "median_per_keluarga"), 0)],
-          ["Jumlah anggota keluarga terbesar", n(angka("1.1", "terbesar"))],
+          ["Nilai tengah (median) per keluarga", d(angka("1.1", "median_per_keluarga"), 0)],
+          ["Anggota pada keluarga terbesar", n(angka("1.1", "terbesar"))],
           ["Jumlah lingkungan", n(meta.lingkungan_total)],
           ["Jumlah wilayah", n(meta.wilayah_total)],
         ]}
@@ -218,7 +218,7 @@ const unduhan = [
       />
       <TabelAlt
         slot="tabel"
-        judul="distribusi ukuran keluarga"
+        judul="sebaran jumlah anggota per keluarga"
         keterangan={a("1.4").caption}
         kolom={[{ judul: "Jumlah anggota keluarga" }, { judul: "Keluarga", num: true }, { judul: "Persen", num: true }]}
         baris={tabelBaris(adegan("1.4").rows)}
@@ -232,12 +232,12 @@ const unduhan = [
         meter={[{
           judul: "Kepala keluarga perempuan",
           pusat: p(angka("1.5", "perempuan_pct")),
-          subPusat: "dikepalai perempuan",
+          subPusat: "keluarga dikepalai perempuan",
           segmen: [{ label: "Perempuan", n: angka("1.5", "perempuan"), pct: angka("1.5", "perempuan_pct"), warna: "var(--series-1)" }],
           sisa: { label: "Laki-laki", n: nilai("1.5", "Laki-laki"), pct: pctBaris("1.5", "Laki-laki") },
           penyebutLabel: `dari ${n(angka("1.5", "penyebut"))} kepala keluarga yang jenis kelaminnya tercatat`,
           satuan: "kepala keluarga",
-          keterangan: `${n(angka("1.5", "tidak_tercatat"))} kepala keluarga tanpa catatan jenis kelamin tidak masuk hitungan.`,
+          keterangan: `${n(angka("1.5", "tidak_tercatat"))} kepala keluarga tanpa catatan jenis kelamin belum masuk hitungan.`,
         }]}
       />
       <TabelAlt
@@ -289,7 +289,7 @@ const unduhan = [
         judul="struktur piramida usia umat"
         keterangan={a("2.1").caption}
         gulir
-        kolom={[{ judul: "Rentang usia" }, { judul: "Laki-laki", num: true }, { judul: "Perempuan", num: true }, { judul: "Jenis kelamin belum tercatat", num: true }]}
+        kolom={[{ judul: "Rentang usia" }, { judul: "Laki-laki", num: true }, { judul: "Perempuan", num: true }, { judul: "Belum tercatat", num: true }]}
         baris={pyramidRows("2.1").map((r) => [
           r.label, sel(r.laki.n, r.laki.disamarkan), sel(r.perempuan.n, r.perempuan.disamarkan),
           sel(r.tidak_tercatat.n, r.tidak_tercatat.disamarkan),
@@ -341,7 +341,7 @@ const unduhan = [
         caption={a("2.4").caption}
         label={a("2.4").label}
         meter={[{
-          judul: "Orang muda berusia 15–29 tahun",
+          judul: "Kaum muda berusia 15–29 tahun",
           pusat: p(pctBaris("2.4", "15–29 tahun")),
           subPusat: "dari seluruh umat",
           segmen: [
@@ -356,7 +356,7 @@ const unduhan = [
       />
       <TabelAlt
         slot="tabel"
-        judul="komposisi kelompok orang muda (15–29 tahun)"
+        judul="komposisi kelompok kaum muda (15–29 tahun)"
         keterangan={a("2.4").caption}
         kolom={KOLOM_BAKU}
         baris={[
@@ -374,7 +374,7 @@ const unduhan = [
         slot="tabel"
         judul="profil warga lanjut usia (65 tahun ke atas)"
         keterangan={a("2.5").caption}
-        kolom={[{ judul: "Rentang usia" }, { judul: "Laki-laki", num: true }, { judul: "Perempuan", num: true }, { judul: "Jenis kelamin belum tercatat", num: true }]}
+        kolom={[{ judul: "Rentang usia" }, { judul: "Laki-laki", num: true }, { judul: "Perempuan", num: true }, { judul: "Belum tercatat", num: true }]}
         baris={[
           ...pyramidRows("2.5").map((r) => [
             r.label, sel(r.laki.n, r.laki.disamarkan), sel(r.perempuan.n, r.perempuan.disamarkan),
@@ -585,8 +585,8 @@ const unduhan = [
         kosong={angka("4.2", "tanpa_penanda")}
         dari={meta.umat_total}
         pct={angka("4.2", "tanpa_penanda_pct")}
-        akibat={`Catatan mengenai jenis sekolah saat ini baru mencakup ${n(angka("4.2", "penyebut"))} dari ${n(meta.umat_total)} jiwa. Oleh sebab itu, informasi ini belum dapat digunakan untuk menarik kesimpulan umum mengenai keseluruhan umat paroki.`}
-        usul="Disarankan untuk mendata jenis sekolah pada sensus berikutnya guna mendukung perencanaan reksa pastoral bidang pendidikan."
+        akibat={`Catatan jenis sekolah saat ini baru terdata pada ${n(angka("4.2", "penyebut"))} dari ${n(meta.umat_total)} jiwa. Oleh sebab itu, informasi ini belum dapat dipergunakan untuk menarik kesimpulan umum mengenai keseluruhan umat paroki.`}
+        usul="Dianjurkan untuk melengkapi pendataan jenis sekolah pada pembaruan sensus berikutnya guna mendukung perencanaan reksa pastoral bidang pendidikan."
       />
       <TabelAlt slot="tabel" judul="kategori jenis sekolah" keterangan={a("4.2").caption}
         kolom={[{ judul: "Jenis sekolah" }, { judul: "Jiwa", num: true }, { judul: "Persen dari yang tercatat", num: true }]}
@@ -716,7 +716,7 @@ const unduhan = [
     <Adegan id="5.5" pertanyaan={a("5.5").pertanyaan} tafsir={a("5.5").tafsir} sumber={s("5.5")}>
       <HorizontalBar rows={adegan("5.5").rows} caption={a("5.5").caption} label={a("5.5").label}
         sorot="Tercatat tidak aktif" penyebutLabel={PENYEBUT_UMAT} />
-      <TabelAlt slot="tabel" judul="keaktifan umat yang jarang bersekutu" keterangan={a("5.5").caption}
+      <TabelAlt slot="tabel" judul="keberadaan umat yang belum aktif atau beribadat di paroki lain" keterangan={a("5.5").caption}
         kolom={KOLOM_BAKU} baris={tabelBaris(adegan("5.5").rows)} />
     </Adegan>
 
@@ -735,8 +735,8 @@ const unduhan = [
         kosong={angka("5.6", "tidak_tercatat")}
         dari={meta.umat_total}
         pct={angka("5.6", "tidak_tercatat_pct")}
-        akibat={`Catatan golongan darah saat ini baru terdata pada ${n(angka("5.6", "tercatat"))} jiwa. Untuk warga selebihnya, paroki belum dapat memfasilitasi pencarian pendonor darah yang cocok secara cepat dalam situasi darurat.`}
-        usul="Pencatatan golongan darah sangat dianjurkan untuk dilengkapi melalui pendataan di tingkat lingkungan karena manfaat kemanusiaannya yang langsung dan nyata."
+        akibat={`Catatan golongan darah saat ini baru terisi pada ${n(angka("5.6", "tercatat"))} jiwa. Untuk warga selebihnya, paroki belum memiliki data kesiapsiagaan pencarian pendonor darah yang cocok secara cepat dalam situasi darurat kemanusiaan.`}
+        usul="Pencatatan golongan darah dianjurkan untuk dilengkapi secara bertahap melalui pendataan di tingkat lingkungan karena manfaat kemanusiaannya yang nyata dan langsung."
       />
       <TabelAlt slot="tabel" judul="distribusi golongan darah umat" keterangan={a("5.6").caption}
         kolom={KOLOM_BAKU} baris={tabelBaris(adegan("5.6").rows)} />
@@ -748,7 +748,7 @@ const unduhan = [
     <div class="wrap">
       <div class="pilar__head">
         <span class="pilar__no" aria-hidden="true">06</span>
-        <h2 id="penutup-judul">Dari Data Menjadi Pijakan Kebijakan Pastoral</h2>
+        <h2 id="penutup-judul">Dari Data Menjadi Pijakan Reksa Pastoral</h2>
       </div>
       <hr class="rule-accent" />
 
@@ -791,13 +791,13 @@ const unduhan = [
 
         <div class="figur">
           <table class="metode-tabel">
-            <caption>Rincian kolom data sensus dengan tingkat kekosongan tertinggi, diurutkan dari persentase terbesar.</caption>
+            <caption>Rincian bidang data sensus dengan proporsi belum tercatat tertinggi, diurutkan dari persentase terbesar.</caption>
             <thead>
               <tr>
-                <th scope="col">Data yang Belum Lengkap</th>
+                <th scope="col">Bidang Data yang Belum Lengkap</th>
                 <th scope="col" class="num">Jumlah Belum Tercatat</th>
                 <th scope="col" class="num">Persen</th>
-                <th scope="col">Implikasi bagi Penafsiran Data</th>
+                <th scope="col">Implikasi bagi Pembacaan Data</th>
               </tr>
             </thead>
             <tbody>
@@ -827,10 +827,10 @@ const unduhan = [
         <p class="prose">{penutupTeks.anomaliLead}</p>
         <div class="figur">
           <table class="metode-tabel">
-            <caption>Daftar anomali dan diskrepansi data yang dilaporkan secara transparan untuk verifikasi.</caption>
+            <caption>Daftar anomali dan perbedaan data yang dilaporkan secara transparan untuk verifikasi.</caption>
             <thead>
               <tr>
-                <th scope="col">Catatan Anomali</th>
+                <th scope="col">Catatan Temuan Anomali</th>
                 <th scope="col" class="num">Jumlah Kasus</th>
                 <th scope="col">Tindak Lanjut Penanganan</th>
               </tr>
@@ -885,20 +885,20 @@ const unduhan = [
 
         <div class="metode">
           <table>
-            <caption>Parameter dan Metadata Sensus Paroki</caption>
+            <caption>Parameter dan Informasi Metodologi Sensus Paroki</caption>
             <tbody>
               <tr>
                 <th scope="row">Paroki</th>
                 <td>{meta.paroki}</td>
               </tr>
               <tr>
-                <th scope="row">Tanggal potret</th>
+                <th scope="row">Tanggal acuan sensus</th>
                 <td>
                   {SNAPSHOT}
                   {!meta.snapshot_terkonfirmasi && (
                     <>
                       {" "}
-                      <b>(asumsi kerja, belum dikonfirmasi)</b>. {meta.snapshot_catatan}
+                      <b>(asumsi kerja sementara, menanti konfirmasi)</b>. {meta.snapshot_catatan}
                     </>
                   )}
                 </td>
@@ -909,48 +909,47 @@ const unduhan = [
                   <code>umat.dbf</code> ({n(meta.umat_total)} baris), <code>umatkk.dbf</code>{" "}
                   ({n(meta.keluarga_umatkk)} baris), <code>lingkung.dbf</code>{" "}
                   ({n(meta.lingkungan_master)} baris), <code>stasi.dbf</code> ({n(meta.wilayah_total)} baris).
-                  Berkas <code>.dbf</code> dibaca langsung; turunan <code>.csv</code> dan{" "}
-                  <code>.xlsx</code> hasil konversi manual sebelumnya tidak dipakai, agar hanya ada satu
-                  sumber untuk satu fakta.
+                  Berkas <code>.dbf</code> dibaca dan diolah langsung dari sistem basis data paroki; berkas turunan hasil
+                  konversi manual tidak digunakan guna menjamin integritas sumber data tunggal (single source of truth).
                 </td>
               </tr>
               <tr>
                 <th scope="row">Jumlah keluarga</th>
                 <td>
-                  Seluruh analisis memakai basis data {n(meta.keluarga_total)} keluarga dari <code>umat.dbf</code>.
-                  Berkas <code>umatkk.dbf</code> mencatat {n(meta.keluarga_umatkk)} keluarga — selisih{" "}
-                  {n(meta.selisih_keluarga)}. Setiap adegan yang memakai berkas kepala keluarga menyebut
+                  Seluruh analisis profil umat memakai basis data {n(meta.keluarga_total)} keluarga dari <code>umat.dbf</code>.
+                  Berkas <code>umatkk.dbf</code> mencatat {n(meta.keluarga_umatkk)} keluarga (selisih{" "}
+                  {n(meta.selisih_keluarga)} keluarga). Setiap adegan yang memakai berkas kepala keluarga senantiasa menyebut
                   penyebutnya sendiri.
                 </td>
               </tr>
               <tr>
-                <th scope="row">Hierarki</th>
+                <th scope="row">Jenjang teritorial</th>
                 <td>
-                  Keuskupan → paroki → {n(meta.wilayah_total)} wilayah →{" "}
-                  {n(meta.lingkungan_total)} lingkungan → {n(meta.keluarga_total)} keluarga →{" "}
-                  {n(meta.umat_total)} jiwa. Daftar resmi memuat {n(meta.lingkungan_master)} lingkungan;{" "}
+                  Keuskupan → Paroki → {n(meta.wilayah_total)} Wilayah →{" "}
+                  {n(meta.lingkungan_total)} Lingkungan → {n(meta.keluarga_total)} Keluarga →{" "}
+                  {n(meta.umat_total)} Jiwa. Daftar resmi memuat {n(meta.lingkungan_master)} lingkungan;{" "}
                   {meta.lingkungan_tanpa_jiwa.length > 0
                     ? `${meta.lingkungan_tanpa_jiwa.join(", ")} tidak memuat satu jiwa pun pada potret ini.`
-                    : "seluruhnya memuat umat."}
+                    : "seluruhnya memiliki umat terdaftar."}
                 </td>
               </tr>
               <tr>
-                <th scope="row">Ambang penyamaran</th>
+                <th scope="row">Ambang privasi</th>
                 <td>
-                  Sel bernilai 1 sampai {meta.ambang_penyamaran - 1} jiwa ditulis "disamarkan" guna melindungi kerahasiaan data pribadi warga.
+                  Sel bernilai 1 sampai {meta.ambang_penyamaran - 1} jiwa ditampilkan sebagai "disamarkan" guna melindungi kerahasiaan data pribadi warga.
                 </td>
               </tr>
               <tr>
-                <th scope="row">Distribusi</th>
+                <th scope="row">Pemanfaatan</th>
                 <td>
-                  Internal. Dokumen ini disusun khusus untuk kepentingan reksa pastoral Dewan Paroki Pugeran. Tidak dipublikasikan secara terbuka di internet dan tidak memuat data identitas perorangan, sehingga aman dibuka pada lingkungan paroki maupun media luring.
+                  Internal. Dokumen ini disusun khusus untuk kepentingan karya reksa pastoral Dewan Paroki Pugeran. Dokumen ini tidak dipublikasikan secara terbuka di internet dan tidak memuat data identitas perorangan, sehingga aman dipergunakan dalam lingkungan paroki maupun media luring.
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <h4 class="sub">Lima Prinsip Etika dan Keamanan Pengolahan Data</h4>
+        <h4 class="sub">Lima Prinsip Etika dan Tata Kelola Perlindungan Data</h4>
         <div class="agenda">
           {
             prinsipData.map((pr, i) => (

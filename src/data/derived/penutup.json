@@ -7,7 +7,7 @@
       "dari": 12614,
       "pct": 74.7,
       "adegan": "4.3",
-      "akibat": "Adegan 4.3 hanya memaparkan data umat yang memiliki catatan bidang studi secara terbuka."
+      "akibat": "Penyajian pada Adegan 4.3 hanya mencakup umat yang memiliki catatan bidang studi, dengan penjelasan terbuka mengenai proporsi data yang belum terisi."
     },
     {
       "kolom": "Penanda sekolah Katolik",
@@ -16,7 +16,7 @@
       "dari": 12614,
       "pct": 85.9,
       "adegan": "4.2",
-      "akibat": "Adegan 4.2 tidak menarik kesimpulan umum mengenai umat, melainkan menggarisbawahi besarnya data yang belum terdata."
+      "akibat": "Adegan 4.2 tidak menarik kesimpulan menyeluruh bagi paroki, melainkan menegaskan perlunya pendataan sekolah Katolik secara lebih lengkap pada masa mendatang."
     },
     {
       "kolom": "Golongan darah",
@@ -25,7 +25,7 @@
       "dari": 12614,
       "pct": 21.6,
       "adegan": "5.6",
-      "akibat": "Adegan 5.6 menyajikan kategori 'Tidak tercatat' sebagai batang tersendiri demi kejujuran data."
+      "akibat": "Adegan 5.6 menyajikan kelompok 'Tidak tercatat' secara tersendiri demi kejujuran penyajian dan kesiapsiagaan donor darurat."
     },
     {
       "kolom": "Pekerjaan",
@@ -34,7 +34,7 @@
       "dari": 12614,
       "pct": 19.7,
       "adegan": "4.4",
-      "akibat": "Kategori 'Tidak tercatat' tetap ditampilkan dalam grafik untuk memperlihatkan proporsi data yang belum terisi."
+      "akibat": "Kelompok 'Tidak tercatat' tetap dicantumkan pada grafik untuk memperlihatkan proporsi umat yang belum terdokumentasi profesinya."
     },
     {
       "kolom": "Tanggal krisma",
@@ -43,7 +43,7 @@
       "dari": 12614,
       "pct": 69.1,
       "adegan": null,
-      "akibat": "Tidak dibuat visualisasi berbasis tahun penerimaan krisma karena tingginya proporsi data kosong."
+      "akibat": "Tidak disajikan grafik tahun penerimaan Krisma karena sebagian besar umat belum memiliki catatan penanggalan krisma."
     },
     {
       "kolom": "Tanggal baptis",
@@ -52,7 +52,7 @@
       "dari": 12614,
       "pct": 29.2,
       "adegan": null,
-      "akibat": "Tidak dibuat visualisasi berbasis tahun baptis demi menjaga akurasi analisis data."
+      "akibat": "Tidak disajikan analisis kurun waktu baptis demi menjaga kesahihan data statistik."
     },
     {
       "kolom": "Jenis kelamin",
@@ -61,7 +61,7 @@
       "dari": 12614,
       "pct": 1.3,
       "adegan": "2.1",
-      "akibat": "Piramida usia mencantumkan secara terbuka jumlah jiwa yang belum dapat dikelompokkan menurut jenis kelamin."
+      "akibat": "Piramida usia mencantumkan secara terbuka jumlah jiwa yang belum memiliki catatan jenis kelamin."
     },
     {
       "kolom": "Tanggal lahir",
@@ -70,7 +70,7 @@
       "dari": 12614,
       "pct": 0.5,
       "adegan": "2.1",
-      "akibat": "Umat yang usianya belum dapat dihitung karena ketiadaan tanggal lahir dicatat terpisah dari perhitungan utama."
+      "akibat": "Umat yang belum memiliki catatan tanggal lahir dipisahkan dari analisis perhitungan usia."
     },
     {
       "kolom": "Tanggal nikah",
@@ -79,83 +79,84 @@
       "dari": 4328,
       "pct": 32.6,
       "adegan": null,
-      "akibat": "Tidak dibuat visualisasi berbasis tahun perkawinan demi menjaga keandalan informasi."
+      "akibat": "Tidak disajikan analisis tahun perkawinan demi menjaga keandalan informasi."
     }
   ],
   "anomali": [
     {
-      "temuan": "Baris dengan nama dan tanggal lahir identik",
+      "temuan": "Baris data dengan kesamaan nama dan tanggal lahir",
       "jumlah": 580,
       "kelompok": 290,
-      "perlakuan": "Ditandai dalam laporan validasi dan tidak dihapus otomatis demi kehati-hatian (mengingat kemungkinan kembar atau kesamaan nama). Dilaporkan sebagai dugaan data ganda untuk ditinjau oleh sekretariat paroki."
+      "perlakuan": "Ditandai dalam laporan validasi dan tidak dihapus otomatis demi kehati-hatian (misalnya kemungkinan kembar atau nama serupa). Dilaporkan sebagai bahan verifikasi bagi sekretariat paroki."
     },
     {
-      "temuan": "Selisih jumlah keluarga antarsumber",
+      "temuan": "Perbedaan pencatatan jumlah keluarga antarsumber",
       "jumlah": 75,
       "kelompok": null,
-      "perlakuan": "Berkas umat.dbf mencatat 4403 keluarga, sedangkan berkas umatkk.dbf mencatat 4328 keluarga. Analisis profil paroki secara konsisten memakai basis data umat.dbf (4403 keluarga), dan setiap adegan yang merujuk berkas kepala keluarga senantiasa menyebutkan penyebutnya sendiri."
+      "perlakuan": "Berkas umat.dbf mencatat 4.403 keluarga, sedangkan berkas umatkk.dbf mencatat 4.328 keluarga. Analisis profil paroki secara konsisten mengacu pada data umat.dbf (4.403 keluarga), dan setiap grafik yang merujuk berkas kepala keluarga mencantumkan penyebutnya secara jelas."
     },
     {
-      "temuan": "Tanggal lahir di luar akal",
+      "temuan": "Catatan tanggal lahir tidak wajar",
       "jumlah": 1,
       "kelompok": null,
-      "perlakuan": "Dikeluarkan dari perhitungan usia dan dicatat dalam laporan validasi data."
+      "perlakuan": "Dikeluarkan dari perhitungan usia dan dicatat dalam laporan audit data."
     },
     {
-      "temuan": "Tanggal nikah di luar akal",
+      "temuan": "Catatan tahun perkawinan tidak wajar",
       "jumlah": 8,
       "kelompok": null,
-      "perlakuan": "Dikeluarkan dari analisis dan dicatat sebagai anomali penanggalan. Tahun yang ditemukan: 965, 992, 1008, 1011, 1020, 2970, 2995, 2997."
+      "perlakuan": "Dikeluarkan dari analisis dan dicatat sebagai temuan anomali penanggalan. Tahun yang tertera: 965, 992, 1008, 1011, 1020, 2970, 2995, 2997."
     },
     {
       "temuan": "Kepala keluarga tanpa catatan jenis kelamin",
       "jumlah": 94,
       "kelompok": null,
-      "perlakuan": "Penyebut perhitungan adegan 1.5 adalah 4234 kepala keluarga yang memiliki catatan, dan dicantumkan pada grafik."
+      "perlakuan": "Perhitungan proporsi pada Adegan 1.5 menggunakan penyebut 4.234 kepala keluarga yang memiliki catatan jenis kelamin lengkap, dengan keterangan terbuka pada grafik."
     },
     {
-      "temuan": "Baris berkode paroki lain",
+      "temuan": "Baris data dengan kode di luar Paroki Pugeran",
       "jumlah": 6,
       "kelompok": null,
-      "perlakuan": "Tetap disertakan dalam total 12.614 jiwa terdaftar, namun dikeluarkan dari tabulasi agregasi tingkat wilayah dan lingkungan Pugeran; keterangan penyebut dinyatakan pada grafik wilayah."
+      "perlakuan": "Tetap dihitung dalam total 12.614 jiwa terdaftar, namun dikeluarkan dari tabulasi wilayah dan lingkungan Pugeran; keterangan penyebut dinyatakan secara terbuka pada grafik wilayah."
     }
   ],
   "usulan_pembaruan": [
     {
-      "usul": "Melengkapi pencatatan data golongan darah warga",
+      "usul": "Melengkapi pencatatan data golongan darah umat melalui rukun lingkungan",
       "besaran": 2722,
       "satuan": "jiwa",
       "adegan": "5.6"
     },
     {
-      "usul": "Melengkapi data profesi dan pekerjaan umat",
+      "usul": "Melengkapi pendataan profesi dan karya umat pada sensus berikutnya",
       "besaran": 2480,
       "satuan": "jiwa",
       "adegan": "4.4"
     },
     {
-      "usul": "Verifikasi dan peninjauan langsung atas dugaan data ganda",
+      "usul": "Verifikasi langsung oleh sekretariat paroki atas data yang terindikasi ganda",
       "besaran": 290,
       "satuan": "kelompok data",
       "adegan": null
     },
     {
-      "usul": "Rekonsiliasi dan sinkronisasi data keluarga antardokumen sensus",
+      "usul": "Penyelarasan dan sinkronisasi data keluarga antardokumen sensus",
       "besaran": 75,
       "satuan": "keluarga",
       "adegan": null
     },
     {
-      "usul": "Mendata jenis sekolah (sekolah Katolik) guna mendukung perencanaan pastoral bidang pendidikan",
+      "usul": "Mendata jenis sekolah (sekolah Katolik) guna mendukung perencanaan reksa pastoral bidang pendidikan",
       "besaran": 10834,
       "satuan": "jiwa",
       "adegan": "4.2"
     },
     {
-      "usul": "Mencantumkan tanggal resmi ekstraksi pada setiap pembaruan data sensus berikutnya",
+      "usul": "Mencantumkan tanggal resmi penarikan data pada pembaruan sensus berikutnya",
       "besaran": null,
       "satuan": null,
       "adegan": null
     }
   ]
 }
+
