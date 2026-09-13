@@ -22,38 +22,95 @@ interface Props {
 }
 
 const { rows, caption, label, sorot, perTitik = 10, penyebutLabel } = Astro.props;
+
+const totalAnak = rows.reduce((acc, r) => acc + (r.n ?? 0), 0);
+
+const infoKategori: Record<string, { nama: string; tahap: string; catatan: string }> = {
+  "0–4 tahun": {
+    nama: "Balita",
+    tahap: "Usia Prasekolah / PAUD",
+    catatan: "Kelompok terkecil, berjumlah kurang dari sepertiga kelompok usia 10–14 tahun.",
+  },
+  "5–9 tahun": {
+    nama: "Usia Anak",
+    tahap: "Usia Sekolah Dasar / PIA",
+    catatan: "Kelompok pertengahan, mencakup hampir sepertiga (32,3%) dari total anak paroki.",
+  },
+  "10–14 tahun": {
+    nama: "Remaja Awal",
+    tahap: "Usia SMP / PIR & Pra-Krisma",
+    catatan: "Kelompok mayoritas, mencakup hampir 6 dari setiap 10 anak paroki (58,3%).",
+  },
+};
 ---
 
 <figure class="figur">
   <figcaption>{caption}</figcaption>
 
-  <p class="unit__kunci">
-    <span class="unit__titik" aria-hidden="true"></span> = {perTitik} jiwa, dibulatkan ke titik utuh
-  </p>
+  <div class="unit__panduan">
+    <span class="unit__panduan-kunci">
+      <span class="unit__titik unit__titik--sampel" aria-hidden="true"></span>
+      <span><b>1 titik = {perTitik} jiwa</b> (dibulatkan ke titik terdekat)</span>
+    </span>
+    <span class="unit__panduan-total">
+      Total anak di bawah 15 tahun: <b>{n(totalAnak)} jiwa</b>
+    </span>
+  </div>
 
   <div class="unit viz" {...kontainer(label)}>
     {
       rows.map((r) => {
         const jumlah = Math.round((r.n ?? 0) / perTitik);
         const disorot = r.label === sorot;
+        const info = infoKategori[r.label] ?? { nama: r.label, tahap: "Kelompok Usia", catatan: "" };
         return (
           <div
-            class="unit__kolom"
+            class:list={["unit__kartu", disorot && "unit__kartu--sorot"]}
             {...tip({
-              judul: r.label,
+              judul: `${info.nama} (${r.label})`,
               nilai: r.n === null ? "disamarkan" : `${n(r.n)} jiwa`,
               warna: disorot ? "var(--mark-highlight)" : "var(--mark-base)",
-              baris: [r.pct !== null && `${p(r.pct)} ${penyebutLabel}`, `${jumlah} titik`],
+              baris: [
+                r.pct !== null && `${p(r.pct)} ${penyebutLabel}`,
+                `${jumlah} titik (${jumlah * perTitik} jiwa)`,
+                info.tahap,
+              ],
             })}
           >
-            <div class="unit__tumpuk" aria-hidden="true">
-              {Array.from({ length: jumlah }, () => (
-                <span class:list={["unit__titik", disorot && "unit__titik--sorot"]} data-seri={disorot ? "highlight" : "base"} />
-              ))}
+            <div class="unit__kartu-head">
+              <span class="unit__kartu-tag">Rentang {r.label}</span>
+              <h4 class="unit__kartu-judul">{info.nama}</h4>
+              <span class="unit__kartu-tahap">{info.tahap}</span>
             </div>
-            <span class:list={["unit__n", disorot && "unit__n--sorot"]}>{n(r.n)}</span>
-            <span class="unit__label">{r.label}</span>
-            <span class="unit__pct">{p(r.pct)}</span>
+
+            <div class="unit__kpi">
+              <span class:list={["unit__n", disorot && "unit__n--sorot"]}>{n(r.n)}</span>
+              <span class="unit__satuan">jiwa</span>
+            </div>
+
+            <div class="unit__bar-wrap">
+              <div class="unit__bar">
+                <div
+                  class:list={["unit__bar-isi", disorot && "unit__bar-isi--sorot"]}
+                  style={`width: ${r.pct ?? 0}%`}
+                />
+              </div>
+              <span class:list={["unit__bar-pct", disorot && "unit__bar-pct--sorot"]}>{p(r.pct)}</span>
+            </div>
+
+            <div class="unit__panggung">
+              <div class="unit__tumpuk" aria-hidden="true">
+                {Array.from({ length: jumlah }, () => (
+                  <span
+                    class:list={["unit__titik", disorot && "unit__titik--sorot"]}
+                    data-seri={disorot ? "highlight" : "base"}
+                  />
+                ))}
+              </div>
+              <span class="unit__panggung-ket">{jumlah} titik</span>
+            </div>
+
+            {info.catatan && <p class="unit__catatan">{info.catatan}</p>}
           </div>
         );
       })
@@ -64,79 +121,212 @@ const { rows, caption, label, sorot, perTitik = 10, penyebutLabel } = Astro.prop
 </figure>
 
 <style>
-  .unit {
+  .unit__panduan {
     display: flex;
-    justify-content: space-around;
-    align-items: flex-end;
-    gap: var(--space-4);
-    padding-top: var(--space-2);
-  }
-  .unit__kunci {
-    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-2);
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-4);
     margin-bottom: var(--space-5);
+    padding: var(--space-2) var(--space-3);
+    background: var(--surface-sunken);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-sm);
     font-size: var(--size-caption);
     color: var(--text-muted);
   }
-  .unit__kolom {
+  .unit__panduan-kunci {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .unit__titik--sampel {
+    width: 12px;
+    height: 12px;
+    background: var(--mark-base);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .unit__panduan b {
+    color: var(--text-strong);
+    font-family: var(--font-mono);
+  }
+  .unit {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+    width: 100%;
+  }
+  .unit__kartu {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    min-width: 0;
-    padding: var(--space-2);
-    border-radius: var(--radius-sm);
+    padding: var(--space-4);
+    background: var(--surface-card);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-md);
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out),
+      box-shadow var(--duration-fast) var(--ease-out);
+    position: relative;
+    cursor: pointer;
   }
-  .unit__tumpuk {
-    --t: 11px;
+  .unit__kartu:hover,
+  .unit__kartu.is-aktif {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-2);
+    transform: translateY(-2px);
+  }
+  .unit__kartu--sorot {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .unit__kartu--sorot::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 16px;
+    right: 16px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 3px 3px 0 0;
+  }
+  .unit__kartu-head {
     display: flex;
-    flex-wrap: wrap-reverse;
-    align-content: flex-start;
-    gap: 3px;
-    width: calc(5 * var(--t) + 4 * 3px);
-    margin-bottom: var(--space-3);
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: var(--space-2);
   }
-  .unit__titik {
-    display: inline-block;
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    background: var(--mark-base);
-    flex: none;
+  .unit__kartu-tag {
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--text-subtle);
   }
-  .unit__titik--sorot {
-    background: var(--mark-highlight);
+  .unit__kartu--sorot .unit__kartu-tag {
+    color: var(--accent);
+    font-weight: var(--fw-bold);
+  }
+  .unit__kartu-judul {
+    font-size: 1.15rem;
+    font-weight: var(--fw-bold);
+    color: var(--text-strong);
+    line-height: var(--lh-tight);
+    margin: 0;
+  }
+  .unit__kartu-tahap {
+    font-size: var(--size-caption);
+    color: var(--text-muted);
+    line-height: var(--lh-normal);
+  }
+  .unit__kpi {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: var(--space-2) 0;
   }
   .unit__n {
-    font-size: clamp(1.5rem, 3.4vw, 2rem);
+    font-size: clamp(2rem, 3.4vw, 2.5rem);
     font-weight: var(--fw-black);
     line-height: var(--lh-tight);
     letter-spacing: var(--tracking-display);
     color: var(--text-strong);
+    font-variant-numeric: tabular-nums;
   }
   .unit__n--sorot {
     color: var(--accent);
   }
-  .unit__label {
-    margin-top: var(--space-1);
+  .unit__satuan {
     font-size: var(--size-body-sm);
-    color: var(--text-body);
-    text-align: center;
+    color: var(--text-muted);
   }
-  .unit__pct {
+  .unit__bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+  .unit__bar {
+    flex: 1;
+    height: 6px;
+    background: var(--surface-sunken);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+  }
+  .unit__bar-isi {
+    height: 100%;
+    background: var(--mark-base);
+    border-radius: var(--radius-pill);
+  }
+  .unit__bar-isi--sorot {
+    background: var(--accent);
+  }
+  .unit__bar-pct {
+    font-family: var(--font-mono);
+    font-size: var(--size-caption);
+    font-weight: var(--fw-bold);
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .unit__bar-pct--sorot {
+    color: var(--accent);
+  }
+  .unit__panggung {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 236px;
+    padding: var(--space-3) var(--space-2);
+    background: var(--surface-sunken);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-sm);
+    margin: var(--space-2) 0 var(--space-3);
+  }
+  .unit__tumpuk {
+    --t: 13px;
+    display: flex;
+    flex-wrap: wrap-reverse;
+    align-content: flex-start;
+    justify-content: center;
+    gap: 4px;
+    width: calc(6 * var(--t) + 5 * 4px);
+  }
+  .unit__titik {
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: var(--mark-base);
+    flex: none;
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+  .unit__titik--sorot {
+    background: var(--mark-highlight);
+  }
+  .unit__panggung-ket {
+    margin-top: var(--space-2);
     font-family: var(--font-mono);
     font-size: var(--size-micro);
     color: var(--text-subtle);
   }
-  @media (max-width: 480px) {
-    .unit__tumpuk {
-      --t: 8px;
-      gap: 2px;
-      width: calc(5 * var(--t) + 4 * 2px);
+  .unit__catatan {
+    margin-top: auto;
+    padding-top: var(--space-3);
+    border-top: 1px dashed var(--border-hairline);
+    font-size: var(--size-caption);
+    color: var(--text-muted);
+    line-height: var(--lh-normal);
+  }
+  @media (max-width: 768px) {
+    .unit {
+      grid-template-columns: 1fr;
     }
-    .unit__tumpuk .unit__titik {
-      width: 8px;
-      height: 8px;
+    .unit__kartu {
+      max-width: 380px;
+      margin-inline: auto;
+      width: 100%;
     }
   }
 </style>

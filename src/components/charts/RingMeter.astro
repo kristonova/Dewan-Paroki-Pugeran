@@ -3,10 +3,11 @@
  * RingMeter — satu rasio terhadap keseluruhan sebagai meter melingkar. Dipakai
  * di adegan 1.5, 2.4, dan 3.3.
  *
- * Ini meter, bukan diagram lingkaran: lintasan netral adalah keseluruhan, isian
- * berwarna adalah bagian yang dibicarakan, dan angkanya ditulis besar di tengah.
- * Ujung busur dipotong rata, bukan membulat, supaya panjang busur tidak
- * melebih-lebihkan nilainya. Beberapa segmen berurutan dipisah celah tipis.
+ * Ditata dalam tata letak korporat modern:
+ *  - Tampilan tunggal (1.5 dan 2.4): Membagi wadah kartu menjadi 2 kolom eksekutif
+ *    (Panggung Hero Meter di kiri, dan Panel Rincian Kartu & Distribusi Proporsi di kanan),
+ *    sehingga seluruh bidang putih kartu terisi penuh, padat, dan seimbang.
+ *  - Tampilan jamak (3.3): Disusun sebagai kartu eksekutif bersebelahan (3 kolom).
  */
 import { n, p } from "../../lib/format";
 import { kontainer, tip } from "../../lib/viz";
@@ -39,118 +40,576 @@ interface Props {
 const { meter, caption, label } = Astro.props;
 const R = 80;
 const CELAH = 0.6;
+const tunggal = meter.length === 1;
 ---
 
 <figure class="figur">
   <figcaption>{caption}</figcaption>
 
-  <div class="rings viz" {...kontainer(label)}>
-    {
-      meter.map((m) => {
-        const jamak = m.segmen.length > 1;
+  {
+    tunggal &&
+      (() => {
+        const m = meter[0];
+        const jamakSegmen = m.segmen.length > 1;
         let offset = 0;
+        const totalSegmen = m.segmen.reduce((acc, s) => acc + (s.n ?? 0), 0);
+        const totalBasis = totalSegmen + (m.sisa.n ?? 0);
+
         return (
-          <div class="ring">
-            <div class="ring__gambar">
-              <svg viewBox="0 0 200 200" aria-hidden="true">
-                <circle
-                  class="ring__jalur"
-                  cx="100"
-                  cy="100"
-                  r={R}
+          <div class="rings rings--tunggal viz" {...kontainer(label)}>
+            <!-- Kolom Kiri: Panggung Visual Ring Meter Hero -->
+            <div class="ring-hero">
+              <div class="ring-hero__panggung">
+                <div class="ring-hero__gambar">
+                  <svg viewBox="0 0 200 200" aria-hidden="true">
+                    <circle
+                      class="ring__jalur"
+                      cx="100"
+                      cy="100"
+                      r={R}
+                      {...tip({
+                        judul: m.sisa.label,
+                        nilai: `${n(m.sisa.n)} ${m.satuan}`,
+                        baris: [`${p(m.sisa.pct)} ${m.penyebutLabel}`],
+                      })}
+                    />
+                    {m.segmen.map((s) => {
+                      const panjang = Math.max(0.2, s.pct - (jamakSegmen ? CELAH : 0));
+                      const elemen = (
+                        <circle
+                          class="ring__seg"
+                          cx="100"
+                          cy="100"
+                          r={R}
+                          pathLength="100"
+                          stroke={s.warna}
+                          stroke-dasharray={`${panjang.toFixed(2)} ${(100 - panjang).toFixed(2)}`}
+                          stroke-dashoffset={(-offset).toFixed(2)}
+                          transform="rotate(-90 100 100)"
+                          {...tip({
+                            judul: s.label,
+                            nilai: `${n(s.n)} ${m.satuan}`,
+                            warna: s.warna,
+                            baris: [`${p(s.pct)} ${m.penyebutLabel}`],
+                          })}
+                        />
+                      );
+                      offset += s.pct;
+                      return elemen;
+                    })}
+                  </svg>
+                  <div class="ring-hero__pusat" aria-hidden="true">
+                    <b class="ring-hero__pusat-angka">{m.pusat}</b>
+                    <span class="ring-hero__pusat-sub">{m.subPusat}</span>
+                  </div>
+                </div>
+
+                <div class="ring-hero__foot">
+                  <span class="ring-hero__tag">{m.judul}</span>
+                  <div class="ring-hero__stat">
+                    <b>{n(totalSegmen)}</b>
+                    <span>{m.satuan} ({m.pusat})</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Kolom Kanan: Rincian & Distribusi Proporsi Korporat -->
+            <div class="ring-panel">
+              <div class="ring-panel__head">
+                <div class="ring-panel__head-info">
+                  <span class="ring-panel__tag">Rincian Komposisi</span>
+                  <h4 class="ring-panel__judul">{m.judul}</h4>
+                </div>
+                <div class="ring-panel__total">
+                  Basis data: <b>{n(totalBasis)}</b> {m.satuan}
+                </div>
+              </div>
+
+              <div class="ring-panel__items">
+                {m.segmen.map((s) => (
+                  <div
+                    class="ring-kartu"
+                    {...tip({
+                      judul: s.label,
+                      nilai: `${n(s.n)} ${m.satuan}`,
+                      warna: s.warna,
+                      baris: [`${p(s.pct)} ${m.penyebutLabel}`],
+                    })}
+                  >
+                    <div class="ring-kartu__head">
+                      <div class="ring-kartu__ident">
+                        <span class="ring-kartu__sw" style={`background: ${s.warna}`} aria-hidden="true" />
+                        <span class="ring-kartu__nama">{s.label}</span>
+                      </div>
+                      <div class="ring-kartu__angka">
+                        <b class="ring-kartu__n">{n(s.n)}</b>
+                        <span class="ring-kartu__satuan">{m.satuan}</span>
+                        <span class="ring-kartu__pct">{p(s.pct)}</span>
+                      </div>
+                    </div>
+                    <div class="ring-kartu__track">
+                      <div
+                        class="ring-kartu__isi"
+                        style={`width: ${Math.max(1.5, s.pct).toFixed(2)}%; background: ${s.warna};`}
+                      />
+                    </div>
+                  </div>
+                ))}
+
+                <div
+                  class="ring-kartu ring-kartu--sisa"
                   {...tip({
                     judul: m.sisa.label,
                     nilai: `${n(m.sisa.n)} ${m.satuan}`,
                     baris: [`${p(m.sisa.pct)} ${m.penyebutLabel}`],
                   })}
-                />
-                {m.segmen.map((s) => {
-                  const panjang = Math.max(0.2, s.pct - (jamak ? CELAH : 0));
-                  const elemen = (
-                    <circle
-                      class="ring__seg"
-                      cx="100"
-                      cy="100"
-                      r={R}
-                      pathLength="100"
-                      stroke={s.warna}
-                      stroke-dasharray={`${panjang.toFixed(2)} ${(100 - panjang).toFixed(2)}`}
-                      stroke-dashoffset={(-offset).toFixed(2)}
-                      transform="rotate(-90 100 100)"
-                      {...tip({
-                        judul: s.label,
-                        nilai: `${n(s.n)} ${m.satuan}`,
-                        warna: s.warna,
-                        baris: [`${p(s.pct)} ${m.penyebutLabel}`],
-                      })}
+                >
+                  <div class="ring-kartu__head">
+                    <div class="ring-kartu__ident">
+                      <span class="ring-kartu__sw ring-kartu__sw--sisa" aria-hidden="true" />
+                      <span class="ring-kartu__nama">{m.sisa.label}</span>
+                    </div>
+                    <div class="ring-kartu__angka">
+                      <b class="ring-kartu__n">{n(m.sisa.n)}</b>
+                      <span class="ring-kartu__satuan">{m.satuan}</span>
+                      <span class="ring-kartu__pct">{p(m.sisa.pct)}</span>
+                    </div>
+                  </div>
+                  <div class="ring-kartu__track">
+                    <div
+                      class="ring-kartu__isi ring-kartu__isi--sisa"
+                      style={`width: ${Math.max(1.5, m.sisa.pct).toFixed(2)}%;`}
                     />
-                  );
-                  offset += s.pct;
-                  return elemen;
-                })}
-              </svg>
-              <div class="ring__pusat" aria-hidden="true">
-                <b>{m.pusat}</b>
-                <span>{m.subPusat}</span>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <p class="ring__judul">{m.judul}</p>
-            <ul class="ring__legenda" role="list">
-              {m.segmen.map((s) => (
-                <li>
-                  <span class="ring__sw" style={`background:${s.warna}`} aria-hidden="true" />
-                  <span class="ring__nama">{s.label}</span>
-                  <b>{n(s.n)}</b>
-                </li>
-              ))}
-              <li>
-                <span class="ring__sw ring__sw--sisa" aria-hidden="true" />
-                <span class="ring__nama">{m.sisa.label}</span>
-                <b>{n(m.sisa.n)}</b>
-              </li>
-            </ul>
-            {m.keterangan && <p class="ring__ket">{m.keterangan}</p>}
+              {m.keterangan && (
+                <div class="ring-panel__footer">
+                  <span class="ring-panel__footer-ikon" aria-hidden="true">ℹ</span>
+                  <span class="ring-panel__footer-teks">{m.keterangan}</span>
+                </div>
+              )}
+            </div>
           </div>
         );
-      })
-    }
-  </div>
+      })()
+  }
+
+  {
+    !tunggal && (
+      <div class="rings rings--jamak viz" {...kontainer(label)}>
+        {meter.map((m) => {
+          const jamakSegmen = m.segmen.length > 1;
+          let offset = 0;
+          return (
+            <div class="ring-kartu-jamak">
+              <div class="ring-kartu-jamak__head">
+                <span class="ring-kartu-jamak__tag">Inisiasi Sakramen</span>
+                <h4 class="ring-kartu-jamak__judul">{m.judul}</h4>
+              </div>
+
+              <div class="ring-kartu-jamak__gambar">
+                <svg viewBox="0 0 200 200" aria-hidden="true">
+                  <circle
+                    class="ring__jalur"
+                    cx="100"
+                    cy="100"
+                    r={R}
+                    {...tip({
+                      judul: m.sisa.label,
+                      nilai: `${n(m.sisa.n)} ${m.satuan}`,
+                      baris: [`${p(m.sisa.pct)} ${m.penyebutLabel}`],
+                    })}
+                  />
+                  {m.segmen.map((s) => {
+                    const panjang = Math.max(0.2, s.pct - (jamakSegmen ? CELAH : 0));
+                    const elemen = (
+                      <circle
+                        class="ring__seg"
+                        cx="100"
+                        cy="100"
+                        r={R}
+                        pathLength="100"
+                        stroke={s.warna}
+                        stroke-dasharray={`${panjang.toFixed(2)} ${(100 - panjang).toFixed(2)}`}
+                        stroke-dashoffset={(-offset).toFixed(2)}
+                        transform="rotate(-90 100 100)"
+                        {...tip({
+                          judul: s.label,
+                          nilai: `${n(s.n)} ${m.satuan}`,
+                          warna: s.warna,
+                          baris: [`${p(s.pct)} ${m.penyebutLabel}`],
+                        })}
+                      />
+                    );
+                    offset += s.pct;
+                    return elemen;
+                  })}
+                </svg>
+                <div class="ring-kartu-jamak__pusat" aria-hidden="true">
+                  <b>{m.pusat}</b>
+                  <span>{m.subPusat}</span>
+                </div>
+              </div>
+
+              <div class="ring-kartu-jamak__legenda">
+                {m.segmen.map((s) => (
+                  <div
+                    class="ring-kartu-jamak__baris"
+                    {...tip({
+                      judul: s.label,
+                      nilai: `${n(s.n)} ${m.satuan}`,
+                      warna: s.warna,
+                      baris: [`${p(s.pct)} ${m.penyebutLabel}`],
+                    })}
+                  >
+                    <span class="ring-kartu-jamak__sw" style={`background:${s.warna}`} aria-hidden="true" />
+                    <span class="ring-kartu-jamak__nama">{s.label}</span>
+                    <b class="ring-kartu-jamak__n">{n(s.n)}</b>
+                  </div>
+                ))}
+                <div
+                  class="ring-kartu-jamak__baris"
+                  {...tip({
+                    judul: m.sisa.label,
+                    nilai: `${n(m.sisa.n)} ${m.satuan}`,
+                    baris: [`${p(m.sisa.pct)} ${m.penyebutLabel}`],
+                  })}
+                >
+                  <span class="ring-kartu-jamak__sw ring-kartu-jamak__sw--sisa" aria-hidden="true" />
+                  <span class="ring-kartu-jamak__nama">{m.sisa.label}</span>
+                  <b class="ring-kartu-jamak__n">{n(m.sisa.n)}</b>
+                </div>
+              </div>
+
+              {m.keterangan && <p class="ring-kartu-jamak__ket">{m.keterangan}</p>}
+            </div>
+          );
+        })}
+      </div>
+    )
+  }
 
   <slot />
 </figure>
 
 <style>
-  .rings {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-    gap: var(--space-8) var(--space-6);
-  }
-  .ring {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  .ring__gambar {
-    position: relative;
-    width: min(100%, 13.5rem);
-    aspect-ratio: 1;
-  }
-  .ring__gambar svg {
-    width: 100%;
-    height: 100%;
-  }
   .ring__jalur,
   .ring__seg {
     fill: none;
-    stroke-width: 18;
+    stroke-width: 20;
     pointer-events: stroke;
   }
   .ring__jalur {
     stroke: var(--ring-jalur);
   }
-  .ring__pusat {
+
+  /* ── Desain Tunggal (Adegan 1.5 & 2.4) ────────────────────────────────── */
+  .rings--tunggal {
+    display: grid;
+    grid-template-columns: minmax(280px, 340px) 1fr;
+    gap: var(--space-5);
+    align-items: stretch;
+    width: 100%;
+  }
+  .ring-hero {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .ring-hero__panggung {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-5) var(--space-4);
+    background: var(--surface-card);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-md);
+    height: 100%;
+    position: relative;
+  }
+  .ring-hero__gambar {
+    position: relative;
+    width: min(100%, 15.5rem);
+    aspect-ratio: 1;
+    margin: var(--space-2) 0;
+  }
+  .ring-hero__gambar svg {
+    width: 100%;
+    height: 100%;
+  }
+  .ring-hero__pusat {
+    position: absolute;
+    inset: 20%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    text-align: center;
+  }
+  .ring-hero__pusat-angka {
+    font-size: clamp(2.2rem, 3.8vw, 2.75rem);
+    font-weight: var(--fw-black);
+    letter-spacing: var(--tracking-display);
+    line-height: var(--lh-tight);
+    color: var(--text-strong);
+    font-variant-numeric: tabular-nums;
+  }
+  .ring-hero__pusat-sub {
+    margin-top: 4px;
+    font-size: var(--size-caption);
+    line-height: 1.3;
+    color: var(--text-muted);
+    max-width: 140px;
+  }
+  .ring-hero__foot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-top: var(--space-4);
+    padding-top: var(--space-3);
+    border-top: 1px dashed var(--border-hairline);
+    width: 100%;
+    text-align: center;
+  }
+  .ring-hero__tag {
+    font-size: var(--size-caption);
+    font-weight: var(--fw-bold);
+    color: var(--text-strong);
+  }
+  .ring-hero__stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: var(--size-body-sm);
+    color: var(--text-muted);
+  }
+  .ring-hero__stat b {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    color: var(--text-strong);
+  }
+
+  /* Panel Kanan */
+  .ring-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    background: var(--surface-card);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-md);
+    height: 100%;
+  }
+  .ring-panel__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border-hairline);
+  }
+  .ring-panel__tag {
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--text-subtle);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .ring-panel__judul {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: var(--fw-bold);
+    color: var(--text-strong);
+  }
+  .ring-panel__total {
+    font-size: var(--size-caption);
+    color: var(--text-muted);
+  }
+  .ring-panel__total b {
+    font-family: var(--font-mono);
+    color: var(--text-strong);
+  }
+  .ring-panel__items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    flex: 1;
+    justify-content: center;
+    margin: var(--space-2) 0;
+  }
+  .ring-kartu {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: var(--surface-sunken);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-sm);
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out),
+      box-shadow var(--duration-fast) var(--ease-out);
+    cursor: pointer;
+  }
+  .ring-kartu:hover,
+  .ring-kartu.is-aktif {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-1);
+    transform: translateY(-1px);
+  }
+  .ring-kartu__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+  .ring-kartu__ident {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .ring-kartu__sw {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .ring-kartu__sw--sisa {
+    background: var(--ring-jalur);
+    outline: 1px solid var(--border-hairline);
+  }
+  .ring-kartu__nama {
+    font-size: var(--size-body-sm);
+    font-weight: var(--fw-bold);
+    color: var(--text-strong);
+  }
+  .ring-kartu__angka {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .ring-kartu__n {
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    font-weight: var(--fw-black);
+    color: var(--text-strong);
+    font-variant-numeric: tabular-nums;
+  }
+  .ring-kartu__satuan {
+    font-size: var(--size-caption);
+    color: var(--text-muted);
+  }
+  .ring-kartu__pct {
+    font-family: var(--font-mono);
+    font-size: var(--size-caption);
+    font-weight: var(--fw-bold);
+    color: var(--text-strong);
+    background: var(--surface-card);
+    padding: 1px 6px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border-hairline);
+    margin-left: 4px;
+  }
+  .ring-kartu__track {
+    height: 7px;
+    background: var(--surface-card);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+    border: 1px solid var(--border-hairline);
+  }
+  .ring-kartu__isi {
+    height: 100%;
+    border-radius: var(--radius-pill);
+    transition: width var(--duration-normal) var(--ease-out);
+  }
+  .ring-kartu__isi--sisa {
+    background: var(--mark-base);
+    opacity: 0.6;
+  }
+  .ring-panel__footer {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--surface-sunken);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-sm);
+    font-size: var(--size-caption);
+    color: var(--text-muted);
+    line-height: var(--lh-normal);
+  }
+  .ring-panel__footer-ikon {
+    font-weight: var(--fw-bold);
+    color: var(--text-strong);
+    flex-shrink: 0;
+  }
+
+  /* ── Desain Jamak (Adegan 3.3) ────────────────────────────────────────── */
+  .rings--jamak {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+    width: 100%;
+  }
+  .ring-kartu-jamak {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--space-4);
+    background: var(--surface-card);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-md);
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out),
+      box-shadow var(--duration-fast) var(--ease-out);
+  }
+  .ring-kartu-jamak:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-1);
+    transform: translateY(-2px);
+  }
+  .ring-kartu-jamak__head {
+    margin-bottom: var(--space-2);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .ring-kartu-jamak__tag {
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  .ring-kartu-jamak__judul {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: var(--fw-bold);
+    color: var(--text-strong);
+  }
+  .ring-kartu-jamak__gambar {
+    position: relative;
+    width: min(100%, 12rem);
+    aspect-ratio: 1;
+    margin: var(--space-2) 0;
+  }
+  .ring-kartu-jamak__gambar svg {
+    width: 100%;
+    height: 100%;
+  }
+  .ring-kartu-jamak__pusat {
     position: absolute;
     inset: 22%;
     display: flex;
@@ -159,63 +618,69 @@ const CELAH = 0.6;
     justify-content: center;
     pointer-events: none;
   }
-  .ring__pusat b {
-    font-size: clamp(1.75rem, 4.2vw, 2.4rem);
+  .ring-kartu-jamak__pusat b {
+    font-size: clamp(1.75rem, 3.8vw, 2.2rem);
     font-weight: var(--fw-black);
     letter-spacing: var(--tracking-display);
     line-height: var(--lh-tight);
     color: var(--text-strong);
   }
-  .ring__pusat span {
+  .ring-kartu-jamak__pusat span {
     margin-top: var(--space-1);
     font-size: var(--size-micro);
-    line-height: 1.3;
     color: var(--text-muted);
   }
-  .ring__judul {
-    margin: var(--space-4) 0 var(--space-2);
-    font-size: var(--size-body-sm);
-    font-weight: var(--fw-bold);
-    color: var(--text-strong);
-  }
-  .ring__legenda {
-    list-style: none;
-    margin: 0;
+  .ring-kartu-jamak__legenda {
+    margin: var(--space-2) 0 0;
     padding: 0;
-    width: min(100%, 16rem);
+    width: 100%;
     font-size: var(--size-caption);
   }
-  .ring__legenda li {
+  .ring-kartu-jamak__baris {
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: var(--space-2);
-    padding: 3px 0;
+    padding: 4px 0;
     border-bottom: 1px solid var(--border-hairline);
     text-align: left;
+    cursor: pointer;
   }
-  .ring__legenda b {
+  .ring-kartu-jamak__baris:last-child {
+    border-bottom: none;
+  }
+  .ring-kartu-jamak__sw {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .ring-kartu-jamak__sw--sisa {
+    background: var(--ring-jalur);
+    outline: 1px solid var(--border-hairline);
+  }
+  .ring-kartu-jamak__nama {
+    color: var(--text-body);
+  }
+  .ring-kartu-jamak__n {
     font-family: var(--font-mono);
     font-weight: var(--fw-medium);
     color: var(--text-strong);
     font-variant-numeric: tabular-nums;
   }
-  .ring__nama {
-    color: var(--text-body);
-  }
-  .ring__sw {
-    width: 14px;
-    height: 3px;
-    border-radius: 2px;
-  }
-  .ring__sw--sisa {
-    background: var(--ring-jalur);
-    outline: 1px solid var(--border-hairline);
-  }
-  .ring__ket {
+  .ring-kartu-jamak__ket {
     margin-top: var(--space-2);
-    max-width: 18rem;
     font-size: var(--size-micro);
     color: var(--text-subtle);
+  }
+
+  /* Responsif */
+  @media (max-width: 820px) {
+    .rings--tunggal {
+      grid-template-columns: 1fr;
+    }
+    .rings--jamak {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
