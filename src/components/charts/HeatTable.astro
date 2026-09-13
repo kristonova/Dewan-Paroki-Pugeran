@@ -1,0 +1,163 @@
+---
+/**
+ * HeatTable — 88 baris lingkungan, beberapa kolom, diberi warna dengan ramp
+ * sekuensial. Dipakai di adegan 5.2.
+ *
+ * Tabel ini ADALAH datanya: ia sudah berupa tabel angka, sehingga setiap sel
+ * terbaca tanpa hover dan tanpa warna. Ramp hanya mempercepat pembacaan urutan.
+ * Rumus, bobot, dan batas tafsirnya dicantumkan tepat di bawah tabel — judulnya
+ * memakai kata "prioritas kunjungan", bukan "termiskin" (PRD §16).
+ */
+import type { KelompokInfo, LingkunganRow } from "../../lib/data";
+import { langkahRamp } from "../../lib/chart";
+import { d, n, p } from "../../lib/format";
+import { kat } from "../../lib/viz";
+
+interface Rumus {
+  keterangan: string;
+  bobot: Record<string, number>;
+  batas: string;
+}
+
+interface Props {
+  rows: LingkunganRow[];
+  caption: string;
+  label: string;
+  rumus: Rumus;
+  kelompok?: KelompokInfo[];
+}
+
+const { rows, caption, label, rumus, kelompok = [] } = Astro.props;
+const slotKelompok = new Map(kelompok.map((k) => [k.label, k.slot]));
+
+const skor = rows.map((r) => r.skor);
+const min = Math.min(...skor);
+const maks = Math.max(...skor);
+
+const namaBobot: Record<string, string> = {
+  lansia: "proporsi warga lanjut usia (65 tahun ke atas)",
+  perlu_bantuan: "proporsi keluarga yang memerlukan bantuan ekonomi",
+  rumah_tangga_satu_orang: "proporsi keluarga dengan satu anggota (hidup sendiri)",
+};
+---
+
+<figure class="figur">
+  <figcaption>{caption}</figcaption>
+
+  <div class="tabel-scroll">
+    <table class="panas" aria-label={label}>
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Lingkungan</th>
+          <th scope="col">Wilayah</th>
+          <th scope="col">Jiwa</th>
+          <th scope="col">65+</th>
+          <th scope="col">Perlu bantuan</th>
+          <th scope="col">Tinggal sendiri</th>
+          <th scope="col">Indeks</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map((r) => {
+            const langkah = langkahRamp(r.skor, min, maks);
+            return (
+              <tr>
+                <td class="rank">{r.peringkat}</td>
+                <td class="nama">{r.label}</td>
+                <td class="wil">
+                  {slotKelompok.has(r.kelompok) && (
+                    <span class="wil__sw" style={`background:${kat(slotKelompok.get(r.kelompok) ?? 1)}`} aria-hidden="true" />
+                  )}
+                  {r.wilayah}
+                  <span class="wil__kel">{r.kelompok}</span>
+                </td>
+                <td class="num">{n(r.jiwa)}</td>
+                <td class="num">{p(r.p_lansia)}</td>
+                <td class="num">{p(r.p_bantuan)}</td>
+                <td class="num">{p(r.p_solo)}</td>
+                <td class="num">
+                  <span
+                    class="sel"
+                    data-ramp={langkah}
+                    style={`background:var(--ramp-${langkah});color:var(--ramp-text-${langkah})`}
+                  >
+                    {d(r.skor, 1)}
+                  </span>
+                </td>
+              </tr>
+            );
+          })
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="rumus">
+    <p class="rumus__judul">Metode Perhitungan Indeks Prioritas</p>
+    <p>{rumus.keterangan}</p>
+    <ul>
+      {
+        Object.entries(rumus.bobot).map(([k, v]) => (
+          <li>
+            <code>{d(v, 4)}</code> &times; {namaBobot[k] ?? k}
+          </li>
+        ))
+      }
+    </ul>
+    <p class="rumus__batas">{rumus.batas}</p>
+  </div>
+
+  <slot />
+</figure>
+
+<style>
+  .rumus {
+    margin-top: var(--space-5);
+    padding: var(--pad-card-tight) var(--pad-card);
+    background: var(--surface-sunken);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-md);
+    font-size: var(--size-body-sm);
+    max-width: var(--measure-prose);
+  }
+  .rumus__judul {
+    font-weight: 700;
+    color: var(--text-strong);
+    font-size: var(--size-caption);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    margin-bottom: var(--space-3);
+  }
+  .rumus ul {
+    margin: 0 0 var(--space-3);
+    padding-left: var(--space-5);
+  }
+  .rumus li {
+    margin-bottom: var(--space-1);
+  }
+  .rumus code {
+    font-family: var(--font-mono);
+    color: var(--text-brand);
+  }
+  .rumus__batas {
+    border-top: 1px solid var(--border-hairline);
+    padding-top: var(--space-3);
+    color: var(--text-muted);
+    margin-bottom: 0;
+  }
+  .wil__sw {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 6px;
+    border-radius: 50%;
+    vertical-align: middle;
+  }
+  .wil__kel {
+    display: block;
+    font-size: var(--size-micro);
+    color: var(--text-subtle);
+  }
+</style>

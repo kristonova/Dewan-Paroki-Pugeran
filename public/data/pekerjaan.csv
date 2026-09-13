@@ -1,0 +1,76 @@
+kategori,jiwa,persen,disamarkan
+Swasta,2589.0,20.5,False
+Tidak tercatat,2480.0,19.7,False
+Ibu Rumah Tangga,1649.0,13.1,False
+Pensiun,914.0,7.2,False
+Pelajar,850.0,6.7,False
+"PNS, pegawai, atau karyawan",709.0,5.6,False
+Mahasiswa,490.0,3.9,False
+Pekerja kasar atau buruh,283.0,2.2,False
+Pedagang atau usaha kecil,262.0,2.1,False
+Tidak bekerja,200.0,1.6,False
+Sedang mencari kerja,197.0,1.6,False
+Pedagang atau usaha sedang,149.0,1.2,False
+Pengajar SD,130.0,1.0,False
+Tenaga pemasaran dan penjualan,120.0,1.0,False
+Pengajar SLTA,112.0,0.9,False
+"Penjual jasa (pijat, salon, kurir)",109.0,0.9,False
+Pengajar SLTP,83.0,0.7,False
+Pekerja Rumah Tangga,82.0,0.7,False
+Dosen,74.0,0.6,False
+Tukang Jahit,67.0,0.5,False
+Teknisi atau operator mesin,63.0,0.5,False
+Tidak dapat bekerja karena usia atau disabilitas,59.0,0.5,False
+Sopir,50.0,0.4,False
+"Pemahat, pelukis, atau seniman",50.0,0.4,False
+Pelaksana tata usaha,49.0,0.4,False
+Tukang listrik atau bengkel,46.0,0.4,False
+Juru masak dan pengolah makanan,41.0,0.3,False
+Perawat,40.0,0.3,False
+Pengajar Prasekolah,39.0,0.3,False
+Polisi atau TNI,38.0,0.3,False
+Satpam,38.0,0.3,False
+Buruh tani dan ternak,36.0,0.3,False
+Tenaga Management,34.0,0.3,False
+"Pengrajin kulit, tembaga, atau tanah liat",29.0,0.2,False
+Pedagang atau usaha besar,28.0,0.2,False
+"Imam, bruder, atau suster",25.0,0.2,False
+Dokter Umum/Ahli,24.0,0.2,False
+Petani dan peternak,22.0,0.2,False
+Pekerja Sosial,20.0,0.2,False
+Tukang Kayu,20.0,0.2,False
+Penerbangan atau pelayaran,19.0,0.2,False
+Tenaga ahli lainnya,18.0,0.1,False
+"Ahli hukum (pengacara, hakim)",18.0,0.1,False
+Jasa keuangan,18.0,0.1,False
+Tukang Batu,16.0,0.1,False
+Ahli Ekonomi,15.0,0.1,False
+Pekerja lepas,15.0,0.1,False
+"Pengarang, wartawan, atau penulis",14.0,0.1,False
+Tenaga jasa (pelayan toko),14.0,0.1,False
+Terkena pemutusan hubungan kerja,13.0,0.1,False
+Pemegang kas atau bendahara,12.0,0.1,False
+Bidan,12.0,0.1,False
+Apoteker,12.0,0.1,False
+Kontraktor,11.0,0.1,False
+Tenaga Administrasi,10.0,0.1,False
+Dokter Gigi,9.0,0.1,False
+Dokter Hewan,9.0,0.1,False
+Tukang Las,9.0,0.1,False
+Pengajar SLB,9.0,0.1,False
+Olahragawan,8.0,0.1,False
+Pemandu wisata,7.0,0.1,False
+Psikolog,7.0,0.1,False
+Buruh Perusahaan,6.0,0.0,False
+Manager,5.0,0.0,False
+Pemborong,,,True
+Anak berusia di bawah 6 tahun,,,True
+Katekis atau tenaga pastoral,,,True
+Konsultan,,,True
+Buruh Tambang,,,True
+Buruh Pabrik,,,True
+Pemelihara gedung,,,True
+Tukang Cat,,,True
+Guru Agama di Sekolah,,,True
+Nelayan,,,True
+Peneliti,,,True

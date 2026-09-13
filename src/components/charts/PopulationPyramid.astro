@@ -1,0 +1,257 @@
+---
+/**
+ * PopulationPyramid — bentuk baku demografi: dua sisi berbagi satu sumbu usia.
+ * Dipakai di adegan 2.1.
+ *
+ * Interaktif: menyentuh satu pita umur menampilkan laki-laki, perempuan, dan
+ * rasionya. Garis tipis menandai umur median. Sel yang disamarkan (1–4 jiwa)
+ * digambar sebagai tanda tipis, bukan sebagai nol — kosong bukan nol.
+ *
+ * Dua tata letak dirender dan dipilih lewat media query: tata letak sempit
+ * membuang angka di ujung batang supaya label umur tetap terbaca di ponsel.
+ */
+import type { PyramidRow } from "../../lib/data";
+import { isi, kisi, q } from "../../lib/chart";
+import { d, n } from "../../lib/format";
+import { kontainer, tip } from "../../lib/viz";
+import Legenda from "../Legenda.astro";
+
+interface Props {
+  rows: PyramidRow[];
+  caption: string;
+  label: string;
+  snapshot: string;
+  /** Umur median; digambar sebagai garis tipis melintang. */
+  median?: number;
+}
+
+const { rows, caption, label, snapshot, median } = Astro.props;
+
+const maks = rows.reduce((m, r) => Math.max(m, r.laki.n ?? 0, r.perempuan.n ?? 0), 0);
+const garis = kisi(maks, 3);
+const atas = garis[garis.length - 1] ?? 1;
+
+const LEBAR = { W: 760, SUMBU: 96, ROW: 17, GAP: 4, TOP: 26, BOTTOM: 26, nilai: true, kelas: "piramida--lebar" };
+const SEMPIT = { W: 360, SUMBU: 60, ROW: 15, GAP: 3, TOP: 24, BOTTOM: 24, nilai: false, kelas: "piramida--sempit" };
+type Geo = typeof LEBAR;
+
+const tinggi = (g: Geo) => g.TOP + rows.length * (g.ROW + g.GAP) - g.GAP + g.BOTTOM;
+const sisi = (g: Geo) => (g.W - g.SUMBU) / 2;
+const kiri0 = (g: Geo) => q(sisi(g) - 8);
+const kanan0 = (g: Geo) => q(sisi(g) + g.SUMBU + 8);
+const lebar = (g: Geo, v: number | null) => (v === null ? 0 : q((v / atas) * (sisi(g) - 8)));
+const y = (g: Geo, i: number) => g.TOP + (rows.length - 1 - i) * (g.ROW + g.GAP);
+
+function kiriBatang(g: Geo, w: number, yy: number): string {
+  const r = q(Math.min(4, w / 2, g.ROW / 2));
+  const x = kiri0(g);
+  if (w <= 0.6) return `M${x} ${yy} h-0.6 v${g.ROW} h0.6 Z`;
+  return `M${x} ${yy} h${q(-(w - r))} a${r} ${r} 0 0 0 ${-r} ${r} v${q(g.ROW - 2 * r)} a${r} ${r} 0 0 0 ${r} ${r} h${q(w - r)} Z`;
+}
+function kananBatang(g: Geo, w: number, yy: number): string {
+  const r = q(Math.min(4, w / 2, g.ROW / 2));
+  const x = kanan0(g);
+  if (w <= 0.6) return `M${x} ${yy} h0.6 v${g.ROW} h-0.6 Z`;
+  return `M${x} ${yy} h${q(w - r)} a${r} ${r} 0 0 1 ${r} ${r} v${q(g.ROW - 2 * r)} a${r} ${r} 0 0 1 ${-r} ${r} h${q(-(w - r))} Z`;
+}
+
+// Garis median: pita "a–b" yang memuat umur median, diinterpolasi di dalam pita.
+const awalPita = (labelPita: string) => Number.parseInt(labelPita, 10);
+function yMedian(g: Geo): number | null {
+  if (median === undefined) return null;
+  const i = rows.findIndex((r, j) => {
+    const a0 = awalPita(r.label);
+    const berikut = rows[j + 1];
+    const a1 = berikut ? awalPita(berikut.label) : a0 + 5;
+    return median >= a0 && median < a1;
+  });
+  const pita = rows[i];
+  if (!pita) return null;
+  const bagian = (median - awalPita(pita.label)) / 5;
+  return q(y(g, i) + g.ROW - bagian * g.ROW);
+}
+
+const fLaki = isi("3");
+const fPerempuan = isi("1");
+---
+
+<figure class="figur">
+  <figcaption>{caption}</figcaption>
+
+  <Legenda
+    items={[
+      { label: "Laki-laki", seri: "3" },
+      { label: "Perempuan", seri: "1" },
+      ...(median === undefined
+        ? []
+        : [{ label: `garis merah: umur median ${d(median, 1)} tahun`, seri: "highlight" as const }]),
+    ]}
+  />
+
+  <div class="viz" {...kontainer(label)}>
+    {
+      [LEBAR, SEMPIT].map((g) => {
+        const H = tinggi(g);
+        const ym = yMedian(g);
+        return (
+          <svg class:list={["piramida", g.kelas]} viewBox={`0 0 ${g.W} ${H}`} aria-hidden="true">
+            <g class="grid">
+              {/* Tata letak sempit memakai separuh garis kisi supaya angka sumbu tidak berdesakan. */}
+              {(g.nilai ? garis : garis.filter((_, i) => i % 2 === 0)).map((t) => {
+                const dx = q((t / atas) * (sisi(g) - 8));
+                return (
+                  <>
+                    <line x1={q(kiri0(g) - dx)} y1={g.TOP - 8} x2={q(kiri0(g) - dx)} y2={H - g.BOTTOM} />
+                    <line x1={q(kanan0(g) + dx)} y1={g.TOP - 8} x2={q(kanan0(g) + dx)} y2={H - g.BOTTOM} />
+                    <text class="tick" x={q(kiri0(g) - dx)} y={H - g.BOTTOM + 14} text-anchor="middle">{n(t)}</text>
+                    <text class="tick" x={q(kanan0(g) + dx)} y={H - g.BOTTOM + 14} text-anchor="middle">{n(t)}</text>
+                  </>
+                );
+              })}
+            </g>
+
+            <text class="kepala" x={kiri0(g)} y={14} text-anchor="end">Laki-laki</text>
+            <text class="kepala" x={kanan0(g)} y={14} text-anchor="start">Perempuan</text>
+            <text class="kepala kepala--umur" x={g.W / 2} y={14} text-anchor="middle">Umur</text>
+
+            {rows.map((r, i) => {
+              const yy = y(g, i);
+              const l = r.laki.n;
+              const pr = r.perempuan.n;
+              const tt = r.tidak_tercatat.n ?? 0;
+              return (
+                <g
+                  class="pita"
+                  {...tip({
+                    judul: `${r.label} tahun`,
+                    nilai: `${n((l ?? 0) + (pr ?? 0) + tt)} jiwa`,
+                    baris: [
+                      `laki-laki ${l === null ? "disamarkan" : n(l)} · perempuan ${pr === null ? "disamarkan" : n(pr)}`,
+                      l !== null && pr !== null && pr > 0 && `${d((100 * l) / pr, 1)} laki-laki per 100 perempuan`,
+                      tt > 0 && `${n(tt)} jiwa tanpa catatan jenis kelamin`,
+                    ],
+                  })}
+                >
+                  <rect x="0" y={q(yy - g.GAP / 2)} width={g.W} height={g.ROW + g.GAP} fill="transparent" />
+                  {l === null && r.laki.disamarkan ? (
+                    <rect class="samar" x={q(kiri0(g) - 22)} y={q(yy + g.ROW / 2 - 2)} width="22" height="4" rx="2" />
+                  ) : (
+                    <path d={kiriBatang(g, lebar(g, l), yy)} fill={fLaki.fill} data-seri="3" />
+                  )}
+                  {pr === null && r.perempuan.disamarkan ? (
+                    <rect class="samar" x={kanan0(g)} y={q(yy + g.ROW / 2 - 2)} width="22" height="4" rx="2" />
+                  ) : (
+                    <path d={kananBatang(g, lebar(g, pr), yy)} fill={fPerempuan.fill} data-seri="1" />
+                  )}
+                  <text class="umur" x={g.W / 2} y={q(yy + g.ROW / 2 + 4)} text-anchor="middle">{r.label}</text>
+                  {g.nilai && (
+                    <>
+                      <text class="nilai" x={q(kiri0(g) - lebar(g, l) - 6)} y={q(yy + g.ROW / 2 + 4)} text-anchor="end">
+                        {l === null ? "·" : n(l)}
+                      </text>
+                      <text class="nilai" x={q(kanan0(g) + lebar(g, pr) + 6)} y={q(yy + g.ROW / 2 + 4)} text-anchor="start">
+                        {pr === null ? "·" : n(pr)}
+                      </text>
+                    </>
+                  )}
+                </g>
+              );
+            })}
+
+            {ym !== null && <line class="median" x1="0" y1={ym} x2={g.W} y2={ym} />}
+          </svg>
+        );
+      })
+    }
+  </div>
+
+  <p class="catatan-umur">
+    Umur dihitung terhadap {snapshot}, bukan terhadap hari ini. Titik (·) menandai sel berisi 1–4 jiwa
+    yang disamarkan.
+  </p>
+
+  <slot />
+</figure>
+
+<style>
+  .piramida {
+    width: 100%;
+    height: auto;
+  }
+  .piramida--sempit {
+    display: none;
+  }
+  @media (max-width: 640px) {
+    .piramida--lebar {
+      display: none;
+    }
+    .piramida--sempit {
+      display: block;
+    }
+  }
+  @media print {
+    .piramida--lebar {
+      display: block !important;
+    }
+    .piramida--sempit {
+      display: none !important;
+    }
+  }
+  .grid line {
+    stroke: var(--chart-grid);
+    stroke-width: 1;
+  }
+  .tick {
+    fill: var(--text-subtle);
+    font-size: 10px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  .kepala {
+    fill: var(--text-muted);
+    font-size: 11px;
+    font-family: var(--font-body);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .kepala--umur {
+    fill: var(--text-subtle);
+  }
+  .umur {
+    fill: var(--text-body);
+    font-size: 11.5px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  .pita:global(.is-aktif) .umur {
+    fill: var(--text-strong);
+    font-weight: var(--fw-medium);
+  }
+  .nilai {
+    fill: var(--text-muted);
+    font-size: 10.5px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  .samar {
+    fill: var(--mark-gap);
+  }
+  .median {
+    stroke: var(--accent);
+    stroke-width: 1;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  .median-l {
+    fill: var(--text-brand);
+    font-size: 10.5px;
+    font-family: var(--font-mono);
+    pointer-events: none;
+  }
+  .catatan-umur {
+    margin-top: var(--space-4);
+    font-size: var(--size-caption);
+    color: var(--text-subtle);
+    max-width: var(--measure-prose);
+  }
+</style>

@@ -1,0 +1,1717 @@
+# Basic Data Science
+Hari ini, big data menjadi buah bibir di mana-mana. Big data dibicarakan dalam setiap kesempatan, baik dalam seminar, kuliah, ataupun obrolan ringan di acara televisi. Namun apakah sesungguhnya big data itu? Big data bukan hanya tentang jenis data baru yang mengalir dengan cepat dan bisa di dapat dalam jumlah besar. Big data juga tentang keterampilan baru yang dibutuhkan untuk mengekstrak informasi yang ada dalam data yang cenderung mudah untuk didapatkan. Saat ini kita tidak hanya dapat mengandalkan kemampuan analisis berdasarkan metode-metode konvensional. Dibutuhkan keahlian baru yang menggabungkan setidaknya tiga bidang terkait, yaitu statistik, pengetahuan, dan *engineering*. Untuk itu, dalam beberapa tahun terakhir, dan beberapa tahun ke depan banyak *data scientist* menjadi salah satu profesi yang banyak dicari oleh banyak perusahaan. LinkedIn dalam laporan tahunannya mengatakan bahwa posisi "data scientist" menduduki peringkat kedua dalam tingkat pertumbuhan munculnya jenis pekerjaan baru di Indonesia dalam kurun waktu 5 tahun belakangan ini. 
+
+*Data Science* merupakan disiplin ilmu yang menarik dan seksi di abad 21. Kita dapat mengubah data mentah menjadi sebuah pemahaman (*understanding*), wawasan (*insight*), dan pengetahuan (*knowledge*). Seni mengungkap wawasan dan tren dalam data ini sebenarnya telah ada sejak zaman dahulu. Bangsa Mesir kuno menggunakan data sensus penduduknya untuk meningkatkan efisiensi dalam pengumpulan pajak dan secara akurat mereka dapat memperkirakan banjir sungai Nil setiap tahun. Sejak saat itu, orang yang bekerja di bidang *data science* telah mengukir bidang yang unik dan berbeda untuk pekerjaan yang mereka lakukan. Bidang inilah yang disebut sebagai *data science*. 
+
+Tujuan dari pelatihan ini adalah untuk membantu Anda belajar apa itu *data science*, bagaimana mengerjakan proyek *data science* khususnya menggunakan R Programming. Setelah pelatihan ini, diharapkan Anda dapat menggunakan tools-tools yang terdapat di dalam R untuk menyelesaikan proyek-proyek *data science*. 
+
+## Pengenalan Dasar
+
+Mengapa menggunakan R? Berdasarkan definisi di laman resminya, R merupakan bahasa pemrograman untuk mengolah data secara statistik. Dalam prakteknya, R juga banyak digunakan untuk mengolah data tidak terstruktur, termasuk data dari media sosial. R merupakan salah satu *open source* yang saat ini cukup populer dan banyak digunakan oleh berbagai organisasi dengan skala besar hingga kecil. Pengguna R tersebar mulai dari perusahaan teknologi besar dunia (*tech giants*) seperti Google dan Facebook, pemerintahan, akademisi, hingga usaha kecil menengah. R populer digunakan karena ketersediaan *library*-nya yang lengkap dan mudah digunakan. Kita dapat melakukan proses manipulasi data atau visualisasi data dengan mudah. Pada modul ini, kita akan menggunakan RStudio versi 3.5.1 (2018-07-02). 
+
+*Data science* merupakan bidang ilmu yang sangat luas dan tidak ada jalan pintas untuk menguasai seluruh materi tentang *data science*. Model yang kami gunakan dalam pelatihan ini adalah sebagai berikut:
+```{r DataScienceProj, echo = FALSE, out.width = '100%', fig.cap = "Diagram alir project data science"}
+knitr::include_graphics("images/gambar-1.1.png")
+```  
+
+Pertama, Anda harus meng-**import** data ke R. Artinya, Anda harus mengambil data yang sudah disimpan sebelumnya di dalam sebuah file, database, atau web API, dan memuatnya ke dalam sebuah *dataframe* di R. 
+
+Sesudah berhasil mengimpor data, langkah selanjutnya adalah membereskan data, atau sering disebut dengan **tidy**. *Tidying data* berarti menyimpan data Anda ke dalam sebuah bentuk yang konsisten yang sesuai antara semantik dari data yang Anda miliki dengan cara penyimpanan data tersebut. Secara singkat, jika data Anda telah *tidy* (rapi, teratur), setiap kolom adalah sebuah variabel, dan setiap baris adalah sebuah observasi. Data yang *tidy* sangatlah penting karena dengan struktur data yang konsisten, Anda hanya perlu berkonsentrasi untuk menjawab pertanyaan-pertanyaan seputar data Anda, bukannya untuk mengambil data ke dalam format yang tepat untuk fungsi-fungsi yang berbeda.
+
+Setelah mendapat data yang rapi dan teratur (*tidy*), langkah selanjutnya adalah melakukan **transformasi** terhadap data tersebut. Transformasi data dapat digambarkan sebagai observasi dari kepentingan kita (misalnya data semua orang dalam suatu kota atau semua data dengan batasan waktu tertentu), membuat variabel baru yang merupakan fungsi dari variabel yang sudah ada sebelumnya (misalnya menghitung variabel kecepatan dari variabel jarak dan waktu), dan menghitung fungsi-fungsi statistik (mean, median, modus). Proses **tidy** dan **transformasi** ini sering disebut dengan **wrangling**, karena mengubah bentuk data Anda menjadi bentuk yang siap diolah seringkali terasa seperti sebuah pertarungan (*wrangling*)!
+
+Setelah mendapatkan data yang rapi dan teratur (*tidy*) dengan variabel yang dibutuhkan, ada dua cara untuk melakukan penggalian **knowledge** dari data: visualisasi dan pemodelan. Kedua cara ini memiliki kelebihan dan kekurangan yang saling berkomplemen, sehingga dalam analisis yang riil biasanya akan berulang di antara kedua cara ini.
+
+**Visualization** adalah kegiatan fundamental manusia. Visualisasi yang baik akan menunjukkan sesuatu yang tidak diduga sebelumnya, atau menimbulkan pertanyaan baru seputar data Anda. Visualisasi yang baik juga akan memberikan isyarat bahwa Anda telah mengajukan pertanyaan yang salah atau harus mengumpulkan data lain lagi. 
+
+**Model** adalah perkakas komplementer dari visualisasi. Ketika Anda dapat mengajukan pertanyaan yang cukup presisi, Anda dapat menggunakan sebuah model untuk menjawab pertanyaan tersebut. Model secara fundamental adalah fungsi matematis, sehingga dapat *scaling* dengan baik.
+
+Langkah terakhir dari *data science* adalah **communication** yang merupakan bagian paling kritis dari seluruh proyek analisis data. Tidak peduli sebaik apa pemodelan atau visualisasi yang Anda buat, jika Anda tidak bisa mengkomunikaskan hasilnya kepada orang lain, berarti proyek data analisis Anda berakhir sebagai sebuah kegagalan. 
+
+Seluruh tahapan di atas dilakukan menggunakan teknik *programming*. *Programming* merupakan sebuah alat yang akan Anda gunakan di dalam seluruh tahapan proyek. Anda tidak perlu menjadi seorang *programmer* handal untuk melakukan proyek *data science*. Akan tetapi belajar lebih tentang pemrograman memiliki banyak keuntungan karena Anda dapat mengotomasi tugas rutin dan memecahkan masalah baru dengan lebih mudah. Pada kesempatan kali ini, kita akan menggunakan bahasa pemrograman R untuk melakukan proses-proses dalam *data science*.
+
+Pada bagian ini kita akan mempelajari hal-hal dasar yang sering digunakan dalam proses pengolahan data baik dalam skala besar, sedang, maupun kecil. Bagian pertama membahas tentang fungsi dan keunggulan bahasa pemrograman, keunggulan dan kelebihannya untuk mengolah data. Bagian kedua membahas tentang hal-hal dasar tentang R dan Rstudio. Bagian ketiga membahas beberapa fungsi dasar yang dibutuhkan dalam pemrosesan data dan permodelan. Bagian terakhir membahas tentang jenis-jenis data yang umum dan sering diolah menggunakan R. 
+
+Sebelum mulai, kita perlu terlebih dahulu perlu menyiapkan R dan menjalankan fungsi berikut untuk menginstall package/library. Paket dan atau library ini merupakan alat yang dibutuhkan dalam lingkungan R yang penjelasannya bisa ditemukan pada bagian \@ref(packageLib). 
+
+**Jalankan fungsi berikut untuk menyiapkan R dan Rstudio kita mengerjakan seluruh materi dalam modul ini.**
+
+```{r, eval=FALSE}
+# Digunakan untuk mengecek apakah paket yang dibutuhkan sudah terinstall atau belum. Jika belum install.package()
+
+install_paket <- function(pkg){
+    new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
+    if (length(new.pkg)) 
+        install.packages(new.pkg, dependencies = TRUE)
+    sapply(pkg, require, character.only = TRUE)
+    }
+
+# usage
+paket <- c("tidyverse", "tidytext", "reshape2", "RColorBrewer", "scales", "haven",
+           "topicmodels", "plotly", "DT", "knitr", "readxl", "missForest")
+install_paket(paket)
+```
+
+### Mengenal Bahasa pemrograman {#knowR}
+
+Bahasa pemrograman adalah sebuah kumpulan perintah-perintah yang bisa dipahami oleh komputer. Mengapa menggunakan istilah `bahasa`? Karena hal tersebut dibuat agar manusia dapat berkomunikasi dengan komputer. Kita dapat memberikan perintah ke komputer untuk melakukan suatu tugas tertentu. Ada banyak sekali jenis bahasa pemrograman saat ini. Beberapa yang cukup populer sekarang di antaranya: C, C++, PHP, Java, Python, Swift, dan lain-lain. Memasuki era revolusi industri ke-4 ini, kebutuhan penggunaan komputer semakin masif, sehingga setiap orang diharapkan menguasai setidaknya satu bahasa pemrograman untuk mampu bersaing. R merupakan sebuah bahasa pemrograman yang relatif mudah dan sederhana untuk dikuasai orang-orang yang tidak memiliki latar belakang keilmuan terkait komputer. R mulai populer sekitar 5-10 tahun terakhir dalam kaitannya sebagai alat untuk mengolah data serta membuat visualisasi yang menarik.
+
+### Menggunakan R dan RStudio {#RandRstudio}
+
+R dan Rstudio adalah dua hal yang berbeda tapi digunakan untuk fungsi yang sama. RStudio di sini berfungsi untuk menjalankan skrip-skrip R yang kita buat. Saat mayoritas pengguna R menggunakan RStudio. Dua-duanya dapat di unduh dan digunakan secara gratis melalui tautan berikut.  
+
+1. R dapat diunduh di: https://cran.r-project.org/
+2. Rstudio dapat diunduh di: https://www.rstudio.com/
+
+Setelah kedua perangkat lunak di atas terunduh lalu install `R terlebih dahulu`, kemudian `RStudio`. Setelah keduanya terinstall, kita akan lebih banyak menggunakan Rstudio. Untuk itu langkah selanjutnya adalah mengenal bagian-bagian dari R Studio, yang secara umum memiliki empat bagian antar muka seperti dapat dilihat pada gambar berikut. 
+
+```{r RstudioInt, echo = FALSE, out.width = '100%', fig.cap = "RStudio Interface terdiri empat bagian utama."}
+knitr::include_graphics("images/RStudio.png")
+```
+
+Seperti dapat dilihat pada gambar \@ref(fig:RstudioInt), Rstudio memiliki empat bagian utama. Namun, ketika pertama kali membukanya atau tidak ada skrip yang terbuka RStudio hanya menunjukkan tiga bagian, yaitu bagian 2, 3, dan 4. Bagian 1 merupakan bagian untuk menampilkan skrip. Untuk membuat skrip di Rstudio kita dapat menggunakan cara pintas, yaitu dengan menekan tombol `command + shift + N` di Mac atau `control + shift + N` di Windows. Walaupun demikian, agar pekerjaan kita terkelola dengan baik kita bisa mengikuti langkah berikut dalam menggunakan Rstudio. 
+
+1. **Membuat project** dengan menuju menu `File (Bagian kiri atas) -> New Project -> New Directory -> New Project -> Pilih Disk/Folder untuk menyimpan pekerjaan -> Isi bagian directory name dengan nama project -> tekan tombol create new`. Dengan membuat project tersebut, semua pekerjaan kita akan berada dalam satu folder yang dibuat pada kolom `directory name`. 
+
+2. **Membuat skrip baru**. Untuk membuat skrip baru kita akan menuju menu `File ->R Script` untuk membuat file `.R` (dot R). Selain itu, kita juga membuat jenis file lain seperti `R Markdown` (akan dibahas lebih lanjut pada bagian \@ref(report_123)) maupun bahasa lain, misalnya `C++`. File skrip yang dibuat akan tampil pada bagian antar muka **nomor 1**. 
+
+3. **Membuat folder baru** khusus untuk menyimpan data mentah, data yang telah di olah, dan untuk menyimpan visualisasi yang dihasilkan. Folder-folder ini dapat dibuat seperti umumnya membuat folder sehari-hari yaitu dengan `klik kanan -> new folder` akan memudahkan kita dalam mengerjakan project di R. 
+
+Project yang kita buat dengan urutan di atas, dapat dilihat pada bagian antar muka **nomor 4**. Bagian antar muka **nomor 2** berfungsi untuk melihat skrip dan aktivitas yang dijalankan di RStudio. Sementara bagian antar muka **nomor 3** dapat digunakan untuk melihat data yang digunakan atau ada di lingkungan *project* yang dibuat. Di R hal semua aktivitas yang dilakukan tersimpan dalam sebuah tempat yang disebut `global environment`.
+
+Selain hal-hal yang disebutkan di atas, dalam setiap halaman antarmuka juga memiliki beberapa fitur lain yang berfungsi untuk melihat dan mengontrol pekerjaan. Misalnya, pada bagian nomor 4 kita juga melihat hasil visualisasi data. Sementara pada bagian nomor 3 kita bisa mengatur koneksi langsung dengan aplikasi *database* seperti `spark` dan version control seperti `github` dan atau `gitlab`. Namun hal-hal tersebut tidak akan dibahas dalam modul ini. 
+
+### Dasar-dasar Bahasa pemrograman R {#baseR}
+
+#### R Sebagai Kalkulator
+
+Sama seperti beberapa bahasa pemrograman lainnya, R melalui RStudio juga dapat berfungsi sebagai kalkulator. Untuk mencobanya, kita dapat langsung menuliskan skrip di bawah pada bagian Consol lalu tekan enter. 
+
+```{r, eval=FALSE}
+2 + 3  # the space around '+' is optional
+2 * 3  #=> 6
+sqrt(36)  #=> 6, square root
+log10(100)  #=> 2, log base 10
+10 / 3  #=> 3.3, 10 by 3
+10 %/% 3  #=> 3, quotient of 10 by 3
+10 %% 3  #=> 1, remainder of 10 by 3
+```
+
+Selain operasi sederhana seperti di atas, kita juga dapat menggunakan R untuk melakukan tugas yang lebih rumit sama seperti kalkulator saintifik. Untuk kesempatan ini, kita cukup tahu bahwa R bisa mengoperasikan berbagai fungsi matematika. 
+
+#### Operator Penugasan
+
+**Menjalankan skrip**
+
+Setelah bisa membuat objek seperti yang dituliskan dalam skrip operasi matematika di atas. Selanjutnya kita juga perlu mengetahui cara menjalankan skrip di R. Terdapat beberapa cara yang bisa digunakan untuk menjalankan skrip R di Rstudio. Misalnya, pada skrip di atas, kita bisa mengarahkan kursor tetikus sejajar dengan baris skrip yang akan dijalankan lalu tekan tombol `Run` yang ada pada bagian atas. Selain itu, kita juga menggunakan tombol pintas dengan menekan `Control + Enter` di windows atau `Command + Enter` di Mac. Sementara untuk menjalankan skrip beberapa baris sekaligus kita hanya perlu membloknya dan melakukan langkah yang sama. 
+
+**Tanda `<-`**
+
+Hal berikutnya yang perlu kita tahu adalah operator penugasan di R. Tidak seperti kebanyakan bahasa lain, R menggunakan operator `<-` selain operator `=`  biasa untuk menetapkan nilai. Oleh karena itu, setiap tanda `<-` di R bisa di baca sama dengan. Walaupun sebenarnya hal tersebut tidak berarti sama yang di sebelah kanan sama dengan yang di sebalah kiri tanda `<-` atau sebaliknya. 
+
+```{r, eval=FALSE}
+sebuah_data <- 10  # assign 10 to 'a'
+sebuah_data = 10  # same as above
+10 -> sebuah_data  # assign 10 to 'a'
+10 = sebuah_data  # Wrong!. This will try to assign `a` to 10.
+```
+
+Skrip di atas dapat dibaca dari sisi penunjuk anak panah. Misalnya, baris pertama dapat di baca `10 sama dengan sebuah_data`. Secara umum, kita membaca skrip dari sisi kanan, walaupun kita juga bisa membaca dari sisi sebaliknya seperti skrip bari ketiga di atas. 
+
+Untuk diketahui dalam membuat objek di R kita tidak bisa menggunakan spasi. Sehingga ketika umumnya kita melihat `sebuah_data` akan ditulis `sebuah data` di sini kita mengganti spasi dengan tanda `_`. Selain itu, R juga case sensitf. Artinya, ketika kita menamai sebuah objek dengan huruf kecil semua maka ketika memanggilnya harus sama persis. 
+
+Cobalah skrip berikut untuk lebih memahami, dan lihat keterangan apa yang muncul pada bagian Console. 
+
+```{r, eval=FALSE}
+Sebuah_data
+```
+
+**Tanda #**
+
+Pada skrip sebelumnya, kita juga melihat tanda `#` (tanda pagar). di R. Tanda pagar berfungsi sebagai komentar. Artinya, apapun yang ditulis setelah tanda tersebut tidak akan dieksekusi sebagai skrip oleh R. Tanda pagar di sini berfungsi untuk memudahkan penulis skrip (manusia) dalam menandai setiap bagian dan fungsi dalam skrip yang dibuatnya. Untuk lebih lengkapnya operator R dapat dilihat pada tabel \@ref(tab:Roprators) berikut. 
+
+```{r Roprators, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(DT)
+Roprators <- data.frame(Operator = c("<", "<=", ">", ">=", "==", "!=", "!x", 
+                                     "x & y", "isTRUE(x)"), 
+                        Deskripsi = c("kurang dari", "kurang dari atau sama dengan", 
+                                     "lebih dari", "lebih dari atau sama dengan", 
+                                     "sama persis", "tidak sama persis", 
+                                     "bukan x", "x AND Y", "test if X is TRUE"))
+
+knitr::kable(Roprators, caption = "Operator R lain yang sering digunakan")
+```
+
+#### Package dan Library {#packageLib}
+
+Packages atau Paket R merupakan kumpulan fungsi dan dataset yang dibuat oleh komunitas pengguna dan dapat digunakan secara gratis. Karena siapa saja dapat membuat paket, saat ini jumlahnya adalah puluhan ribu dan bisa dicek pada tautan di atas. Di sini paket merupakan salah satu kekuatan *open source* karena dapat memudahkan pekerjaan kita dalam menyelesaikan sebuah proyek dengan R.
+
+Sebagai contoh, ketika kita ingin membuat sebuah visualisasi dari data maka tanpa bantuan paket. Maka kita membutuhkan puluhan baris dan bahkan ratusan baris kode untuk satu gambar. Namun dengan bantuan paket, kita bisa menghemat energi dan terkadang hanya butuh beberpa baris kode saja. 
+
+Contoh lainnya, misalnya kita ingin mengekstrak probabilitas topik yang terdapat dalam sebuah data teks. Di sini kita bisa menggunakan algoritma *Latent Dirichelet Allocation*(LDA). Tanpa bantuan paket, kita harus menyesuaikan persyaratan dan perhitungan serta jumlah iterasi yang dibutuhkan hingga sebuah model cukup meyakinkan. Tapi kita beruntung karena ada orang yang telah membuat paket dengan nama `topicmodels` [@topicmodels] yang sama persis menjalankan algoritma LDA. Oleh karena itu, kita bisa saja hanya butuh mempelajari fungsi dari paket tersebut. 
+
+Di kalangan pengguna R (Ruser), penggunaan nama paket dan *library* sering membingungkan. Untuk itu, definisi dari Hadley Wickham dibutuhkan untuk menambah pemahahaman kita. 
+
+> A package is a like a book, a library is like a library; you use library() to check a package out of the library #rsats — Hadley Wickham, December 8, 2014
+
+Paket adalah kumpulan fungsi atau dataset seperti telah dijelaskan di atas. Sedangkan library merujuk pada tempat (bisa juga disebut folder) tempat paket-paket berada. Untuk mendapatkan contoh nyata, mungkin anda perlu mencari tahu sebuah paket yang bernama `tidyverse` yang di dalamnya terdiri dari beberapa paket lain, seperti `dplyr`, `ggplot2` dan lain sebagainya. 
+
+**Cara Menginstall Paket**
+
+Terdapat dua cara untuk memasang atau menginstall paket dalam R. Tentunya di sini kita berbicara dalam konteks penggunaan RStudio. Pertama, dengan menggunakan *user interface*. Kedua, menggunakan perintah `install.packages()`. Kedua cara tersebut dapat dilakukan saat perangkat yang digunakan terkoneksi dengan internet. 
+
+Untuk menggunakan *user interface*, kita bisa menuju ke bagian atas dan mencari menu `Tools -> Install Pacakages... -> Isi nama paket -> Biarkan install dependencies tercentang`. Hal tersebut merupakan hal umum. Selain itu, di sini kita juga dapat menginstall dari sumber lain selain dari CRAN.
+
+Untuk menginstall dengan menggunakan perintah `install.packages()` kita bisa mengetikkannya baik dalam skrip maupun langsung dalam console. Tanda kurung dalam fungsi di atas diisi dengan nama paket dalam format string atau karakter yang di tandai dengan tanda petik (Contoh: "itsAsAtring"). Contohnya adalah sebagai berikut.
+
+```{r, eval=FALSE}
+install.packages("tidyverse")
+```
+
+Dengan meletakkan (*copy paste*) perintah di atas pada bagian Console dan menekan `Enter`, bagian Console Rstudio akan menunjukkan beberapa aktivitas. Secara umum, aktivitas tersebut dapat dikatakan instalasi. Di pojok kanan atas Console juga akan terdapat tanda merah, yang artinya sedang ada aktivitas. Pada kesempatan tersebut, tidak disarankan melakukan aktivitas lain di Rstudio hingga tanda merahnya menghilang. Untuk me-*review* aktivitas kita bisa cermati bagian Console dan melihat apakah pemasangan paket berhasil atau tidak. 
+
+Tidak semua paket dapat diinstall dari CRAN. Hal ini karena paket berkembang cukup cepat sesuai dengan kebutuhan pengguna dan pembuatanya. Di sini kita juga bisa menginstall paket dari sumber lain, misalnya github atau biconductor. Berikut ini adalah beberapa fungsi yang dapat digunakan untuk menginstall paket. 
+
+- `install_bioc()` from Bioconductor,
+- `install_bitbucket()` from Bitbucket,
+- `install_cran()` from CRAN,
+- `install_git()` from a git repository,
+- `install_github()` from GitHub,
+- `install_local()` from a local file,
+- `install_svn()` from a SVN repository,
+- `install_url()` from a URL, and
+- `install_version()` from a specific version of a CRAN package.
+
+Selain itu, untuk mengetahui apakah paket sudah terpasang atau belum kita juga bisa mengecek keberadaannya melalui bagian nomor empat (lihat gambar \@ref(fig:RstudioInt)). Di sana kita bisa menemukan menu *Packages* dan bisa mengetikkan nama paket pada kolom pencarian. Jika paket ditemukan berarti pemasangan sudah benar dan paket sudah bisa dipanggil atau digunakan. 
+
+> Latihan: pasanglah (install) paket-paket berikut: (1) igraph; (2) tidytext; (3) devtools; (4) plotly; (5) e1071; dan twitteR. Petunjuk: R case sensitive.
+
+**Cara Memanggil Paket**
+
+Paket hanya perlu diinstall sekali, namun untuk menggunakannya perlu dipanggil setiap kali kita hendak menjalankan skrip yang menggunakan fungsi dari paket tertentu. Fungsi yang dapat digunakan untuk memanggil paket adalah `library(nama_paket)`. `nama_paket` diisi sesuai dengan nama paket yang akan digunakan. Beberapa fungsi tambahan terkait dengan paket berikut suatu waktu mungkin akan dibutuhkan. 
+
+- `installed.packages()` untuk mengecek paket yang terinstall
+- `remove.packages("vioplot")` untuk menghapus paket yang terinstall 
+- `old.packages()` untuk mengecek paket yang perlu di perbaharui
+- `update.packages()` untuk mengupdate paket
+- `detach()` untuk meng-*unload* sebuah paket
+
+Karena banyaknya paket yang tersedia, terkadang ada fungsi yang sama dan menyebabkan konflik. Salah satu tanda yang sering muncul (dapat dilihat pada bagian `Console`) adalah adanya keterangan yang menyatakan fungsi tidak ada. Padahal kita sudah memanggil paket yang memiliki fungsi tersebut. Solusinya adalah adalah dengan memanggil fungsi dari paket yang spesifik dengan cara `package::function()`. Contohnya, `dplyr::count()` untuk menggunakan fungsi `count` dari paket `dplyr`. 
+
+**Cara Mendapatkan Paket yang Tepat**
+
+Cara utama untuk mendapatkan paket yang tepat sebenarnya hanya bisa dilakukan melalui percobaan secara terus-menurus hingga menemukan paket yang tepat dan sesuai dengan kebutuhan dan perangkat yang digunakan. Tapi mungkin beberapa langkah berikut ini bisa sedikit memudahkan menemukan data tentang paket yang dapat digunakan. 
+
+1. Membaca dokumentasi paket R di: https://cran.r-project.org/web/packages/available_packages_by_date.html
+2. Mencari paket berdasarkan kategori di: https://cran.r-project.org/web/views/
+3. Mencari dokumentasi di: https://www.rdocumentation.org/
+
+#### Workspace
+
+Workspace adalah direktori atau mungkin kita lebih mengenalnya sebagai folder. Workspace merupakan tempat proyek yang dilakukan di R disimpan. Ketika di awal (lihat \@ref(RandRstudio)) kita membuat proyek kita memilih dan membuat folder baru. Namun terkadang kita juga lupa di mana tempat kita menyimpannya. Hal ini umumnya terjadi saat kita menempatkan beberapa folder lain untuk menyimpan hasil dan atau plot yang dibuat. Fungsi berikut dapat digunakan mengetahui di mana proyek disimpan. 
+
+```{r, eval=FALSE}
+getwd()
+```
+
+Pada bagian konsol akan muncul tempat di mana proyek di simpan. Hal ini kemudian akan dimanfaatkan untuk menyimpan file yang dihasilkan di R agar tidak tercampur dengan file lain. Misalnya untuk menyimpan hasil pre-processing dan visualisasi yang akan dibahas pada bagian \@ref(pre-process) dan \@ref(vis1). Walaupun tidak disarankan di awal kita juga menentukan di mana folder proyek disimpan dengan mengatur dengan fungsi berikut. Selain itu fungsi `getwd()` juga berguna saat kita ingin menyimpan sebuah objek dalam sebuah folder yang spesifik dalam sebuah *directory*. **Sebagai catatan,** jika dalam sistem operasi Linux dan Mac OS menggunakan slashes (/), sebalikanya di windows menggunakan backslashes **(\)**. 
+
+```{r, eval=FALSE}
+setwd("/path/to/my/CoolProject") # mengatur folder sumber (tidak disarankan)
+ggsave(plots/diamonds.pdf) # menyimpan objek ggplot2 dalam folder plot
+write.csv(contoh, "cleanData/contoh.csv") # menyimpan csv di folder cleanData
+write.csv(contoh, "cleanData\contoh.csv") # di SO Windows
+```
+
+#### Fungsi-fungsi Dasar {#fungsidasar}
+
+1. Fungsi `paste`
+
+Terdapat dua fungsi paste, yaitu `paste()` dan `paste0()`. Pertama, `paste()` adalah cara untuk menggabungkan string dan menyesuaikan dengan pembatas (*delimiter*). Sementara paste0() tidak memberikan spasi pada string yang digabungkan. Cobalah jalankan satu-persatu baris beberapa contoh berikut dan amati perbedaan hasilnya.  
+
+```{r, eval=FALSE}
+teks1 <- "aku adalah anak gembala"
+teks2 <- "selalu riang serta gembira"
+
+teks12 <- paste(teks1, teks2, sep = " ")
+teks12
+
+teks0 <- paste0(teks1, teks2)
+teks0
+
+teks <- paste0(teks1, " ", teks2)
+teks
+```
+
+2. Fungsi `if_else`
+
+```{r}
+a = 5
+if (a > 10) {
+  print("a lebih dari 10")
+} else {
+  print("a kurang dari 10")
+  }
+
+```
+
+3. Fungsi `for-Loop`
+Walaupun di R sebenarnya ada fungsi lain yang lebih sederhana yang dapat digunakan sebagai pengganti for loop. Tapi kita juga perlu memahami konsepnya seperti dapat dilihat pada skrip di bawah ini. 
+
+```{r, eval=FALSE}
+ # Create a vector filled with random normal values
+u1 <- rnorm(30)
+print("This loop calculates the square of the first 10 elements of vector u1")
+
+# Initialize `usq`
+usq <- 0
+
+for(i in 1:20) {
+  # i-th element of `u1` squared into `i`-th position of `usq`
+  usq[i] <- u1[i] * u1[i]
+  print(usq[i])
+}
+
+print(i)
+```
+
+4. Fungsi `apply` family
+
+Secara umum fungsi `apply()` digunakan untuk menghindari banyak pengulangan penulisan skrip atau fungsi untuk melakukan hal yang sama. Dalam manual R fungsi `apply()` dinyatakan sebagai berikut: `apply(X, MARGIN, FUN, ...)`, di mana: 
+
+`X` is an array or a matrix if the dimension of the array is 2;
+
+`MARGIN` is a variable defining how the function is applied: when `MARGIN=1`, it applies over rows, whereas with `MARGIN=2`, it works over columns. Note that when you use the construct MARGIN=c(1,2), it applies to both rows and columns; and
+
+`FUN`, which is the function that you want to apply to the data. It can be any R function, including a User Defined Function (UDF).
+
+Hal di atas mungkin masih sedikit membingungkan. Sekarang coba bayangkan kita memiliki matrix 5 x 6 dan ingin melihat jumlah tiap barisnya. Maka hal tersebut dapat dilakukan dengan skrip berikut. 
+
+```{r}
+X <- matrix(rnorm(30), nrow=5, ncol=6) # Construct a 5x6 matrix
+
+apply(X, 2, sum) # Sum the values of each column with `apply()`
+```
+
+`apply` dapat digunakan untuk matrix dan list, sementara `lapply()` juga memiliki fungsi yang mirip tapi juga dapat digunakan untuk data frame. 
+
+```{r, eval=FALSE}
+A <- c(1:5)
+B <- c(6:20)
+C <- c(7:15)
+
+# Create a list of matrices
+MyList <- list(A,B,C)
+
+# Extract the 2nd column from `MyList` with the selection operator `[` with `lapply()`
+lapply(X = MyList, FUN = "[", 2)
+
+# Extract the 1st row from `MyList`
+lapply(MyList,"[", 1)
+
+lapply(airquality, class)  # return classes of each column in 'airquality' in a list
+sapply(airquality, class)  # return classes of each column in 'airquality'
+```
+
+Baris terakhir menggunakan `sapply()` yang digunakan untuk mengecek dengan fungsi `class()` pada setiap kolom data frame airquality.
+
+5. Fungsi `str()`, `class()` dan `summary()`
+
+Fungsi-fungsi di atas digunankan untuk melihat struktur, kelas, dan rangkuman data. `str()` bisa dibaca struktur, `class()` atau kelas digunakan untuk mengetahui jenis data yang ada dalam data, apakah ia data frame, list, matrix atau lainnya. Sementara summary akan lebih banyak digunakan saat melakukan eksplorasi data. 
+
+#### Mendapatkan Bantuan dan Mengatasi Error
+
+Hal paling mudah untuk mendapatkan bantuan di R adalah dengan menggunakan operator `?`. Caranya hanya tambahkan hal yang ingin diketahui setelah tanda tanya. R kemudian akan mencari dan mencoba menemukan informasi tentang fungsi dari paket yang telah terinstall. Jika kita ingin mencari sesuatu diluar informasi yang terdapat dalam sebuah paket bisa menggunakan dua tanda tanya (`??`) diikuti dengan objek yang ingin diketahui. Contohnya adalah sebagai berikut: 
+
+```{r, eval=FALSE}
+library(tidytext)  # initialize the pkg 'tidytext'
+require(tidytext)  # another way to initialize
+library()  # see list of all installed packages
+library(help=tidytext)  # see info about 'tidytext' pkg
+
+??tidytext
+?unnest_tokens
+```
+
+Contoh skrip di atas menunjukkan bahwa di dalam R tersedia informasi yang bisa kita pelajari atau panggil saat menemukan masalah. Baris terakhir dari skrip di atas menunjukkan secara spesifik apa fungsi `unnest_tokens` dari paket `tidytext` yang dibuat oleh Silge dan Robinson [-@tidytext] beserta dengan contohnya yang dapat dilihat pada bagian antarmuka nomor 4. 
+
+Selain menggunakan fungs-fungsi di atas, tentu kita juga bisa mencari bantuan di luar. Misalnya kita bisa mencari jawaban atas masalah yang kita hadapi di laman www.stackoverflow.com. Stackoverflow merupakan sebuah laman yang digunakan oleh beragam komunitas untuk bertanya dan menjawab terkait dengan berbagai bahasa pemrograman. Lebih penting lagi, kita juga harus bisa memperhatikan dan membaca sumber error. Sebagai contoh, skrip di bawah ini ketika dijalankan akan menghasilkan error dan ada keterangan yang menunjukkan penyebabnya pada bagian *Console*. 
+
+```{r, eval=FALSE}
+library(readr)
+mydata <- read_delim("data/geocoded2.csv", 
+                      ",", escape_double = FALSE)
+```
+
+Perhatikan keterangan yang ada di Console. Di sana kita kurang lebih akan menemukan keterangan bahwa R tidak menemukan data csv dengan nama `geocoded2.csv` dalam folder data. Dengan demikian, kita bisa mengetahui solusi apa yang perlu dilakukan. Misalnya, mengubah nama file, atau mungkin juga file yang dimaksud belum dimasukkan ke dalam folder data. Bahkan terkadang dengan meng-*copy paste* keterangan error yang ada di Console ke laman pencarian Google pun bisa menyelesaikan masalah. 
+
+### Jenis-jenis data yang umum digunakan {#dataType}
+
+Seperti berbagai jenis bahasa lain, pada R kita juga mengenal tipe data untuk membantu kita dalam pengolahan data. Beberapa tipe data yang akan sering kita jumpai dalam R di antaranya:
+
+#### Tipe dasar (`atomic vector`)
+Ini merupakan tipe yang mendasari semua objek yang ada pada R. Pada praktiknya, yang akan banyak kita temui adalah `logical`, `numeric`, dan `character`. Tipe `integer` sebenarnya hanya bagian dari `numeric` yang dioptimalkan dalam penggunaan memori komputer. Sedangkan untuk `complex` dan `raw` akan sangat jarang kita jumpai dalam kasus sehari-hari.
+
+| Tipe Data        | Contoh | 
+| ------------- |:-------------:|
+| logical      | TRUE, FALSE | 
+| numeric      | 12.3, 4, 15.09 |
+| character | 'satu',"dua" |
+| integer | 5L, 2L, 11L |
+| complex | 2+ 3i |
+| raw | 48 65 6c 6c 6f (hex) |
+
+#### Vectors
+Vector merupakan sebuah tipe data gabungan yang berisi beberapa elemen `atomic` berjenis sama. Untuk membuat sebuah vector, digunakan perintah kombinasi `c()`. Contoh pembuatan vector adalah sebagai berikut:
+
+```{r, eval=FALSE}
+a <- c(1,2,5.3,6,-2,4) # numeric vector
+b <- c("one","two","three") # character vector
+c <- c(TRUE,TRUE,TRUE,FALSE,TRUE,FALSE) #logical vector
+```
+Untuk mengakses elemen dalam vector, kita menggunakan kurung siku `[]` disertai perintah gabungan `c()` seperti contoh berikut:
+```{r,eval=FALSE}
+# mengakses elemen nomer 2 dari vector a
+print (a[c(3)])
+```
+
+#### Lists
+List merupakan tipe data gabungan yang mirip dengan Vector, namun di sini memungkinkan penggunaan elemen-elemen dengan tipe data berbeda. Sebagai contoh sebagai berikut:
+```{r,eval=FALSE}
+w <- list(name="Fred", age=25, height=159.7)
+x <- list("saya",5.4,1,FALSE)
+```
+Pada contoh di atas, terdapat dua cara dalam mendefinisikan List, yaitu dengan menyebutkan `key` seperti `name, age, height` atau secara langsung menyebutkan elemennya. Kemudian untuk mengakses elemen dalam List, kita dapat menggunakan dua cara berikut:
+```{r,eval=FALSE}
+print(x[1]) # mengakses melalui urutan indeks
+print(w['name']) # mengakses melalui key
+```
+
+#### Data Frame
+Data Frame merupakan tipe data yang akan sering kita jumpai dalam pengolahan data terstruktur. Pada dasarnya, *Dataframe* dapat kita anggap sebagai sebuah tabel yang sering kita gunakan. *Dataframe* secara sederhana dapat kita buat dengan menggabungkan beberapa Vector yang kita gunakan sebagai kolom. Contoh pembuatan *dataframe*:
+```{r,eval=FALSE}
+id <- c(1,2,3,4) #vector kolom id
+name <- c("tom", "jerry", "dora", "emon") #vector kolom name
+score <- c(85.4,78.3,88.9,90) #vector kolom score
+
+# membuat data frame dari kolom vector
+mydata <- data.frame(id,name,score)
+
+# menambahkan nama kolom
+names(mydata) <- c("ID","Nama","Nilai")
+
+print(mydata)
+```
+Pengolahan *dataframe* dalam R sangat banyak jenisnya, hal ini akan kita pelajari melalui contoh kasus. Namun perintah dasar untuk mengakses data dalam *dataframe* dapat kita amati pada contoh berikut:
+
+```{r,eval=FALSE}
+# mengambil kolom 1 sampai 3
+mydata[1:3]
+
+# mengambil kolom dengan nama "ID" dan "Nilai"
+mydata[c("ID","Nilai")]
+
+# mengambil satu kolom dengan nama "Nilai"
+mydata$Nilai
+```
+
+### Alur Kerja dalam R: Projects
+
+Suatu hari, Anda menutup aplikasi R, kemudian mengerjakan hal lain, dan kembali ke pekerjaan di aplikasi R keesokan harinya. Pada waktu tertentu, Anda akan bekerja dengan banyak proyek bersama R secara simultan dan Anda menginginkan proyek tersebut diperlakukan secara terpisah. Atau di lain kesempatan, Anda ingin membawa data dari "dunia luar" ke R dan mengirimkan hasil analisisnya kembali ke "dunia luar tersebut". Untuk menangani situasi di kehidupan nyata tersebut, Anda harus membuat dua keputusan:
+
+1. Apa yang akan Anda simpan di dalam R sebagai *history* tentang semua yang terjadi?
+2. Di mana analisis Anda "hidup"?
+
+#### Lingkungan kerja dalam RStudio
+
+Sebagai pengguna R pemula, baik untuk menganggap lingkungan (seperti *object* yang ada di panel *environment*) sebagai hal yang *"real"*. Namun, dalam jangka panjang, lebih baik untuk menganggap R *scripts* sebagai yang *"real"*.
+
+Dengan skrip R (dan berkas data), Anda dapat membuat ulang sebuah *environment*. Akan tetapi, sebaliknya, lebih sulit membuat ulang *script* R dari *environment* Anda! Anda harus mengetik ulang sebarisan panjang kode yang diambil dari ingatan anda (di mana kesalahan menjadi tidak terhindarkan) atau Anda harus menggali R *history* dengan tekun untuk mengembalikan *environment* yang Anda inginkan tersebut. Untuk mebiasakan hal tersebut, disarankan untuk mematikan fungsi preservasi *workspace* di antara *sessions*:
+
+```{r RestoreData, echo = FALSE, out.width = '100%', fig.cap = "Uncheck pilihan 'Restore .RData into workspace at startup"}
+knitr::include_graphics("images/gambar-2.1.png")
+```  
+Di awal, hal ini mungkin akan menimbulkan *short-term pain*, karena ketika Anda me-*restart* RStudio, sekarang RStudio tidak akan mengingat lagi hasil-hasil analisis Anda beserta kode-kode programnya. Akan tetapi, "rasa sakit" jangka pendek ini akan menyelamatkan Anda dari "penderitaan" jangka panjang karena hal ini memaksa Anda untuk menangkap seluruh interaksi penting dalam seluruh proses pengkodean program Anda. 
+
+Ada dua *shortcut* keyboard yang akan berguna untuk menangkap seluruh bagian penting dari kode Anda di dalam editor:
+
+1. Tekan `Cmd/Ctrl-Shift-F10` untuk me-restart RStudio.
+2. Tekan `Cmd/Ctrl-Shift-S` untuk me-*rerun* skrip yang sedang dijalankan (*current script*).
+
+#### Mengenal Direktori Kerja dalam RStudio
+R memiliki `working directory`. `Working directory` adalah tempat di mana R mencari berkas-berkas yang ingin Anda buka dan lokasi seluruh penyimpanan file Anda. RStudio menampilkan `working directory` yang sedang aktif di atas Console:
+
+```{r workingdirectory, echo = FALSE, out.width = '100%', fig.cap = "Letak Working directory di RStudio"}
+knitr::include_graphics("images/gambar-2.2.png")
+```  
+
+Dan kita dapat mencetaknya melalui kode R `getwd()`:
+
+```{r, eval=FALSE}
+getwd()
+```
+
+Mulai sekarang, Anda harus mengorganisasikan project-project *data science* Anda ke dalam direktori-direktori yang terpisah dan ketika bekerja dalam sebuah R Projects, atur R *working directory* ke folder yang bersangkutan.
+
+#### Gaya Penulisan Direktori di RStudio
+
+*Path* dan *directories* agak sedikit rumit karena ada dua gaya penulisan *path*, yakni antara sistem operasi Linux atau Windows. Berikut adalah perbedaan di antara keduanya:
+
+1. Perbedaan yang utama adalah cara memisahkan component di dalam *path*. Pada Mac dan Linux, mereka menggunakan *slash* (contoh: plots/diamonds.pdf), sedangkan Windows menggunakan *backslash* (contoh: plots\diamonds.pdf). R dapat bekerja dengan dua jenis *slash* tersebut, namun sayangnya, *backslash* memiliki arti penting bagi R, dan untuk mendapatkan *single backslash* di dalam *path*, Anda harus menuliskan dua *backslash*. Hal ini membuat bingung, jadi disarankan untuk selalu menggunakan *path* dengan style Mac/Linux dengan *forward slash*. 
+2. *Absolute path* (contohnya *path* yang menunjukkan lokasi yang sama tanpa menghiraukan *working directory* Anda) terlihat berbeda. Di Windows dimulai dengan huruf *drive* (misalnya C:) atau dua *backslash* (e.g. \\servername) dan di Mac/Linux dimulai dengan *slash* (misalnya /user/hadley). Jangan pernah gunakan *absolute path*, karena tidak ada orang yang memiliki lokasi *directory* yang sama persis dengan kita. 
+3. Perbedaan selanjutnya adalah penggunaan tanda ~. Tanda ~ digunakan sebagai shortcut lokasi *home directory* kita. Windows tidak memiliki istilah *home directory*, sehingga tanda ~ akan mengarahkan ke lokasi Documents/My Documents Anda. 
+
+#### Menggunakan menu Project di dalam RStudio
+Seorang pengguna R yang *expert* selalu menyimpan semua *file* yang terkait dengan sebuah *project* dalam satu kesatuan: input data, R script, hasil analisis, dan gambar plot atau *figures*. Semua hal ini telah diakomodir oleh R lewat fitur Project.
+
+Sekarang, mari kita buat Project pertama kita dengan mengklik menu `File-->New Project`, kemudian:
+
+```{r MakeProject1, echo = FALSE, out.width = '100%', fig.cap = "Membuat Project di R"}
+knitr::include_graphics("images/gambar-2.3.png")
+```  
+
+```{r MakeProject2, echo = FALSE, out.width = '100%', fig.cap = "Membuat Project di R"}
+knitr::include_graphics("images/gambar-2.4.png")
+```  
+
+```{r MakeProject3, echo = FALSE, out.width = '100%', fig.cap = "Membuat Project di R"}
+knitr::include_graphics("images/gambar-2.5.png")
+```
+
+Silahkan menuliskan directory names sebagai `r4ds` dan di kolom "Create project as subdirectory of:" sebagai lokasi di mana Anda akan menyimpan project Anda. Anda dapat mengecek directory aktif yang sedang berjalan:   
+
+```{r, eval=FALSE}
+getwd()
+```
+
+### Impor dan Ekspor Data menggunakan `readr`
+
+Bekerja dengan data yang telah disediakan oleh package R merupakan salah satu sarana yang cukup ampuh untuk belajar *data science*. Akan tetapi, pada titik tertentu, kita ingin menggunakan data kita sendiri, alih-alih dataset yang telah disediakan oleh R. Pada bagian ini, kita akan belajar untuk memasukkan data yang kita miliki ke dalam aplikasi R. 
+
+Pada bab ini, kita akan menggunakan package `readr` yang merupakan bagian dari package core `tidyverse`. Seperti dikatakan pada bagian sebelumnya (lihat bagian \@ref(packageLib)), R didukung oleh puluhan ribu paket. Dari sekian banyak paket yang ada, Tidyverse yang dibuat oleh Hadley Wickham [-@R-tidyverse] memungkinkan kita mengolah di R dengan mengandalkan satu library. Selain itu, untuk beberapa kasus, fungsi-fungsi di `tidyverse` memungkinkan skrip dieksekusi lebih cepat. Berikut adalah beberapa contohnya:
+
+```{r, eval=FALSE}
+library(tidyverse)
+``` 
+
+#### Fungsi dalam readr
+
+Package `readr` dapat mengkonversi beberapa jenis file ke dalam *dataframe*. `read_csv()` membaca file comma-separated value (CSV) dengan tanda pemisah koma. Sedangkan untuk membaca file CSV dengan pemisah tanda titik koma, perintah yang digunakan adalah `read_csv2()`. Untuk tanda pemisah tab dapat menggunakan `read_tsv()`, dan `read_delim()` dapat membaca file dengan tanda pemisah apapun. Pada bab ini, kita akan fokus menggunakan fungsi `read_csv()` karena file CSV merupakan salah satu format umum dalam penyimpanan data. Selain itu, ketika kita sudah mahir menggunakan fungsi `read_csv()`, mudah bagi kita untuk berpindah ke fungsi-fungsi yang lain.
+
+Untuk menggunakan fungsi `read_csv()` pertama kali, kita akan memanggil path lokasi di mana data yang akan kita impor terletak:
+
+```{r, eval=FALSE}
+heights <- read_csv("data/heights.csv") 
+``` 
+
+Ketika perintah di atas dijalankan, fungsi `read_csv()` akan mencetak spesifikasi kolom yang mendeskripsikan seluruh nama kolom dan tipe data dari setiap kolom. 
+
+Fungsi `read_csv()` secara default menggunakan baris paling atas dari file CSV sebagai nama kolom. Jika baris paling atas bukan nama kolom, berikut adalah solusinya:
+
+1. Jika beberapa baris atas diisi oleh informasi-informasi metadata, kita dapat menggunnakan fungsi `skip = n` untuk melompati `n` baris pertama; atau menggunakan `comment = "#"` untuk mengabaikan semua baris yang dimulai dengan tanda `#`. Kita dapat mengganti tanda pagar tersebut dengan tanda apapun sesuai dengan data yang kita miliki:
+
+ ```{r, eval=FALSE}
+read_csv("The first line of metadata The second line of metadata
+	x,y,z
+	1,2,3", skip = 2)
+```
+
+2. Kasus kedua adalah jika data tidak memiiki nama kolom. Kita dapat menggunakan fungsi `col_names = FALSE` untuk memberitahukan fungsi `read_csv()` untuk tidak memperlakukan kolom pertama sebagai nama kolom dan sebagai gantinya nama kolomnya akan diberikan secara sekuensial dari X1 sampai Xn:
+```{r, eval=FALSE}
+read_csv("1,2,3\n4,5,6", col_names = FALSE)
+```
+
+Jika kita ingin memberikan nama kolom sesuai dengan keinginan, kita dapat menggunakan fungsi `col_names`:
+
+```{r, eval=FALSE}
+read_csv("1,2,3\n4,5,6", col_names = c("x", "y", "z"))
+```
+
+#### Cara kerja readr
+
+Bagaimana `readr` membaca sebuah file? Dalam istilah komputer cara membaca data dari sebuah file disebut dengan `parsing`. Secara otomatis, fungsi `readr` akan menebak tipe data data setiap kolom. Strategi yang dilakukan oleh `readr` adalah membaca 1000 baris pertama dari file dan menyelidiki sendiri (heuristik) tipe data dari 1000 baris pertama tersebut. Kita dapat mensimulasikan proses ini dengan menggunakan fungsi `guess_parser()`, yang mana akan mengembalikan tebakan tipe data yang paling mendekati:
+
+```{r, eval=FALSE}
+guess_parser("2010-10-01")
+#> [1] "date"
+guess_parser("15:01")
+#> [1] "time"
+guess_parser(c("TRUE", "FALSE"))
+#> [1] "logical"
+guess_parser(c("1", "5", "9"))
+#> [1] "integer"
+guess_parser(c("12,352,561"))
+#> [1] "number"
+str(parse_guess("2010-10-10"))
+#> Date[1:1], format: "2010-10-10"
+```
+
+Fungsi heuristik mencoba untuk mencari tipe-tipe data berikut, dan berhenti ketika tipe data yang cocok telah ditemukan:
+
+1. `logical`: berisi data "F", "T", "FALSE", atau "TRUE".
+2. `integer`: berisi karakter numerik (0-9).
+3. `double`: berisi karakter numerik dengan format *floating point* (format numerik floating point seperti 4.5e-5).
+4. `number`: berisi tipe data double dengan pemisah angka di dalamnya.
+5. `time` : berisi tipe data waktu (jam, menit, detik)
+6. `date` : berisi tipe data tanggal (hari, bulan, tahun)
+7. `date-time : berisi gabungan tipe data waktu dan tanggal (sesuai format ISO8601)
+
+Jika fungsi `readr` tidak menemukan ciri-ciri data yang sesuai dengan ketujuh tipe data ini, maka tipe datanya akan menjadi string. 
+
+#### Permasalahan yang Akan Muncul
+
+Fungsi heuristik ini mengandung masalah jika kita akan bekerja dengan data yang besar. Ada dua permasalahan yang akan ditemui:
+
+1. Seribu baris pertama mungkin adalah sebuah kasus khusus, dan `readr` menebak sebuah tipe data yang tidak cocok untuk keseluruhan data. Sebagai contoh: kita mungkin memmiliki data di mana tipe data yang seharusnya adalah double, tapi karena 1000 baris pertama hanya berisi data integer, maka `readr` mengira bahwa tipe data dari kolom tersebut adalah integer.
+2. Permasalahan kedua muncul ketika data di kolom banyak yang *missing value*. Jika seribu baris pertama hanya berisi *missing value* (NA), `readr` akan menerka bahwa tipe data kolom tersebut adalah karakter, padahal bukan. 
+
+Berikut adalah salah satu contoh ilustrasi penggunaan fungsi `readr` menggunakan dataset CSV yang menjelaskan problem di atas:
+
+```{r, eval=FALSE}
+challenge <- readr::read_csv(readr_example("challenge.csv"))
+# Parsed with column specification:
+# cols(
+#   x = col_integer(),
+#   y = col_character()
+# )
+# Warning: 1000 parsing failures.
+# row # A tibble: 5 x 5 col 	
+#	 row col 		expected 		actual 		file expected 
+#	<int> <chr> 	<chr>			<chr> 		<chr> actual 
+# 1  1001 x 	no trailing char~ .23837975086~ 'C:/Users/vista/Anaconda3/envs/rstudio/lib/R/libra~ file 
+# 2  1002 x     no trailing char~ .41167997173~ 'C:/Users/vista/Anaconda3/envs/rstudio/lib/R/libra~ row 
+# 3  1003 x     no trailing char~ .74607167625~ 'C:/Users/vista/Anaconda3/envs/rstudio/lib/R/libra~ col 
+# 4  1004 x     no trailing char~ .72345055383~ 'C:/Users/vista/Anaconda3/envs/rstudio/lib/R/libra~ expected 
+# 5  1005 x     no trailing char~ .61452413746~ 'C:/Users/vis [... truncated]
+# Warning message:
+# In rbind(names(probs), probs_f) :
+#   number of columns of result is not a multiple of vector length (arg 1)
+```
+
+Output yang dicetak saat menjalankan perintah di atas memberitahukan kepada kita bahwa ketika proses parsing dilakukan terhadap 1000 baris pertama, proses parsing di 5 baris pertama langsung gagal. Salah satu strategi yang baik untuk menangani permasalahan ini adalah dengan bekerja dari kolom ke kolom sampai tidak ada problem yang muncul. Kita dapat melihat bahwa terdapat banyak permasalahan dalam proses parsing terhadap kolom x, yakni terdapat karakter yang tertinggal (trailing character) setelah nilai integer. Hal ini mengindikasikan bahwa kita memerlukan parser dengan tipe data double sebagai gantinya. 
+
+Untuk menyelesaikan permasalahan ini, kita mulai dengan mengkopi dan mem-paste tipe data koreksi kita:
+
+```{r, eval=FALSE}
+challenge <- read_csv(
+readr_example("challenge.csv"),
+	col_types = cols(
+		x = col_integer(),
+		y = col_character()
+	)
+)
+```
+
+Kemudian kita dapat mengubah tipe kolom x menjadi double:
+
+```{r, eval=FALSE}
+challenge <- read_csv(
+readr_example("challenge.csv"),
+	col_types = cols(
+		x = col_double(),
+		y = col_character()
+	)
+)
+```
+
+Hal ini baru memperbaiki masalah pertama di kolom x. Jika kita melihat ke dalam beberapa baris terakhir, kita akan melihat bahwa data tanggal disimpan dalam tipe data character:
+
+```{r, eval=FALSE}
+tail(challenge)
+# A tibble: 6 x 2
+#   x     y         
+#   <dbl> <chr>     
+# 1 0.805 2019-11-21
+# 2 0.164 2018-03-29
+# 3 0.472 2014-08-04
+# 4 0.718 2015-08-16
+# 5 0.270 2020-02-04
+# 6 0.608 2019-01-06
+```
+
+Kita dapat memperbaikinya dengan memperinci bahwa y adalah kolom bertipe data date:
+
+```{r, eval=FALSE}
+challenge <- read_csv(
+  readr_example("challenge.csv"),
+  col_types = cols(
+    x = col_double(),
+		y = col_date()
+		)
+  )
+tes <- tail(challenge)
+# A tibble: 6 x 2
+#   x      y         
+#   <dbl> <date>    
+# 1 0.805 2019-11-21
+# 2 0.164 2018-03-29
+# 3 0.472 2014-08-04
+# 4 0.718 2015-08-16
+# 5 0.270 2020-02-04
+# 6 0.608 2019-01-06
+```
+
+#### Strategi Lain
+
+Strategi lain yang bisa kita gunakan adalah menambahkan 1 row tambahan dari 1000 row pertama sebagai pengecekan awal. Dengan demikian kita dapat menerka tipe data dengan tepat hanya dengan sekali penulisan sintaks:
+
+```{r, eval=FALSE}
+challenge2 <- read_csv(
+	readr_example("challenge.csv"),
+	guess_max = 1001
+)
+# Parsed with column specification:
+# cols(
+#   x = col_double(),
+#   y = col_date(format = "")
+# )
+challenge2
+# A tibble: 2,000 x 2
+#     x     y         
+#    <dbl> <date>    
+#  1   404 NA        
+#  2  4172 NA        
+#  3  3004 NA        
+#  4   787 NA        
+#  5    37 NA        
+#  6  2332 NA        
+#  7  2489 NA        
+#  8  1449 NA        
+#  9  3665 NA        
+# 10  3863 NA        
+# ... with 1,990 more rows
+```
+
+#### Impor dan Ekspor Data jenis lain {#impore-kspor}
+
+RStudio dapat mengimpor data dari ekstensi selain CSV. Untuk praktik, silakan unduh satu folder data dari tautan ini: https://drive.google.com/drive/folders/1tJWgcMIhqRehGkdMVAJR-bbyD9rc7Gdf?usp=sharing
+
+```{r, eval=FALSE}
+library(tidyverse)
+
+# txt
+txt_data1 <- read_lines("data/happy.txt")
+txt_data0 <- read_table("data/happy.txt", col_names = FALSE)
+# tsv
+tsv_data <- read_tsv("data/petisiData.tsv", trim_ws = TRUE)
+
+library(data.table)
+csv_data3 <- fread("data/kemendag.csv", header = FALSE) #1.2-2 x lebih cepat
+
+# xlsx
+library(readxl)
+xlsx_data1 <- read_excel("data/Anggaran (Bidang) - 2003.xlsx", 
+    sheet = "Sheet1", skip = 3)
+```
+
+Skrip di atas telah menunjukkan bagaimana cara untuk mengimpor data dengan tipe data TXT, TSV, dan XLSX. Sementara setelah data ada di R dan mendapatkan perlakukan, kita juga bisa mengekspornya kembali dan menyimpannya di *harddisk*. Misalnya, dalam proyek yang dibuat kita memiliki folder khusus dengan nama cleanData. Berikut adalah cara mengekspor dalam bentuk CSV dalam folder yang spesifik. 
+
+```{r, eval=FALSE}
+write_csv(x = xlsx_data1, path = "contoh_ekspor1.csv")
+```
+
+`x` dalam skrip di atas objek data di `R` yang ingin disimpan. Sementara `path` merujuk pada nama folder dan nama file yang spesifik. Selanjutnya, `R` juga memiliki kemampuan untuk membaca berbagai jenis data lainnya. Misalnya, skrip di berikut menunjukkan bagaimana mengimpor dan mengekspor data dari Stata, SPSS, dan SAS. Di sini kita akan menggunakan paket dari `tidyverse` yang bernama `haven` [@pkg-haven]. Tapi umumnya paket tersebut tidak/belum terinstal bersamaan dengan tidyverse. Dengan kata lain kita harus menginstall lagi. Untuk melakukannya kita bisa merujuk pada cara menginstall paket yang telah dijelaskan sebelumnya (lihat bagian \@ref(packageLib)).
+
+```{r, eval=FALSE}
+library(haven) # part of tidyverse
+
+# stata
+stata_data <- read_dta("data/salary.dta")
+write_sas(stata_data, "stata_data_tes.sas7bdat")
+
+# spss
+spss_data <- read_sav("data/PsychBike.sav")
+write_sav(spss_data, "spss_data_tes.sav")
+
+# sas
+sas_data <- read_sas("data/hhsurvey.sas7bdat")
+write_sas(sas_data, "sas_data.sas7bdat")
+```
+
+Setelah data diimpor selanjutnya kita juga perlu mengetahui struktur data. Di sini struktur dapat diketahui dengan fungsi `str()` di mana dalam kolom di isi nama data yang kita buat. Sebagai contoh: 
+
+```{r, eval=FALSE}
+str(sas_data) # fungsi dasar R
+glimpse(sas_data) # fungsi dari dplyr tidyverse
+
+class(sas_data)
+```
+
+Fungsi di atas, akan menunjukkan struktur kolom dalam data. Sementara fungsi `class()` menunjukkan jenis data yang ada. Karena di sini kita menggunakan metode impor data dengan fungsi-fungsi dari *tidyverse* maka format data yang ada berupa tible. Tible sejenis dengan *dataframe*, tapi lebih konsisten dan lebih cepat dieksekusi dalam R. Terakhir, kita juga bisa melihat rangkuman data dengan menggunakan fungsi `summary()`. 
+
+> **Cobalah eksekusi fungsi di bawah ini dan amati apa hasilnya.**
+
+```{r, eval=FALSE}
+summary(sas_data)
+```
+
+Setelah kita bisa mengimpor, terkadang kita juga melakukan kesalahan dan ingin menghapus sebuah objek dari lingkungan global R. Untuk mencapainya kita bisa menggunakan fungsi `rm(nama_data)`. Sedangkan jika ingin mengosongkan kembali lingkungan global kita bisa menambahkan fungsi `ls()` yang menghasilkan sebuah list ke dalam fungsi `rm()`. 
+
+```{r, eval=FALSE}
+rm()
+ls()
+rm(list = ls())  # caution: delete all objects in .GlobalEnv
+```
+
+Selain jenis data di atas, R juga dapat digunakan untuk mengolah data dalam database dan jenis data lain seperti:
+
+1. `DBI` : bersama dengan backend basis data spesifik (seperti RMySQL, RSQLite, RPostgreSQL, dll) memungkinkan kita untuk menjalankan kueri SQL terhadap sebuah database dan mengembalikan hasilnya ke sebuah data frame.
+2. Untuk data hierarkial, gunakan `jsonlite` untuk tipe data JSON dan `xml2` untuk XML. 
+3. Untuk tipe data lain, gunakan package `rio` yang tersedia di R. 
+
+### Pengambilan data dengan API {#twitterapi}
+
+Secara teknis API (Application Programming Interface) adalah sebuah protokol komunikasi antara dua entitas. Sebagai ilustrasi, saat kita menyimpan sebuah lemari, kemudian lemarinya dikunci dengan sebuah gembok berkode. Maka hanya orang yang telah diberitahu dan mengetahui kombinasi kodenya saja yang bisa mengambil dan menggunakan benda dalam lemari tersebut. Prinsip yang kurang lebih sama diterapkan oleh berbagai perusahaan pengembang teknologi agar para developernya dapat membuat aplikasi dengan memanfaatkan data yang mereka simpan di server. 
+
+Media sosial, seperti Facebook, Youtube, Twitter, dan portal-portal berita biasanya menyediakan API agar publik dapat mengakses apa yang mereka miliki. Tapi API di sini ada yang bersifat gratis, ada yang berbayar. Contohnya Twitter yang menyediakan beberapa tingkat API dengan fasilitas yang berbeda. Untuk lebih lengkapnya, API Twitter dapat dilihat di sini: https://developer.twitter.com/en/pricing. 
+
+Di sini kita akan mencoba menggunakan API BASIC dari Twitter dengan tujuan mendapatkan data aktivitas dan konten yang dilakukan oleh para pengguna Twitter. Namun sebelum berharap lebih jauh, API BASIC hanya bisa menyediakan data: 
+
+1. Sejauh 7-10 hari ke belakang dihitung dari saat penggunaan
+2. Tidak bisa mengambil data dalam jumlah banyak
+3. Memiliki beberapa keterbatasan fitur aktivitas yang dapat diambil. 
+
+Walaupun demikian, karena kemudahan penggunaannya penggunaan API BASIC merupakan salah satu hal yang bisa bermanfaat. Manfaat tersebut khususnya saat kita hendak melakukan observasi terhadap data di Twitter sebelum melakukan penelitian yang lebih mendalam. Langkahnya adalah sebagai berikut: 
+
+#### Membuat API Twitter
+
+Untuk membuat API twitter kita harus memiliki akun Twitter. Selanjutnya menuju ke halaman https://developer.twitter.com/en/apps yang kemudian akan mengarahkan kita ke sebuah laman seperti tampak pada gambar \@ref(fig:api1). Selanjutnya klik tombol `cretae an app` di sebelah kanan. 
+
+```{r api1, echo = FALSE, fig.align='center', out.width = '100%', fig.cap = "Halaman untuk membuat API Twitter"}
+knitr::include_graphics("images/apiTwitter1.png")
+```
+
+Pada bagian selanjutnya kita harus mengisi semua kolom yang diwajibkan seperti nama aplikasi, tujuan penggunaan dan lain-lain. Selain kolom yang diwajibkan, pada bagian ini juga kita perlu mengisi kolom `Callback URLs (required)` (lihat gambar \@ref(fig:api2)) dengan `http://127.0.0.1:1410`. 
+
+```{r api2, echo = FALSE, fig.align='center', out.width = '100%', fig.cap = "Pengisian kolom Callback URLs"}
+knitr::include_graphics("images/apiTwitter2.png")
+```
+
+Khusus pada bagain kolom `Tell us how this app will be used (required)` kita wajib mengisi tujuan pembuatan aplikasi secara detil. Contohnya adalah: `I am going to use this app to explore social movement on the Internet using Twitter data. In addition, I will also use this application to teach data mining in class.` Setelah semuanya terisi lalu tekan tombol `create` di bagian bawah dan akan memunculkan kota dialog baru seperti gambar \@ref(fig:api3). 
+
+```{r api3, echo = FALSE, fig.align='center', out.width = '100%', fig.cap = "Tombol create API Twitter"}
+knitr::include_graphics("images/apiTwitter3.png")
+```
+
+Sampai di sini, kita telah bisa membuat sebuah API Twitter basic. Selanjutnya untuk mendapatkan data dari Twitter kita perlu mendapatkan `Keys and tokens` dengan menekan tombolnya pada halaman baru yang terbuka. Bagian pertama seperti dapat dilihat pada gambar \@ref(fig:api4). 
+
+```{r api4, echo = FALSE, fig.align='center', out.width = '100%', fig.cap = "Mendapatkan Keys and tokens Twitter"}
+knitr::include_graphics("images/apiTwitter4.png")
+```
+
+Pada gambar \@ref(fig:api4) terdapat dua bagian yaitu `Consumer API keys` dan `Access token & access token secret`. Namun pada saat pertama halaman ini terbuka bagian kedua masing kosong. Di sana ada tombol create untuk mendapatkan nomor yang dimaksud. Keempat nomor tersebutlah yang selanjutnya akan digunakan setiap kita mau mengambil data dari Twitter dengan menggunakan API BASIC. 
+
+#### Mendapatkan Data Twitter {#twitterData}
+
+Setelah berhasil membuat api **basic**, selanjutnya kita sudah bisa mengambil data dari Twitter secara langsung. Pada kesempatan ini kita akan menggunakan paket `rtweet` yang dibuat oleh Michael W. Kearney [-@rtweet-package]. Skrip berikut merupakan langkah pertamanya. 
+
+```{r, eval=FALSE, message=FALSE, warning=FALSE}
+# loading the package
+library(rtweet)
+# create access between R and Twitter
+create_token(
+  app = "myresearchapi",
+  consumer_key = "7gNLk4bTdAnM5nMTBrMRF0Kvo",
+  consumer_secret = "eWeZpmdDkH2T9mEqSxYxGlpzk7qb22iFXAceW1nlMv29biMT4d",
+  access_token = "73705532-7bfqUaHiZNinLaVxxdfw04y8g7BuG5ZMGJD1z9HWw",
+  access_secret = "OouvQVrAxdjoN3gTbqUytKajUQiv4d2cujE6k6gPqnAG0")
+```
+
+Skrip di atas digunakan untuk memanggil library `rtweet` dan mengatur hubungan dengan API Twitter. Hubungan dengan Twitter diatur dengan menggunakan aplikasi API yang dibuat serta beberapa nomor kuncinya. Nomor kunci tersebut hanya dibuat sekali, namun setiap kali pengambilan data harus dijalankan terlebih dahulu. Selanjutnya, setelah hal tersebut dilakukan kita dapat segera mengambil data dengan menggunakan beberapa fungsi dari `rtweet`. 
+
+#### Mendapatkan twit berdasarkan kata kunci
+
+Kata kunci yang dimaksud di sini bisa berupa kata, tagar, atau pun term lain yang terdapat dalam *body* twit (bagian teks dalam sebuah twit). Contohnya skrip berikut digunakan untuk mendapatkan twit yang bukan retweet yang mengandung tagar **tolak212** selama tujuh hari terakhir. 
+
+```{r, eval=FALSE}
+# trying to get 18000 tweets containing #Tolak212 hashtag
+twitterdata1 <- search_tweets("#Tolak212", n = 18000, include_rts = FALSE)
+
+# write_rds(twitterdata1, "Data/twitterData1.rds")
+```
+
+Fungsi pertama yang digunakan dalam skrip di atas adalah: `search_tweets` yang berguna untuk mencari twit. `n` menunjukkan jumlah twit yang mencoba didapatkan. Sementara `include_rts` merupakan fungsi logical (FALSE/TRUE) yang jika di atur `FALSE` tidak akan mengambil  retweet dan sebaliknya. Di dalam pencarian twit dengan fungsi `search_tweets` juga terdapat beberapa parameter lain yang dapat diterapkan. Misalnya, `type` yang bisa di isi `"recent"`, `"mixed"` dan `"popular"` yang menunjukkan jenis twit yang akan diambil bersifat yang terbaru, atau yang paling populer, atau gabungan. 
+
+> Tantangan: setelah menjalankan skrip untuk mendapatkan data dari twitter, pada bagian environment akan menyimpan data yang bisa didapat. Coba eksplorasi data yang didapat dengan menggunakan pengetahuan yang didapat dari bagian \@ref(fungsidasar), yaitu str(), class(), dan summary(). 
+
+#### Mendapatkan *timeline*
+
+Terkadang kita ingin mendapatkan *timeline* dari sebuah atau beberapa akun tertentu. Untuk mendapatkannya kita bisa menggunakan fungsi `get_timelines()` seperti dalam contoh skrip berikut. 
+
+```{r, eval=FALSE, message=FALSE, warning=FALSE}
+tmls <- get_timelines(c("cnn", "BBCWorld", "foxnews"), n = 3200)
+```
+
+Skrip di atas akan mencari twit yang dikirim oleh tiga akun (cnn, BBCWorld, foxnews) dalam 7 hari terakhir. Di sini kita atur untuk mencoba mendapatkan 3200 twit dari masing-masing akun. Hasil yang didapatkan kemudian bisa langsung di visualisasikan menggunakan skrip berikut. Tapi untuk pembahasan visualisasi lebih lengkapnya akan dibahas pada bagian \@ref(vis). 
+
+```{r, eval=FALSE}
+tmls %>%
+  # dplyr::filter(created_at > "2017-10-29") %>%
+  dplyr::group_by(screen_name) %>%
+  ts_plot("days", trim = 1L) +
+  ggplot2::geom_point() +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(
+    legend.title = ggplot2::element_blank(),
+    legend.position = "bottom",
+    plot.title = ggplot2::element_text(face = "bold")) +
+  ggplot2::labs(
+    x = NULL, y = NULL,
+    title = "Frequency of Twitter statuses posted by news organization",
+    subtitle = "Twitter status (tweet) counts aggregated by day from October/December 2018",
+    caption = "\nSource: Data collected from Twitter's REST API via rtweet"
+  )
+```
+
+#### Mendapatkan Data *User*
+
+Selanjutnya, setelah kita berhasil mendapatkan data dengan dua metode sebelumnya. Kita juga mungkin ingin mendapatkan data tentang siapa sebenarnya user-user yang mengirim twit, misalnya tentang tagar tolak212. Untuk mendapatkan hal ini kita bisa menggunakan fungsi `lookup_user()` seperti contoh berikut. 
+
+```{r, eval=FALSE}
+userT212 <- lookup_users(twitterdata1$user_id)
+```
+
+Skrip di atas digunakan untuk mendapatkan data tentang semua akun yang menjadi pengirim. Di sini kita menggunakan kolom `user_id` dari data `twitterdata1` yang menghasilkan 442 obs (observasi), dan 88 kolom (variabel). Data ini selanjutnya dapat digunakan untuk berbagai hal. Misalnya untuk mengetahui jenis perangkat yang digunakan oleh pengguna Twitter, tempat, dan kita bisa menggunakannya untuk membuat klasifikasi sebuah akun bertindak seperti bot atau bukan.
+
+#### Keterbatasan
+
+Di satu sisi menggunakan API BASIC sangat memudahkan kita mendapatkan data dari Twitter baik untuk penelitian maupun lainnya. Di sisi lain terdapat beberapa keterbatasan seperti telah dijelaskan sebelumnya. Selain itu, dengan menggunakan API BASIC kita juga memiliki keterbatasan dalam hal mendapatkan twit dalam jumlah tertentu lebih dari 18000. Jumlah tersebut merupakan jumlah maksimal yang bisa didapat dalam 15 menit pertama. Untuk mendapatkan lebih dari itu, kita bisa menambahkan parameter  `retryonratelimit = TRUE`. Contohnya adalah sebagai berikut. 
+
+```{r, eval=FALSE}
+# how many total follows does cnn have?
+cnn <- lookup_users("cnn")
+# get them all (this would take a little over 5 days)
+cnn_flw <- get_followers("cnn", n = cnn$followers_count, retryonratelimit = TRUE)
+# get 130000 tweets containing Reuni212monas hashtag
+twitterdata2 <- search_tweets("#Reuni212monas", n = 130000, include_rts = FALSE, 
+                              retryonratelimit = TRUE)
+```
+
+Pertama, skrip di atas mencari tentang jumlah akun yang mengikuti (follower) akun `@CNN` (pada saat skrip ini dibuat ada 40.862.969 followers). Skirp kedua kemudian digunakan untuk mendapatkan ID masing-masing pengikut akun `@CNN`. Berdasarkan keterangan dalam website resmi paket `rtweet` untuk mendapatkan seluruh data tentang follower akun `@CNN` tersebut setidaknya membutuhkan waktu 5 hari tanpa terputus. Sementara skrip yang terakhir mencoba mendapatkan 130 ribu tweet yang mengandung tagar Reuni212monas dalam waktu 7 hari terakhir. 
+
+Selain fungsi-fungsi di atas, `rtweet` juga memiliki beberapa fungsi lain yang bisa dilihat di sini ^[Semua fungsi dari `rtweet`: https://rtweet.info/reference/index.html]. Berikut adalah salah contoh fungsi lain yang dapat digunakan untuk mendapatkan teman dari sebuah akun. 
+
+> Skrip di bawah ini menggunakan fungsi get_friends() dari rwteet. Coba jalankan dan lihat apa yang bisa didapat.
+
+```{r, eval=FALSE}
+canggih_fds <- get_friends("canggihpw")
+canggih_fds_data <- lookup_users(canggih_fds$user_id)
+```
+
+## Persiapan Data
+Setelah berhasil mendapatkan data atau mengimpor data ke `R` terkadang kita perlu terlebih dahulu melakukan *pre-processing*. Untuk beberapa data, khususnya yang bersumber dari internet seperti media sosial, *pre-processing* bahkan hampir menjadi salah satu kewajiban sebelum analisis dapat dilakukan. Hal tersebut dibutuhkan karena pada umumnya data bersifat tidak terstruktur. Oleh karena itu pula, *pre-processing* dapat dianggap sebagai proses membuat data tidak terstruktur menjadi terstruktur dan siap dianalisis [@Cleaning1].  
+
+Secara umum *pre-processing* meliputi kegiatan seperti menentukan perlakukan terhadap *missing value*, normalisasi data, menentukan variabel apa saja yang akan digunakan, dan membuat variabel baru dari variabel yang sudah ada. Hal ini akan kita coba dengan menggunakan paket `dplyr` yang dibuat oleh Wickham *et al.* [-@pkg-dplyr] serta beberapa paket lain untuk memenuhi kebutuhan pre-processing data yang dibutuhkan seperti `lubridate` [@pkg-lubridate] untuk mengolah data waktu dan `missForest` [@pkg-MissForest] untuk mengelola *missing value* dalam data. Sementara untuk data teks kita akan fokus menggunakan fungsi-fungsi dari `tidytext` [@tidytext] dan beberapa `regex`.  
+
+### Missing Value {#missing-value}
+
+Konsep *missing value* penting untuk dipahami dalam pengelolaan data. Jika *missing value* tidak ditangani dengan benar, maka kemungkinan peneliti akan berakhir dengan simpulan yang tidak akurat tentang data. Penanganan yang tidak tepat juga bisa membuat hasil yang diperoleh berbeda ketika data memiliki *missing value* yang bisa di sebabkan oleh beberapa hal, seperti: 
+
+(1) responden tidak merespons karena stres, lelah atau tidak memiliki pengetahuan; 
+(2) pertanyaan terlalu sensitif buat responden; dan lain sebagainya. 
+
+Secara teori terdapat beberapa jenis *missing value*, seperti MAR (Missing at Random), MCAR (Missing Completely at Random) dan MNAR (Missing not at Random)^[How to Handle Missing Data: https://towardsdatascience.com/how-to-handle-missing-data-8646b18db0d4]. Ada yang berpendapat jika data yang hilang dalam jumlah tertentu yang kecil (misalnya 5 persen) dapat dihilangkan saja. Namun dalam beberapa kasus, jika data dihilangkan justru akan membiaskan hasil. 
+
+Di sini kita akan mencoba mengisi data yang hilang dalam kasus yang umum, yaitu kita dalam posisi tidak bisa menghilangkan hasil observasi yang terdapat *missing value*-nya dengan dua pendekatan dalam dua paket. 
+
+#### *imputation* menggunakan `missForest`
+
+Seperti namanya, `missForest` memanfaatkan algoritma **random forrest**^[The Random Forest Algorithm: https://towardsdatascience.com/the-random-forest-algorithm-d457d499ffcd] untuk memprediksi nilai data yang hilang (missing value). `missForest` dapat digunakan baik untuk variabel kontinu maupun kategori. Terdapat dua parameter yang penting untuk diketahui. Pertama, **NRMSE** (normalized mean squared error) yang dapat direpresentasikan dengan: $$\sqrt{\frac{mean((X_{true}-X_{imp})^2)}{var(X_{true})}}$$
+digunakan untuk melihat error dari *imputation* terhadap nilai continuous. Kedua, PFC (Proportion of Falsely Classified) digunakan untuk merepresentasikan eror dari *imputation* nilai kategori. 
+
+Untuk memahami secara praktis kita akan menggunakan data `iris` yang memiliki empat variabel kontinu dan satu variabel kategorial. Untuk melihat penjelasan tentang data dapat menggunakan `?iris` pada Console. Langkahnya adalah:  
+1. Memanggil library dan menambahkan missing value
+
+```{r, warning=FALSE, message=FALSE}
+library(missForest)
+data(iris)
+summary(iris)
+```
+
+Seperti dapat dilihat pada rangkumannya, data iris tidak ada yang hilang. Untuk itu, kita akan tambahkan nilai yang hilang pada setiap variabel dalam data. 
+
+2. Menambahkan nila NA pada data
+
+Untuk menambahkan nilai NA atau *missing* pada data kita akan menggunakan fungsi `prodNA()` dari `missForest` seperti contoh berikut. 
+
+```{r, warning=FALSE, message=FALSE}
+set.seed(81)
+iris.mis <- prodNA(iris, noNA = 0.2)
+summary(iris.mis)
+```
+
+Skrip di atas membuat data memiliki nilai yang hilang dalam setiap variabel dalam data. Hasil penambahan tersebut dapat dilihat pada hasil rangkuman, di mana sebelumnya tidak ada nilai `NA` namun saat ini kita bisa melihat bahwa kurang lebih ada 20 persen nila NA dalam tiap variabel. Dua persen tersebut ditentukan oleh parameter `noNA` yang mengambil 0.2 dari data `iris` untuk diisi dengan nilai `NA`.
+
+3. Meng*impute* missing value
+
+Untuk melakukan *imputation* kita bisa menggunakan fungsing `missForest()` seperti contoh skrip berikut. 
+
+```{r, eval=FALSE}
+iris.imp <- missForest(iris.mis, xtrue = iris, verbose = TRUE)
+```
+
+4. Mengecek error dan membuat dataframe dari hasil 
+
+Setelah *imputation* dengan skrip sebelumnya selesai dilakukan, pada bagian environment ada sebuah data baru yang bernama `iris.imp`. Data tersebut berupa list di mana di dalamnya terdapat 3 bagian. 
+
+```{r, eval=FALSE}
+iris.imp$OOBerror
+iris.imp$error
+result0 <- iris.imp$ximp
+
+summary(result0)
+```
+
+Skrip di atas digunakan untuk mengakses tiga bagian dari data hasil *imputation*. Di mana `OOBerror` menunjukkan estimasi error dari `random forrest` dan `error` yang menunjukkan tingkat error dari *imputation* dengan random forrest yang dilakukan. Selanjutnya, dalam list tersebut juga terdapat data yang nilai `NA`-nya telah diisi dengan nilai baru. Untuk melihatnya, silakan jalan skrip di atas hingga bagian `summary()`. 
+
+#### Paket lain untuk *imputation*
+
+Selain dengan menggunakan paket `missForest`, melakukan *imputation* juga dapat dilakukan dengan beberapa paket lain dengan metode dan atau pendekatan yang berbeda. Seperti paket `Hmisc` [@pkg-Hmisc] yang juga cukup populer dikalangan pengguna R menawarkan metode *imputation* dengan beberapa algoritme. Misalnya, dalam paket `Hmisc` terdapat fungsi `impute()` di mana pengguna dapat melakukan *imputation* dengan metode yang didefinisikan sendiri (contoh: *mean, max, median,* dll). Paket `mi` juga bisa digunakan untuk melakukan *imputation* dengan menggunakan metode *Predictive Mean Matching Method*. 
+
+Selain tiga paket yang disebutkan di atas, di R kita juga bisa melakukan *imputation* dengan beberapa paket lainnya seperti `MICE`, dan `Amelia`. Dalam konteks ini, kita harus mengenal lebih dalam tentang metode apa yang paling relevan dengan masalah yang harus diselesaikan dan juga metode yang paling akurat. Selain itu, dalam penggunaan paket untuk melakukan *imputation* pada data dalam jumlah besar kita juga harus mempertimbangkan kecepatan. 
+ 
+
+### Wrangling Data {#wrangling}
+
+Setelah sebelumnya membahas cara untuk mengisi data yang kosong atau hilang, pada bagian ini kita akan mencoba menggunakan paket `dplyr` untuk mengelola *dataframe*. Tujuannya adalah data yang akan di analisis sudah sesuai dengan kebutuhan. Namun, mengingat fungsinya yang sangat banyak kita akan membatasi pembahasan penggunaan `dplyr` untuk: 
+
+(1) Memilih kolom; 
+(2) Transformasi kolom; 
+(3) Memfilter baris; 
+(4) Merangkum data.
+
+#### Memilih Kolom
+
+Di sini kita akan menggunakan data `msleep` yang terdapat dalam paket `tidyverse`. Di dalam data tersebut terdapat 11 kolom dan 83 observasi. Masing-masing kolom memiliki nama. Misalnya kolom pertama namanya `name`, kolom kedua namanya `genus` dan seterusnya. Dalam kehidupan nyata mungkin kita memiliki banyak variabel, nama pada saat tertentu kita hanya membutuhkan sebagian di antaranya saja. Dalam konteks ini, memilih data yang diproses agar tidak terlalu banyak dapat dilakukan dengan fungsi `select()`. Berikut adalah contohnya:
+
+```{r, eval=FALSE, message=FALSE, warning=FALSE}
+# load library
+library(tidyverse)
+
+# data
+tes_data <- msleep
+
+# memilih kolom berdasakan namanya
+tes_data_kolom <- tes_data %>%
+  dplyr::select(name, genus)
+
+# memilih kolom berdasakan urutan dari 1 - dst
+tes_data_kolom <- tes_data %>%
+  dplyr::select(1:4, 7)
+```
+
+Skrip di atas mencontohkan untuk memilih kolom dengan fungsi `select()` dari paket `dplyr`. Pertama kita bisa memilih berdasarkan nama kolomnya. Kedua, kita juga bisa memilih kolom berdasarkan nomor urutan kolom yang di hitungan mulai dari kiri ke kanan, dari angka 1 - dan setelahnya. Tanda titik dua (`:`) diantarai angka 1 dan 4 di baca hingga. Dengan kata lain, pertama kita memilih kolom nomor 1 hingga 4, dan 7. 
+
+> Cobalah pilih kolom nomor 1, 7, 8, 9, dan 11 dari `tes_data` dengan menggunakan metode urutan nomor kolom. 
+
+#### Transformasi kolom
+##### Row names to column
+
+Terkadang kita mendapatkan data di mana ada satu kolom yang tidak bernama dan menjadi nama baris. Contohnya adalah data berikut. 
+
+```{r, message=FALSE, warning=FALSE}
+library(dplyr)
+tes_data_col <- mtcars
+tes_data_col %>%
+  head()
+```
+
+Kita bisa lihat bahwa kolom paling kiri tidak bernama. Sebenarnya kolom tersebut menunjukkan jenis atau model mobil. Di sini kita bisa menggunakan fungsi `rownames_to_column()` dan membuat nama kolom untuk menamai kolom tak bernama tersebut. Misalnya di sini kita menamainya `car_model`. 
+
+```{r, message=FALSE, warning=FALSE}
+library(dplyr)
+tes_data_col <- tes_data_col %>%
+   tibble::rownames_to_column("car_model")
+tes_data_col %>%
+  head()
+```
+
+Bisa dilihat bahwa saat ini data `tes_data_col` memiliki 12 kolom, semula hanya 11. Satu kolom tambahan tersebut dihasilkan dengan memberi nama `car_model` menggunakan fungsi `rownames_to_column()`.  
+
+##### Membuat kolom baru
+
+Fungsi sebelumnya dapat digunakan untuk membuat kolom baru dari data yang sebenarnya sudah ada, namun memiliki fungsi yang berbeda. Dalam contoh yang digunakan sebelumnya kolom tak bernama tersebut sering disebut `row name` atau nama baris. Variabel baru yang dibuat berdasarkan variabel yang sudah ada terkadang juga dibutuhkan. 
+
+Misalnya, dalam data `tes_data` terdapat kolom `sleep_total` yang menunjukkan waktu tidur masing-masing bintang dalam jam. Dalam sebuah kesempatan mungkin kita menginginkan data dalam bentuk menit tanpa menghilangkan kolom aslinya sebagai kontrol. Hal ini bisa dicapai dengan fungsi `mutate()` seperti contoh berikut: 
+
+```{r, message=FALSE, warning=TRUE}
+# load library
+library(tidyverse)
+# data
+tes_data <- msleep
+tes_data %>%
+  select(name, sleep_total) %>%
+  mutate(sleep_total_min = sleep_total * 60) %>%
+  head()
+```
+
+Skrip di atas digunakan untuk memilih dua kolom dari `tes_data`, lalu menambah kolom baru dengan nama `sleep_total_min` yang isinya merupakan jumlah total tidur dikali 60 atau total tidur dalam menit. 
+
+Jika Anda hanya ingin menyimpan variabel baru saja hasil `mutate`, gunakan fungsi `transmute()`:
+
+```{r, message=FALSE, warning=TRUE}
+tes_data <- msleep
+tes_data %>%
+  select(name, sleep_total) %>%
+  transmute(sleep_total_min = sleep_total * 60) %>%
+  head()
+```
+
+```{r, message=FALSE, warning=TRUE}
+# A tibble: 6 x 1
+#  sleep_total_min
+#            <dbl>
+#1             726
+#2            1020
+#3             864
+#4             894
+#5             240
+#6             864
+```
+
+Fungsi `mutate()` ini memiliki beberapa spesifikasi, dokumentasi kegunaan masing-masing fungsi selengkapnya dapat dilihat dalam kiriman blog Suzan Bear^[Transforming your columns into the right shape: https://suzan.rbind.io/2018/02/dplyr-tutorial-2/#mutating-columns-the-basics] yang cukup komplit. Di sini kami ingin menambahkan satu fungsi lain dari `mutate` yang cukup sering digunakan, yaitu dengan bantuan `case_when()`.
+
+Fungsi `mutate()` + `case_when()` berguna untuk membuat kolom baru yang berisi variabel diskrit yang ditentukan berdasarkan variabel/kolom lain dalam sebuah data. Misalnya, dari `tes_data` kita ingin membuat sebuah variabel baru yang menunjukkan lamanya waktu tidur (kolom `sleep_total`). Jika `sleep_total` lebih dari 13 jam diberi label `very long`, jika 10 = `long`, 7 = `limited`, yang tidak termasuk angka sebelumnya = `short`. 
+
+```{r, message=FALSE, warning=FALSE}
+library(dplyr) # load library
+tes_data <- msleep # data
+
+# menambah kolom discrete berdasarkan kolom sleep_total
+tes_data_new <- tes_data %>%
+  select(name, sleep_total) %>%
+  mutate(sleep_total_discr = case_when(sleep_total > 13 ~ "very long",
+                                       sleep_total > 10 ~ "long",
+                                       sleep_total > 7 ~ "limited",
+                                       TRUE ~ "short")) %>%
+  mutate(sleep_total_discr = factor(sleep_total_discr, 
+                                    levels = c("short", "limited", 
+                                               "long", "very long")))
+
+tes_data_new %>%
+  head()
+```
+
+Skrip di atas seperti jelaskan sebelumnya menambahkan kolom baru dengan nama `sleep_total_discr` yang merupakan pengelompokan waktu tidur berdasarkan kolom `sleep_total`. Jika dilihat dengan menggunakan fungsi `str()` kolom yang dihasilkan berupa factor yang umumnya memiliki level. Di dalam skrip, level factor kita atur mulai `short` ke `very long`. Namun jika hal tersebut tidak diperlukan maka skripnya bisa seperti berikut. 
+
+```{r, eval=FALSE}
+tes_data_new <- tes_data %>%
+  select(name, sleep_total) %>%
+  mutate(sleep_total_discr = case_when(sleep_total > 13 ~ "very long",
+                                       sleep_total > 10 ~ "long",
+                                       sleep_total > 7 ~ "limited",
+                                       TRUE ~ "short"))
+tes_data_new %>%
+  head()
+```
+
+##### Memisah dan Menggabungkan Kolom {#unite-sep}
+
+Di sini kita akan menggunakan data yang juga digunakan pada bagian \@ref(impore-kspor), dan mempraktikkan fungsi `separate()` dan `unite()` dari `tidyr` [@pkg-tidyr]. 
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+mydirectory <- paste0(getwd(), "/data/")
+# read csv
+csv_data0 <- read_csv(paste0(mydirectory, "geocoded1.csv"))
+```
+
+Salah satu kolom di dalam data `csv_data0` adalah `rating_teks` yang terdiri dari beberapa satu atau dua suku kata. Di sini misalnya kita ingin memisahkan kata pertama dan kedua serta jika tidak ada suku kata kedua di isi NA. Maka skripnya ada sebagai berikut. 
+
+```{r}
+library(tidyverse)
+
+tes_sp <- csv_data0 %>%
+  dplyr::select(rating_teks) %>%
+  tidyr::separate(col = rating_teks, into = c("col1", "col2"), 
+                  sep = " ", extra = "merge", fill = "right")
+```
+
+Melalui skrip di atas, pertama kita memilih sumber data, yaitu `csv_data0`. Lalu dari data tersebut kita hanya memilih kolom `rating_teks` dengan fungsi `select()`. Selanjutnya kolom yang dipilih tersebuh dipisah menjadi dua kolom yaitu `col_1` dan `col_2`. Parameter yang menjadi penanda untuk memisahkan di sini adalah spasi (`" "`), karena di dalam kolom tersebut antara suku kata pertama dan kedua dipisahkan dengan spasi. Sementara dua parameter terakhir yaitu `extra` digunakan sebagai parameter untuk menentukan apakah extra suku kata akan dihilangkan atau tetap ada^[Separate one column into multiple columns: https://tidyr.tidyverse.org/reference/separate.html]. Parameter `fill` digunakan untuk mengontrol jika nilainya tidak ada. 
+
+> Cobalah buka tautan dalam *footnote* dan pisahkan nama pertama dari kolom nama dalam data csv_data0. 
+
+Sebaliknya, untuk menyatukan dua kolom menjadi satu kolom kita bisa menggunakan fungsi `unite()` yang didalamnya berisi (`kolom_hasil`, `nama_kolom1`, `nama_kolom2`, `nama_kolomN`, `sep=" "`). Contohnya adalah sebagai berikut: 
+
+```{r}
+tes_sp %>%
+  tidyr::unite(kolom_gabung, col1, col2, sep = "-")
+```
+
+Skrip di atas berfungsi untuk menggabungkan kolom `col1` dan `col2` dari data `tes_sp` dalam satu kolom `kolom_gabung` dengan pembatas (`sep`) tanda `-`.  
+
+#### Memfilter baris
+
+Memilih atau memfilter data dengan kondisi tertentu dapat dilakukan dengan menggunakan fungsi filter(). Sintaks umum adalah `filter(dataset, condition)`. Data numerik dapat difilter berdasarkan nilainya dengan menggunakan tanda yang paling umum digunakan, yaitu: 
+`>`, `>=`, `<`, `<=`, `==` and `!=` yang keterangannya dapat dilihat pada tabel \@ref(tab:Roprators). Contohnya adalah sebagai berikut: 
+
+```{r}
+msleep %>% 
+  select(name, sleep_total) %>% 
+  filter(sleep_total > 18) # memfilter
+```
+
+Skrip di atas digunakan saat kita ingin memilih data yang berisi nama dari `msleep` yang waktu tidurnya lebih dari 18 jam. Selain itu, dalam fungsi filter kita juga bisa memasukkan fungsi `between()` yang dapat digunakan untuk memfilter data dengan nilai antara. Misalnya, kita ingin mendapatkan nama-nama hewan yang memiliki waktu tidur minimal 16 jam dan maksimal 18 jam. Maka hal tersebut dapat dilakukan dengan skrip berikut: 
+
+```{r}
+msleep %>% 
+  select(name, sleep_total) %>% 
+  filter(between(sleep_total, 16, 18))
+```
+
+> Pertanyaan: mana di antara salah satu skrip dengan menggunakan operator pada tabel \@ref(tab:Roprators) yang bisa digunakan untuk melengkapi skrip di bawah ini dan menghasilkan output yang sama dengan skrip sebelumnya?
+
+```{r, eval=FALSE}
+msleep %>% 
+  select(name, sleep_total) %>% 
+  ...
+```
+
+a. `filter(sleep_total = 16, sleep_total = 18)`
+b. `filter(sleep_total >= 16, sleep_total <= 18)`
+c. `filter(sleep_total == 16, sleep_total == 18)`
+
+Fungsi `filter()` juga dapat digunakan untuk data string. Misalnya, dari `msleep`, kita hanya akan menganalisis data dari Carnivora saja. Maka skripnya adalah sebagai berikut:
+
+```{r, eval=FALSE}
+carnivora_data <- msleep %>%
+  filter(order == "Carnivora")
+```
+
+Skrip di atas akan memfilter data berdasarkan kolom order yang Carnivora. Selain itu tidak akan masuk menjadi data baru yang dibuat. Hal yang perlu diperhatikan di sini adalah paramater yang digunakan harus sama persis dengan yang ada di data asli karena R bersifat *case-sensitive*. Selain itu, parameter yang digunakan di sini juga jenisnya karakter, oleh karena itu ditempatkan di antara dua tanda petik (`"..."`).
+
+#### Menyusun nama kolom
+Nilai yang ada dalam kolom dapat kita atur susunannya menggunakan fungsi `arrange()`. Jika `filter()` berfungsi untuk memilih baris tertentu, maka `arrange()` berfungsi untuk mengubah susunan urutan data. Fungsi `arrange()` akan memanggil *dataframe* dan sebarisan nama kolom yang akan dilakukan penyusunan urutan data. Jika Anda ingin menyusun urutan data di lebih dari satu kolom, setiap kolom dipisahkan oleh tanda koma:
+
+```{r, eval=FALSE}
+coba_arrange <- arrange(tes_data, name)
+```
+
+```{r, eval=FALSE}
+#    name   genus vore  order conservation sleep_total sleep_rem sleep_cycle awake  brainwt  bodywt
+#    <chr>  <chr> <chr> <chr> <chr>              <dbl>     <dbl>       <dbl> <dbl>    <dbl>   <dbl>
+#  1 Afric~ Loxo~ herbi Prob~ vu                   3.3      NA        NA      20.7  5.71e+0 6.65e+3
+#  2 Afric~ Cric~ omni  Rode~ NA                   8.3       2        NA      15.7  6.60e-3 1.00e+0
+#  3 Afric~ Rhab~ omni  Rode~ NA                   8.7      NA        NA      15.3 NA       4.40e-2
+#  4 Arcti~ Vulp~ carni Carn~ NA                  12.5      NA        NA      11.5  4.45e-2 3.38e+0
+#  5 Arcti~ Sper~ herbi Rode~ lc                  16.6      NA        NA       7.4  5.70e-3 9.20e-1
+#  6 Asian~ Elep~ herbi Prob~ en                   3.9      NA        NA      20.1  4.60e+0 2.55e+3
+#  7 Baboon Papio omni  Prim~ NA                   9.4       1         0.667  14.6  1.80e-1 2.52e+1
+#  8 Big b~ Epte~ inse~ Chir~ lc                  19.7       3.9       0.117   4.3  3.00e-4 2.30e-2
+#  9 Bottl~ Turs~ carni Ceta~ NA                   5.2      NA        NA      18.8 NA       1.73e+2
+# 10 Brazi~ Tapi~ herbi Peri~ vu                   4.4       1         0.9    19.6  1.69e-1 2.08e+2
+# ... with 73 more rows
+```
+
+Untuk mengurutkan data secara menurun (descending), gunakan fungsi `desc()`:
+
+```{r, eval=FALSE}
+coba_arrange <- arrange(tes_data, desc(name))
+```
+
+```{r, eval=FALSE}
+#    name    genus vore  order conservation sleep_total sleep_rem sleep_cycle awake brainwt  bodywt
+#    <chr>   <chr> <chr> <chr> <chr>              <dbl>     <dbl>       <dbl> <dbl>   <dbl>   <dbl>
+#  1 Wester~ Euta~ herbi Rode~ NA                  14.9      NA        NA       9.1 NA        0.071
+#  2 "Vole " Micr~ herbi Rode~ NA                  12.8      NA        NA      11.2 NA        0.035
+#  3 Vesper~ Calo~ NA    Rode~ NA                   7        NA        NA      17   NA        0.045
+#  4 Tree s~ Tupa~ omni  Scan~ NA                   8.9       2.6       0.233  15.1  0.0025   0.104
+#  5 Tree h~ Dend~ herbi Hyra~ lc                   5.3       0.5      NA      18.7  0.0123   2.95 
+#  6 Tiger   Pant~ carni Carn~ en                  15.8      NA        NA       8.2 NA      163.   
+#  7 Three-~ Brad~ herbi Pilo~ NA                  14.4       2.2       0.767   9.6 NA        3.85 
+#  8 Thirte~ Sper~ herbi Rode~ lc                  13.8       3.4       0.217  10.2  0.004    0.101
+#  9 Thick-~ Lutr~ carni Dide~ lc                  19.4       6.6      NA       4.6 NA        0.37 
+# 10 Tenrec  Tenr~ omni  Afro~ NA                  15.6       2.3      NA       8.4  0.0026   0.9  
+# ... with 73 more rows
+```
+
+#### Merangkum data {#pre-process}
+
+Salah satu fungsi utama dari `dplyr` yang mungkin akan sering digunakan adalah fungsi `count()`. Fungsi ini dapat digunakan untuk penghitungan jumlah observasi. Biasanya, penggunaannya digabungkan dengan `group_by` untuk mengelompokkan data berdasarkan nilai-nilai dalam sebuah kolom. Contohnya adalah sebagai berikut: 
+
+```{r, eval=TRUE}
+jumlah <- msleep %>%
+  group_by(genus) %>%
+  count(order, sort = TRUE)
+
+jumlah %>%
+  head()
+
+class(jumlah)
+```
+
+Skrip di atas berfungsi untuk menghitung jumlah observasi per nilai dalam kolom order. Sementara parameter `sort = TRUE` memerintahkan untuk mengurutkan hasil penjumlahan dari tinggi ke rendah. Di mana n menunjukkan jumlah order per genus. Namun `count()` hanya dapat digunakan untuk menjumlahkan observasi. Sementara untuk nilai lain tidak bisa. 
+
+Oleh karena itu, di sini kita juga bisa menggunakan fungsi `summarise()` yang bisa diisi dengan pola berikut: `column_name = function(variable)`. Contohnya adalah sebagai berikut: 
+
+```{r}
+msleep %>%
+  group_by(vore) %>%
+  summarise(n = n(), average = mean(sleep_total), maximum = max(sleep_total))
+```
+
+Sekilas fungsi `summarise()` atau `summarize()` berfungsi mirip dengan `mutate()` yaitu untuk menambahkan kolom. Hanya di sini kita lebih menyingkatnya dalam beberapa fungsi lain yang sudah terdokumentasi di `R` seperti `mean()`, dan `max()`.
+
+## Visualisasi 1
+
+Selain untuk menampilkan data secara sederhana, visualisasi juga dapat digunakan sebagai salah satu metode eksplorasi data. Selain itu, dalam perjalanannya sebuah data akan memiliki nilai lebih dari sekedar data jika dapat dikomunikasikan dengan baik. Dalam konteks ini visualisasi menjadi salah satu syarat keterampilan yang harus dimiliki oleh *data analyst* secara umum dan menjadi lebih penting lagi dalam konteks big data dan Big data analytic (BDA). Pada bagian ini kita akan membahas penggunaan salah satu paket paling populer dikalangan pengguna R, yaitu `ggplot2` untuk memvisualisasikan data sekaligus melakukan eksplorasi data. Selanjutnya, peserta juga akan dikenalkan pada penggunaan `plotly` untuk menghasilkan visualisasi yang lebih menarik. Terakhir, penjelasan tentang pemanfaatan `Rmarkdown` untuk membuat laporan yang lebih interaktif dengan output laporan dalam bentuk html. 
+
+### Visualisasi dengan ggplot2 {#vis1}
+
+Untuk membuat sebuah visualisasi yang baik kita perlu terlebih dahulu memahami tujuan dan fungsi masing-masing plot. Gambar \@ref(fig:rightplot) ^[Choose the Right Chart Type for your Data, diakses dari: https://www.labnol.org/software/find-right-chart-type-for-your-data/6523/] menunjukkan tujuan umum pembuat plot, diantaranya adalah untuk melihat perbandingan, hubungan, komposisi, dan distribusi. Di sini kita menggunakan `ggplot2` karena paket tersebut merupakan bagian dari `tidyverse` [@DSR1]. Dengan kata lain, saat kita melakukan sebagian preprocessing data dengan menggunakan paket seperti `dplyr` visualisasi dapat dilakukan secara langsung. 
+```{r rightplot, echo = FALSE, out.width = '100%', fig.align="center", fig.cap = "Pilihan tipe gambar untuk visualisasi data"}
+knitr::include_graphics("images/data-chart-type.png")
+```
+
+Sebagai contoh, kita akan menggunakan data bawaan dari `ggplot2` yang memuat informasi demografi di beberapa daerah di Amerika. Data tersebut bisa didapatkan dengan menggunakan skrip berikut. 
+
+```{r, message=FALSE}
+library(ggplot2)
+data1 <- midwest # membuat dataframe 
+?midwest # mengecek informasi tentang data yang akan digunakan
+```
+
+Data yang digunakan di sini (`data1`) memuat 437 observasi dan 28 variabel atau kolom. Variabelnya cukup beragam, mulai dari total populasi (poptotal) hingga persentase kemiskinan per kategori penduduk. Sebagi permulaan, kita terlebih dahulu harus mengetahui tentang isi datanya. Di sini kita bisa menggunakan fungsi `summary()` untuk mendapatkan rangkuman secara cepat dari data. 
+
+```{r, message=FALSE, warning=FALSE, eval=FALSE}
+summary(data1)
+```
+
+Dengan menjalankan fungsi di atas, pada bagian Console akan muncul rangkuman data yang menunjukkan statistik umum untuk data angka dan jumlah untuk data non-angka. Berdasarkan rangkuman tersebut pula, mungkin kita juga cukup penasaran dengan hubungan antara persentase populasi yang berada di bawah garis kemiskinan (`percbelowpoverty`) dengan jumlah penduduk yang kuliah (percollege). Hal tersebut bisa dieksplorasi dengan menggunakan scatter plot seperti gambar \@ref(fig:plot1).
+
+```{r plot1, message=FALSE, out.width = '70%', fig.align="center", fig.cap = "Contoh scatter plot dengan ggplot2"}
+library(ggplot2)
+
+ggplot(data = data1, aes(x = percollege, y = percbelowpoverty)) +
+  geom_point(aes(color = state)) +
+  labs(title = "Pendidikan Meningkat, Kemiskinan Menurun")
+
+ggplot(data = data1, aes(x = percollege, y = percbelowpoverty)) +
+  geom_point(aes(color = state)) +
+  geom_smooth(method = lm, se = FALSE) +
+  labs(title = "Pendidikan Meningkat, Kemiskinan Menurun",
+       subtitle = "Subtitle untuk menambah keterangan tentang plot")
+```
+
+Dengan menggunakan visualisasi seperti gambar \@ref(fig:plot1) kita bisa mendapatkan tilikan tentang pengaruh pendidikan pada angka kemiskinan. Pada gambar tersebut, selain membuat scatter plot, kita juga menempatkan model regresi sederhana antara dua variabel yang di ingin dicek. Jika diperhatikan, skrip untuk membuat visualisasi seperti gambar \@ref(fig:plot1) terdiri dari empat baris utama di mana masing-masing baris memiliki fungsinya sendiri. Baris pertama berisi `data`. `data` di sini merujuk pada data yang akan divisualisasikan. Selanjutnya berisi `aes()` yang berfungsi untuk memetakan variabel. `geom_point()` menunjukkan jenis visualisasi atau chart dan `geom_smooth` digunakan untuk membuat garis biru yang berfungsi untuk menunjukkan pola dalam data. Terakhir berisi `labs()` digunakan untuk memberikan keterangan tambahan pada plot yang dihasilkan.  
+
+Selain dengan tujuan, pembuatan plot juga dapat didasari oleh jenis variabelnya. Misalnya, plot di atas \@ref(fig:plot1) dibuat berdasarkan tujuan kita untuk mengetahui pola yang ada antar variabel atau juga dapat disebut variation. Selain itu, dalam melakukan eksplorasi juga lazim untuk mengetahui *variation*, yaitu tendensi sebuah variabel untuk berubah dari satu proses penghitungan ke penghitungan. Untuk memvisualisasikannya kita juga perlu melihat apakah variabel tersebut termasuk dalam jenis data *categorical* atau *continuous*. Untuk itu, berdasarkan gambar \@ref(fig:rightplot) chart yang mungkin digunakan adalah bar chart atau column chart. Contohnya adalah sebagai berikut. 
+
+```{r plot2, message=FALSE, out.width = '70%', fig.align="center", fig.cap = "Contoh visualisasi distribusi categorical dari data"}
+ggplot(data1) + 
+  geom_bar(mapping = aes(x = state))
+
+state <- data1 %>%
+  select(state) %>%
+  group_by(state) %>%
+  count(state, sort = TRUE)
+
+state %>%
+  ggplot(aes(x = state, n)) + geom_col()
+```
+
+Gambar \@ref(fig:plot2) menunjukkan jumlah daerah tiap negara bagian, di mana dalam data negara bagian Illinois merupakan yang terbanyak sementara Wisconsin paling sedikit. Terlepas dari deskripsi data yang bisa ditangkap, hal yang perlu diperhatikan di sini adalah perilaku `geom_bar()` yang digunakan untuk membuat plot. `geom_bar()` secara intuitif menjumlahkan masing-masing kategori negara bagian yang ada dalam data. Oleh karena itu, dalam proses membuat visualisasi dengan `ggplot2` selanjutnya kita harus mengetahui fungsi dari masing-masing geom atau geometry yang ada. Hal tersebut mungkin agak susah untuk dihafalkan. Namun dengan mengetahui tujuan visualisasi dan jenis data yang dimiliki kita bisa selalu mengakses dokumentasi tentang geom-geom dalam ggplot2 melalui tautan ini (https://ggplot2.tidyverse.org/reference/).
+
+#### Memahami bagian dalam plot
+
+Dua gambar yang dihasilkan sebelumnya secara umum telah menunjukkan struktur skrip yang digunakan untuk memproduksi plot. Selanjutnya, secara umum pula template yang bisa digunakan untuk membuat visualisasi melalui ggpplot adalah sebagai berikut:
+
+```{r, eval=FALSE}
+ggplot(data = <DATA>) + 
+  <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+```
+
+Elemen pertama pasti `data` yang akan di-plot. Dalam dua contoh sebelumnya, data yang diplot berupa dataframe dengan nama `data1`. Selanjutnya `<GEOM_FUNCTION>` merujuk pada fungsi geom. Dua gambar sebelumnya (gambar \@ref(fig:plot1) dan gambar \@ref(fig:plot2)) menggunakan `geom_point()` dan `geom_bar()`. Bagian terakhir adalah `mapping` yang ditunjukkan dengan fungs `aes()` (sumbu x dan y). Setelah sebelumnya kita bisa membuat plot dengan dua variabel, di dalam `aes()` kita juga bisa menyertakan variabel ketiga yang berfungsi untuk memberi warna seperti gambar \@ref(fig:plot1), bentuk, atau *size*.
+
+```{r plot3, message=FALSE, out.width = '70%', fig.align="center", fig.cap = "Contoh visualisasi tiga variable dengan bentuk"}
+ggplot(data = data1) + 
+  geom_point(mapping = aes(x = percbelowpoverty, y = percollege, shape = state))
+```
+
+Gambar \@ref(fig:plot3) memvisualisasikan tiap negara bagian dalam bentuk titik yang berbeda. Namun, di sini kita juga mungkin terlalu susah untuk membedakan karena masing-masing titik berwarna hitam dan ada yang tumpang tindih. Oleh karena itu, terkadang kita juga perlu melihat satu persatu. Dalam konteks ini, dua variabel untuk masing-masing negara bagian. Hal ini bisa dilakukan dengan menggunakan fungsi `facet_wrap()` seperti gambar \@ref(fig:plot4).
+
+```{r plot4, message=FALSE, out.width = '70%', fig.align="center", fig.cap = "Contoh Facet untuk memvisualisasikan data dalam plot yang beda bedasarkan variabel categorical"}
+
+ggplot(data = data1) + 
+  geom_point(mapping = aes(x = percollege, y = percbelowpoverty)) + 
+  geom_smooth(mapping = aes(percbelowpoverty, percollege), method = lm, se = FALSE) +
+  facet_wrap(~ state, nrow = 2)
+```
+
+Gambar \@ref(fig:plot4) menunjukkan cara yang berbeda untuk melihat tiga variabel, di mana salah satunya merupakan variabel kategori. Dengan menggunakan seperti itu, kita bisa melihat dan memastikan bahwa tren persentase kemiskinan berbanding terbalik dengan persentase penduduk yang kuliah. Dalam bahasa statistiknya disebut berkorelasi negatif. 
+
+Sebagai rangkuman, `ggplot2` bisa menghasilkan visualisasi yang menarik dan memiliki fungsi yang cukup banyak untuk memenuhi kebutuhan mengomunikasikan data. Untuk memanfaatkan fungsi-fungsi tersebut hal pertama yang harus diketahui adalah **tujuan**, kemudian **jenis variabel** (kontinu/kategori), **jenis plot** yang akan digunakan. Untuk mengetahui jenis plot perlu mengetahui fungsi masing-masing `geom`. Terakhir, untuk menyimpan plot bisa dilakukan dengan menggunakan fungsi `ggsave()` seperti contoh berikut. 
+
+```{r, eval=FALSE}
+plot_disimpan <- ggplot(data = data1) + 
+  geom_point(mapping = aes(x = percollege, y = percbelowpoverty)) + 
+  geom_smooth(mapping = aes(percbelowpoverty, percollege), method = lm, se = FALSE) +
+  facet_wrap(~ state, nrow = 2)
+
+ggsave(plot = plot_disimpan, filename = "tes.png", dpi = 300)
+```
+
+Dengan menggunakan skrip di atas, kita menyimpan plot/gambar yang dibuat dengan ggplot2 yang diberi nama `plot_disimpan` dalam directory utama project atau skrip dibuat. Gambar yang dihasilkan memiliki dpi (dot pixel per inch) 300 yang merupakan standar untuk publikasi di jurnal-jurnal bereputasi saat ini. Jika plot tidak disimpan dalam sebuah objek (seperti: plot_disimpan) maka `ggsave()` akan menyimpan plot terakhir yang dibuat seperti dengan menggunakan template umum. 
+
+#### Informasi lebih lanjut
+
+Paket `ggplot2` memiliki cukup banyak fungsi yang bisa digunakan hampir untuk semua jenis/tipe plot yang bisa dijumpai. Modul ini tidak mungkin dapat memuat semuanya. Oleh karena itu, jika tertarik untuk mempelajari visualisasi data lebih lanjut disarankan untuk menggunakan buku tentang ggplot2 yang bisa ditemukan di: https://amzn.com/331924275X. Namun sayangnya buku tersebut tidak gratis. Walaupun demikian, jika kampus berlangganan SpringerLink ada kemungkinan bisa mendapatkannya secara gratis. 
+
+Selain menggunakan buku, kita juga bisa mencari tutorial baik di google maupun melalui Youtube yang sudah banyak dibuat oleh orang. Salah satunya bisa ditemukan di: http://www.cookbook-r.com/Graphs/ secara gratis. 
+
+### Visualisasi interaktif dengan Plotly {#vis2}
+
+`Plotly` untuk R adalah salah satu paket yang dibuat oleh Carson Sievert [-@plotlypkg] untuk membuat plot yang interaktif dengan memanfaatkan javascrpt dari `plot.ly`. Untuk menginstall `plotly` bisa menggunakan cara manual melalui menu tools seperti yang telah dijelaskan pada bagian \@ref(packageLib) atau menggunakan skrip berikut: 
+
+```{r, eval=FALSE}
+# # untuk menginstall dari CRAN
+# install.packages("plotly") 
+# # untuk menginstall dari dari github
+# if (!require("devtools")) install.packages("devtools")
+# devtools::install_github("ropensci/plotly")
+# # untuk mengecek versi
+# packageVersion("plotly")
+```
+
+Untuk memastikan `plotly` telah terpasang dengan benar bisa mengetesnya dengan menjalankan skrip di bawah ini.
+
+```{r, eval=FALSE, warning=FALSE, message=FALSE, out.width = '70%'}
+library(plotly)
+plot_ly(z = ~volcano)
+```
+
+```{r plotly1, echo=FALSE,warning=FALSE, message=FALSE, out.width = '70%', fig.align="center", fig.cap = "Gambar untuk mengetes plotly terpasang dengan benar"}
+knitr::include_graphics("images/newplot.png")
+```
+
+Jika R bisa menampilkan gambar \@ref(fig:plotly1) maka `plotly` sudah terpasang dengan benar dan kita bisa melanjutkan eksplorasi paket ini lebih jauh. Secara umum terdapat dua cara untuk menggunakan `plotly` di R. **Pertama** dengan menggunakan ggplot2. **Kedua** dengan menggunakan aturan `plotly` sendiri. Namun, kenapa kita butuh plot yang interaktif? 
+
+**Jawabannya:** terkadang kita butuh untuk meneliti lebih detail plot yang dihasilkan untuk memastikan pola, nilai dan lain sebagainya. Plot statis tidak buruk. Faktanya sampai saat ini plot statis merupakan kebutuhan utama, khususnya ketika berkaitan dengan produksi laporan dalam bentuk hardcopy. Kita juga terbiasa melihat plot dua dimensi. Namun, bagaimana jika kita memiliki data multidimensi dan bisa menempatkannya dalam satu plot? Plot seperti itu, dapat menjadi salah satu keuntungan, khususnya dalam melakukan eksplorasi data.
+
+#### Menggunakan `ggplotly`
+
+Fungsi `ggplotly()` merupakan fungsi dari `plotly` yang berguna untuk mengonversi objek yang dibuat dengan `ggplot()`. Sebagai contoh, kita telah membuat gambar \@ref(fig:plot4) dengan `ggplot`, untuk mengubahnya menjadi objek `plotly` dapat dilakukan dengan skrip berikut:
+
+```{r, eval=FALSE, message=FALSE, out.width = '100%'}
+plot_1 <- ggplot(data = data1) + 
+  geom_point(mapping = aes(x = percollege, y = percbelowpoverty, colour = county)) + 
+  geom_smooth(mapping = aes(percbelowpoverty, percollege), method = lm, se = FALSE) +
+  facet_wrap(~ state, nrow = 2)
+
+ggplotly(plot_1)
+```
+
+```{r plotly2, echo=FALSE,message=FALSE, out.width = '100%', fig.align="center", fig.cap = "Contoh hasil konversi ggplot ke plotly"}
+knitr::include_graphics("images/newplot(1).png")
+```
+
+Jika pada gambar \@ref(fig:plot4) kita hanya bisa melihat titik-titik, dan mungkin karena itu pula kita akan lebih peduli pada garis biru yang menunjukkan tren linear. Tapi, dengan mengubahnya menjadi objek `plotly` (\@ref(fig:plotly2)) kita bisa meneliti plot hasil visualisasi lebih detail dengan mengarahkan tetikus secara langsung pada titik-titik yang ada. Lebih penting lagi, melalui plot yang interaktif seperti itu, kita bisa melihat dan meneliti empat variabel sekaligus dalam satu gambar. 
+
+Secara umum fungsi `ggplotly()` menerjemahkan secara langsung objek dari `ggolot2` menjadi objek `plotly`. Walaupun demikian, ada beberapa hal yang tentu masih bisa diperluas dan dikembangkan seperti membuat animasi dan lain sebagainya seperti yang ditunjukkan dalam gambar \@ref(fig:plotly3). Gambar tersebut dibuat dari data yang ada dalam paket `gapminder` yang berisi tentang harapan hidup, PDB per kapita, dan populasi menurut negara. Untuk lebih jelasnya bisa menjalankan `?gapminder` pada console anda.
+
+```{r, eval=FALSE, warning=FALSE, echo=FALSE, message=FALSE, out.width = '100%', fig.align="center", fig.cap = "Contoh hasil konversi ggplot ke plotly dan animasi"}
+library(plotly)
+library(gapminder)
+
+gapminder <- gapminder
+
+p <- ggplot(gapminder, aes(gdpPercap, lifeExp, color = continent)) +
+  geom_point(aes(size = pop, frame = year, ids = country)) +
+  scale_x_log10()
+
+p <- ggplotly(p)
+
+p
+```
+
+```{r plotly3, warning=FALSE, echo=FALSE, message=FALSE, out.width = '100%', fig.align="center", fig.cap = "Contoh hasil konversi ggplot ke plotly dan animasi"}
+knitr::include_graphics("images/newplot(2).png")
+```
+
+Animasi dalam gambar \@ref(fig:plotly3) menunjukkan bahwa semakin tinggi GDP, semakin tinggi pula harapan hidup. Hal tersebut dapat dilihat dengan jelas karena point-pointnya bergerak menuju bagian kanan atas plot. Dengan kata lain, ada hubungan positif antara variabel `gdpPercap` dengan `lifeExp`. Plot tersebut diproduksi sama persis dengan cara membuat plot dengan `ggplot2`. Skripnya sengaja tidak ditunjukkan untuk latihan. 
+
+> Lengkapi skrip berikut untuk menghasilkan plot seperti gambar \@ref(fig:plotly3)
+
+```{r, eval=FALSE}
+library(plotly)
+library(gapminder)
+
+plotly_tes1 <- ggplot(data = ..., aes(x = ..., y = ..., color = ...)) +
+  geom_point(aes(size = pop, frame = year, ids = country)) +
+  scale_x_log10()
+
+plotly_tes1 <- ggplotly(...)
+
+plotly_tes1
+```
+
+#### Menggunakan `plot_ly()`
+
+Tidak seperti `ggplotly()` harus membuat objek ggplot2 terlebih dahulu, `plot_ly()` berfungsi lebih langsung. Bagi yang sudah terbiasa dengan `ggplot` mungkin hal tersebut akan memudahkan, namun bagi yang belum terbiasa dan ingin melakukan eksplorasi data `plot_ly()` sangat disarankan karena lebih fleksibel dan data tidak harus berupa *dataframe*. Namun walaupun *dataframe* tidak diharuskan, penggunaannya tetap disarankan dalam membuat plot dengan *plotly*. 
+Untuk mempelajari penggunaan `plot_ly()`, kita akan menggunakan data yang memuat informasi tentang pasar perumahan, yaitu `txhousing` ^[Information about the housing market in Texas provided by the TAMU real estate center, http://recenter.tamu.edu/]. Data ini terdiri dari 9 kolom dan 8602 baris. Seperti biasa, untuk mengetahui datanya lebih jauh bisa menggunakan fungsi `?txhousing`. Sebelum melanjutkan ke pembuatan plot, sebaiknya kita ketahui jenis data yang ada dalam masing-masing kolom dengan menggunakan fungsi `glimpse()` dari `tidyverse`. 
+
+```{r, message=FALSE, warning=FALSE}
+library(plotly)
+library(dplyr)
+
+data_x <- txhousing
+glimpse(data_x)
+```
+
+- Langkah 1: Membuat objek `plot_ly`
+
+Dengan menggunakan fungsi `plot_ly()` kita bisa membuat objek plotly secara langsung dengan memetakan data, sumbu x dan y sama seperti dalam pembuat plot dengan `ggplot2`. Contohnya adalah sebagai berikut. 
+
+```{r}
+data_x <- group_by(data_x, city)
+# initiate a plotly object with date on x and median on y
+tes_plot <- plot_ly(data_x, x = ~date, y = ~median)
+tes_plot
+```
+
+Skrip di atas digunakan untuk membuat objek `plot_ly` dengan nama `tes_plot`. Untuk mengecek data yang diplot, selanjutnya kita menggunakan fungsi `plotly_data()` dari `plot_ly`. `tes_plot` akan digunakan untuk memvisualisasikan kolom `date` dan `median` dari data `tes_plot`. Namun di sini kita belum memastikan akan diplot dengan geom apa. Oleh karena itu selanjutnya kita perlu menentukan `geom_*` jika dengan `ggplot2`. Di `plot_ly` hal tersebut sama dengan fungsi `add_*`. Misalnya, kita ingin membuat line chart untuk setiap kota di Texas dengan penekanan pada **Houston**, maka skripnya adalah sebagai berikut. 
+
+```{r,eval=FALSE, warning=FALSE, message=FALSE, out.width = '100%', fig.align="center", fig.cap = "Line chart untuk setiap kota dalam data"}
+add_lines(
+  # plots one line per city since p knows city is a grouping variable
+  add_lines(tes_plot, alpha = 0.2, name = "Texan Cities", hoverinfo = "none"),
+  name = "Houston", data = filter(data_x, city == "Houston")
+  )
+```
+
+```{r plotly4, echo=FALSE,warning=FALSE, message=FALSE, out.width = '100%', fig.align="center", fig.cap = "Line chart untuk setiap kota dalam data"}
+knitr::include_graphics("images/newplot(3).png")
+```
+
+Di dalam skrip di atas, pertama kita menambah line chart untuk semua (warna biru). Sementara `add_lines()` kedua digunakan untuk membuat *highlight* khusus untuk data dari kota Houston. Jika diperhatikan dalam kodenya, di sini kita kembali menyatakan data, dan memfilter data khusus untuk kota Houston (`city == "Houston"`). Hal yang harus jadi pedoman di sini adalah **Fungsi `plot_ly` mengambil objek `plotly` sebagai inputnya**. Oleh karena itu, setiap kali ingin membuat plot dengan plotly hal pertama yang harus dilakukan adalah membuatnya menjadi objek plotly (menggunakan fungsi `plot_ly()`), kemudian ditambahkan dengan `add_*()` yang akan membuat plot yang sudah dimodifikasi.
+
+Karena fungsi `plot_ly()` mengambil objek plotly sebagai data, kita juga menggunakan fungsi pipeline seperti yang sudah dipelajari pada bagian \@ref(pre-process) yang ditandai dengan tanda `%>%`. 
+
+```{r,eval=FALSE, warning=FALSE, message=FALSE, out.width = '100%', fig.align="center", fig.cap = "Line chart untuk setiap kota dalam data"}
+objek_plot1 <- data_x %>%
+  group_by(city) %>%
+  plot_ly(x = ~date, y = ~median) %>%
+  add_lines(alpha = 0.2, name = "Texan Cities", hoverinfo = "none")
+
+objek_plot1 %>%
+  filter(city == "Houston") %>%
+  add_lines(name = "Houston")
+```
+```{r plotly5, echo=FALSE,warning=FALSE, message=FALSE, out.width = '100%', fig.align="center", fig.cap = "Line chart untuk setiap kota dalam data"}
+knitr::include_graphics("images/newplot(4).png")
+```
+
+Skrip di atas menghasilkan gambar yang sama dengan gambar \@ref(fig:plotly4), tapi dilakukan dengan skrip yang lebih mudah dibaca. Kelemahannya, di sini adalah kita tidak bisa menambah line lain untuk meng-*highlight*, misalnya kota San Antonio dan Abilene. Maka, untuk mengatasi keterbatasan tersebut kita bisa menggunakan fungsi `add_fun()` seperti contoh berikut. 
+
+```{r,eval=FALSE, warning=FALSE, message=FALSE, out.width = '100%', fig.align="center", fig.cap = "Line chart untuk setiap kota dalam data"}
+objek_plot1 %>%
+  add_fun(function(plot) {
+    plot %>% filter(city == "Houston") %>% 
+      add_lines(name = "Houston")
+  }) %>%
+  add_fun(function(plot) {
+    plot %>% filter(city == "San Antonio") %>% 
+      add_lines(name = "San Antonio")
+  }) %>%
+  add_fun(function(plot) {
+    plot %>% filter(city == "Abilene") %>% 
+      add_lines(name = "Abilene")
+  })
+```
+
+```{r plotly6, echo=FALSE,warning=FALSE, message=FALSE, out.width = '100%', fig.align="center", fig.cap = "Line chart untuk setiap kota dalam data"}
+knitr::include_graphics("images/newplot(5).png")
+```
+
+Di dalam gambar \@ref(fig:plotly6) kita memberi penekanan pada tiga kota dengan menggunakan fungsi `add_fun()` yang mengambil argumen `plot` dari objek `objek_plot1`. Highlight diambil dengan menempatkan data yang difilter dari `objek_plot1`. Sampai di sini kita telah mencoba untuk menempatkan dua variabel dalam satu plot dengan plot_ly dalam bentuk line. Lalu bagaimana untuk membuat plot dalam bentuk lain. Misalnya bar chart. Untuk mengetahui jenis `add_*()` bisa menggunakan fungsi help berikut:
+
+```{r, eval=FALSE}
+?add_trace
+```
+
+> Cobalah jalankan beberapa baris kode berikut dan lihat visualisasi yang dihasilkan. Lalu cobalah menggunakan data lain untuk membuat visualisasi. 
+
+```{r, eval=FALSE}
+objek_plot2 <- plot_ly(data = data_x)
+
+objek_plot2 %>%
+  group_by(city) %>%
+  add_bars(x = ~city, y = ~sales, inherit = TRUE) 
+
+objek_plot2 %>%
+  group_by(city) %>%
+  add_boxplot(x = ~city, y = ~sales, inherit = TRUE)
+```
+
+#### Rangkuman dan Informasi lebih lanjut
+
+Visualisasi data merupakan bagian tak terpisahkan dari pengolahan data. Bahkan visualisasi juga dapat menentukan langkah-langkah penting berikutnya dalam pengolahan maupun nilai sebuah data. Tapi mempelajari teknik saja tidak akan menambah keterampilan. Hanya dengan percobaan dan latihan terus-meneruslah yang akan membangun keterampilan. Materi di sini tentu jauh dari sempurna dan hanya merupakan sebagian kecil. Walaupun demikian, setidaknya kita sudah mengenal dua paket yang dapat digunakan dengan mudah, yaitu `ggplot2` [@ggplot2pkg] dan `plotly` [@plotlypkg]. 
+
+Untuk menghasilkan visualisasi yang baik, terlebih dahulu kita harus mengetahui data dan tujuannya. Setalah itu, baik menggunakan `ggplot2` maupun `plotly` kita perlu mengetahui geometry-nya (`geom_*()` atau `add_*()`). Untuk itu, beberapa tautan berikut bisa dijadikan rujukan saat menghadapi data dan masalah visualisasi sesungguhnya. 
+
+1. https://plot.ly/ggplot2/ - website `ggplotly`
+2. https://plot.ly/r/ - website `ploty` untuk R
+3. http://www.ggplot2-exts.org/gallery/ - Galeri plot ggplot2
+
+
+### RMarkdown {#report_123}
+
+RMarkdown adalah salah satu fasilitas yang sayang untuk tidak dimanfaatkan dalam penggunaan R sebagai salah satu alat untuk mengolah data. Menggunakan RMarkdown kita dapat fokus hanya menggunakan satu alat saja. Dengan kata lain, pada saat yang bersamaan kita mengolah data dengan R, kita bisa juga menggunakan Rmarkdown untuk membuat laporannya. 
+
+Selain itu, Rmarkdown juga dapat digunakan untuk membuat laporan yang lebih interaktif jika dibutuhkan. Berikut adalah cara menggunakannya. 
+
+1. Pada menu `file` pilih `new file`, lalu `R Markdown`
+2. Buatlah judul sesuai dengan yang diinginkan atau dibutuhkan seperti tampak pada gambar berikut. 
+
+```{r markdown1, echo=FALSE,warning=FALSE, message=FALSE, out.width = '100%', fig.align="center"}
+knitr::include_graphics("images/markdown1.png")
+```
+
+3. Pilihlah format output yang diinginkan. Di sana kita bisa memilih html, pdf, atau word. Sebagai catatan, untuk export output ke pdf kita perlu menginstal latex yang bisa di dapatkan di sini (https://latex.org/forum/app.php/page/download). Lalu klik tombol `OK`. 
+
+4. Tiga langkah di atas akan menghasilkan sebuah file baru pada bagian source atau bagian 1. Kurang lebih gambarnya adalah sebagai berikut. 
+
+```{r mark1, echo=FALSE,warning=FALSE, message=FALSE, out.width = '100%', fig.align="center", fig.cap="Bagian dokumen Rmarkdown"}
+knitr::include_graphics("images/makrdown2.png")
+```
+
+Dengan empat langkah tersebut kita sebenarnya sudah bisa membuat dokumen Rmarkdown. Namun ada beberapa bagian yang juga perlu diperhatikan seperti dapat dilihat pada gambar \@ref(fig:mark1). 
+
+#### Bagian Header
+
+Bagian header Rmarkdown berfungsi atau juga bisa disebut `yaml` untuk mengatur output dari file. Bagian header ditunjukkan dengan angka satu pada \@ref(fig:mark1). Sebagaimana dapat dilihat, pada bagian ini terdapat title atau judul, dan beberapa bagian lainnya. Hal terpenting pada bagian 1 di sini adalah `output: html_document`. 
+
+Artinya, file RMarkdown yang kita buat di atur untuk menghasilkan dokumen html. Jika ingin menghasilkan dokumen dalam format lain, kita bisa menambahkannya pada bagian output. Selain itu, kita bisa menggunakan fungsi `knit` pada bagian atas. Di mana pada fungsi tersebut kita bisa memilih output yang diinginkan. 
+
+#### Menulis laporan
+
+Untuk membuat laporan dengan RMarkdown pada prinsipnya sama seperti menulis dengan Microsoft Office atau perangkat lunak lainnya. Hal ini bisa dilihat pada bagian 2, di mana di sana ada tanda pagar `#` dan tulisan `This is an RMarkdown` document dan seterusnya. 
+
+Tanda pagar di sini berfungsi sebagai heading atau judul. Di mana tanda pagar 1 menunjukkan heading pertama. Sementara tanda pagar dua `##` menunjukkan bahwa kalimat dan bagian yang ada setelahnya merupakan subjudul dari judul pertama. 
+
+#### Menulis kode/skrip
+
+Penggunaan RMakrdown juga memungkinkan kita untuk menulis skrip dalam dokumen laporan. Contohnya bisa dilihat pada bagian ke tiga dari gambar \@ref(fig:mark1). Skrip dalam RMarkdown di tandai dengan adanya tanda `*```*` di awal dan bagian akhir. Artinya segala hal yang ada di antara dua tanda tesebut akan dibaca sebagai kode. Atau perlakukannya sama ketika kita menulis skrip dengan file `.R`. Untuk menjalankan skrip pada satu bagian kode atau juga bisa disebut `chunk` bisa menggunakan tombol play pada bagian chunk. 
+
+Sebagai penutup, dengan menggunakan RMarkdown kita bisa: Membuat analisis, menyertakan catatan, menampilkan plot, dan menghasilkan dokumen yang bisa dimanfaatkan sebagai laporan yang interaktif dalam format html, atau statis dalam format pdf atau word/office. Untuk mempelajarinya lebih lanjut, bisa menuju pada laman berikut: https://rmarkdown.rstudio.com/lesson-1.html. 
+
+## Exploratory Data Analysis 1
+
+Pada bagian ini, kita akan belajar menggunakan metode visualisasi dan transformasi data untuk menyelidiki data yang akan kita analisis dengan cara yang sistematis. Cara ini sering disebut oleh statistikawan sebagai EDA, yang merupakan singkatan dari *Exploratory Data Analysis*. EDA merupakan metode dengan siklus iteratif sebagai berikut:
+
+1. Membangkitkan pertanyaan seputar data Anda.
+2. Mencari jawaban atas pertanyaan dari langkah 1 sebelumnya dengan menggunakan metode visualisasi, transformasi, dan pemodelan data anda.
+3. Menggunakan pengetahuan dari hasil jawaban langkah 2 untuk mempertajam pertanyaan Anda sebelumnya di langkah 1 atau membangkitkan pertanyaan baru.
+
+EDA bukanlah proses yang formal dengan aturan-aturan tertentu yang ketat dan mengikat. EDA lebih-lebih adalah sebuah "seni". Pada tahap awal proses EDA, Anda diajak untuk secara bebas mengeluarkan dari kepala ide pertanyaan seputar data Anda. Beberapa dari ide pertanyaan ini berhasil mengantarkan pada sebuah pemahaman baru terhadap data Anda, akan tetapi bisa juga berakhir dengan jalan buntu.
+
+EDA merupakan bagian penting dalam setiap proses analisis data, bahkan ketika pertanyaan terhadap data itu sudah disediakan oleh pihak lain sebelumnya, karena Anda selalu harus menyelidiki serta memeriksa kualitas data Anda. *Data cleaning* hanyalah merupakan salah satu dari aplikasi penggunaan EDA: apakah data yang ingin kita analisis memenuhi ekspektasi kita. Untuk melakukan proses pembersihan data (*data cleaning*), Anda menggunakan seluruh tools dalam EDA: visualisasi, transformasi, dan pemodelan data.
+
+Pada bagian ini, kita menggunakan library `dplyr` dan `ggplot2` yang tergabung dalam library `tidyverse` untuk secara interaktif mempertanyakan data Anda, mencari jawabannya lewat visualisasi dan transformasi data, untuk kemudian membangkitkan pertanyaan baru. 
+
+Tujuan utama dalam proses EDA adalah membangun pemahaman tentang data secara gradual. Cara termudah untuk membangun pemahaman tersebut ialah dengan menggunakan pertanyaan sebagai sarana investigasi terhadap data Anda. Ketika Anda bertanya, maka pertanyaan ini akan memusatkan perhatian Anda hanya kepada bagian spesifik dari dataset dan membantu Anda untuk memutuskan grafik, model, atau transformasi apa yang akan digunakan.
+
+Seperti yang telah disebutkan di atas, pada dasarnya EDA adalah sebuah proses kreatif. Dan seperti proses kreatif lainnya, kunci untuk pertanyaan yang berkualitas adalah memproduksi sebanyak mungkin pertanyaan. Sulit untuk membuat pertanyaan yang membuka pikiran di awal proses analisis karena kita belum tahu wawasan apa yang terkandung dalam dataset kita. Di samping itu, setiap pertanyaan yang Anda ajukan akan mengantarkan Anda pada sebuah aspek baru dari data Anda dan melipatgandakan kesempatan Anda untuk mendapatkan sebuah penemuan baru tentang data Anda- yang kemudian mengantarkan Anda untuk menemukan pertanyaan yang memancing rasa ingin tahu yang mendalam. 
+
+Tidak ada aturan tentang jenis pertanyaan seperti apa yang harus diajukan, akan tetapi ada 2 jenis pertanyaan yang selalu berguna ketika kita ingin melakukan eksplorasi data, yakni:
+
+1. Apa jenis variasi yang muncul di dalam variabel- variabel ?
+2. Apa jenis kovariasi yang muncul di antara variabel-variabel ?
+
+Sebelum melangkah lebih lanjut, kita perlu mendefinisikan beberapa istilah yang akan sering kita gunakan nanti:
+
+1. *Variable* : adalah sebuah kualitas, kuantitas, atau sifat tertentu yang dapat diukur.
+2. *Value* : adalah sebuah kondisi tertentu dari sebuah variable saat kita melakukan pengukuran terhadapnya. Nilai dari sebuah variabel dapat berubah dari pengukuran satu ke pengukuran lain. 
+3. *Observation* : adalah sebuah himpunan pengukuran yang dibuat dalam kondisi serupa (biasanya kita membuat seluruh pengukuran dalam observasi ini). Sebuah *observation* akan berisi beberapa *value*, di mana setiap *value* tersebut berhubungan dengan beberapa *variable*. 
+4. *Tabular data* : adalah sebuah kumpulan *value*, yang mana setiap *value* ini berasosiasi dengan *observation*. *Tabular data* disebut *tidy* (rapi) jika setiap *value* di tempatkan pada *cell* yang tepat, kemudian setiap *variable* ditempatkan dalam *column* yang tepat, dan setiap *observation* ditempatkan pada *row* yang tepat pula. 
+
+Akan tetapi, perlu Anda ingat bahwa dalam kasus nyata, data yang kita ingin analisis tidaklah pernah selalu *tidy* atau rapi. Kitalah yang harus merapikan data itu.
+
+Pada contoh EDA kali ini, kita akan menggunakan dataset `diamonds` yang merupakan dataset bawaan dari library `tidyverse`. Untuk itu kita akan memanggil *library* `tidyverse` terlebih dahulu:
+
+```{r, eval=FALSE}
+library(tidyverse)
+```
+
+### Memvisualisasikan Distribusi
+Cara memvisualisasikan distribusi dari sebuah variabel sangat bergantung dari jenis variabel yang ingin divisualisasikan, apakah variabel itu berjenis *categorical* atau *continuous*. Sebuah variabel disebut *categorical* jika variabel tersebut hanya terdiri atas sedikit kemungkinan nilai (*value*). Di R, variabel dengan jenis *categorical* biasanya disimpan sebagai vektor `factor` atau `character`. Untuk memeriksa distribusi dari sebuah variable *categorical*, gunakan diagram batang (*bar chart*): 
+
+```{r, eval=FALSE}
+ggplot(data=diamonds) +
+  geom_bar(mapping = aes(x = cut))
+```
+
+Panjang dari batang yang ditampilkan dalam diagram batang menunjukkan jumlah *observation* yang muncul di setiap *value* x. Anda dapat menghitung *value* ini secara manual dengan menggunakan fungsi `dplyr::count()` :
+
+```{r, eval=FALSE}
+diamonds %>%
+  count(cut)
+```
+
+Sekarang kita beralih ke jenis variabel selanjutnya, yakni *continuous*. Sebuah variabel disebut *continuous* jika variabel tersebut memiliki nilai (*value*) yang tak berhingga. Bilangan angka dan tanggal waktu merupakan dua contoh dari variabel *continuous*. Untuk memeriksa distribusi dari sebuah variabel *continuous*, gunakan diagram histogram:
+
+```{r, eval=FALSE}
+ggplot(data=diamonds) +
+  geom_histogram(mapping = aes(x = carat), binwidth = 0.5)
+```
+
+Anda dapat menghitung *value* dari `carat` ini dengan mengkombinasikan fungsi `dplyr::count()` dan `ggplot2::cut_width()`:
+
+```{r, eval=FALSE}
+diamonds %>%
+  count(cut_width(carat, 0.5))
+```
+
+Sebuah histogram membagi sumbu x  menjadi bin-bin dengan interval yang sama besar kemudian menggunakan tinggi dari setiap batang dalam histogram untuk menampilkan jumlah *observation* yang ada di dalam setiap bin. Pada histogram yang telah kita buat sebelumnya, batang tertinggi ada di `carat` yang memiliki value antara 0,25 sampai dengan 0,75. 
+
+Anda dapat mengatur lebar dari interval bin dengan menggunakan perintah `binwidth`, yang diukur berdasarkan nilai dari variabel x. Ketika bekerja dengan histogram, usahakan untuk mencoba-coba interval `binwidth` yang berbeda karena setiap interval binwidth akan memperlihatkan pola-pola yang berbeda pula. Sebagai contoh, kita mengubah `binwidth` dari histogram sebelumnya dari 0.5 menjadi 0,1, setelah sebelumnya kita menyaring data yang ditampilkan hanya yang memiliki *value* carat kurang dari 3:
+
+```{r, eval=FALSE}
+smaller <- diamonds %>%
+  filter(carat < 3)
+
+ggplot(data=smaller, mapping = aes(x = carat)) +
+  geom_histogram(binwidth = 0.1)
+```
+
+Jika Anda ingin menampilkan banyak histogram dalam satu bidang (*overlay*), gunakan fungsi `geom_freqpoly()`. Fungsi `geom_freqpoly()` berjalan sama seperti `geom_histogram()`, akan tetapi `geom_freqpoly()` menggunakan diagram garis. 
+
+```{r, eval=FALSE}
+ggplot(data = smaller, mapping = aes(x = carat, colour = cut)) +
+  geom_freqpoly(binwidth = 0.1)
+```
+
+### *Value* Khusus
+Pada diagram batang dan histogram, batang tertinggi menunjukkan nilai yang paling banyak muncul di dalam variabel dan batang terpendek menunjukkan nilai yang paling sedikit di dalam variabel. Batang yang tidak memiliki nilai berarti menunjukkan bahwa data dalam rentang nilai tersebut tidak ada dalam data Anda. Untuk mengubah informasi ini menjadi pertanyaan yang bermanfaat, gunakan pertanyaan-pertanyaan di bawah ini untuk mencari hal apa pun yang tidak terduga dari data Anda:
+
+1. Nilai manakah yang paling sering muncul? Mengapa?
+2. Nilai manakah yang paling jarang muncul? Mengapa? Apakah sesuai dengan dugaan Anda?
+3. Dapatkah Anda melihat pola yang tidak biasa atau unik? Adakah jawaban yang dapat menjelaskan hal tersebut?
+
+Sebagai contoh, histogram di bawah ini menimbulkan pertanyaan-pertanyaan menarik seputar data `diamonds`:
+
+```{r, eval=FALSE}
+ggplot(data = smaller, mapping = aes(x = carat)) +
+  geom_histogram(binwidth = 0.01)
+```
+
+1. Mengapa lebih banyak berlian dengan nilai carat penuh daripada carat dengan nilai pecahan?
+2. Mengapa lebih banyak berlian di agak ke kanan setiap puncak daripada agak ke kiri dari puncak? 
+3. Mengapa tidak ada berlian dengan nilai carat lebih dari 3?
+
+Secara umum, klaster dari nilai-nilai yang sama memberi kesan bahwa ada subkelompok di dalam data kita. Untuk memahami subkelompok ini, ajukan pertanyaan-pertanyaan berikut:
+
+1. Bagaimana sebuah observasi (*observation*) di dalam masing-masing klaster serupa satu sama lain?
+2. Bagaimana sebuah observasi di klaster yang terpisah berbeda antara satu dengan yang lain?
+3. Bagaimana Anda dapat menjelaskan atau mendeskripsikan klaster tersebut?
+4. Mengapa boleh jadi kemunculan klaster bisa menyesatkan?
+
+Sebagai contoh, kita akan mencoba menggunakan dataset bawaan R yang menunjukkan durasi (dalam menit) 272 erupsi dari *Old Faithful Geyser in Yellowstone National Park*. Lamanya erupsi tampaknya terklaster dalam dua kelompok: erupsi pendek (durasi sekitar dua menit) dengan erupsi panjang (durasi sekitar 4-5 menit).
+
+```{r, eval=FALSE}
+ggplot(data = faithful, mapping = aes(x = eruptions)) + 
+  geom_histogram(binwidth = 0.25)
+```
+
+Pertanyaan-pertanyaan sebelumnya tadi akan meminta Anda untuk menyelidiki hubungan di antara variabel-variabel. Sebagai contoh, untuk melihat apakah nilai satu salah satu variabel dapat menjelaskan perilaku dari variabel lain. 

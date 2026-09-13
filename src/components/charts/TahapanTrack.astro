@@ -1,0 +1,160 @@
+---
+/**
+ * TahapanTrack — tahap sakramen inisiasi sebagai lintasan progres. Dipakai di
+ * adegan 3.1.
+ *
+ * Menggantikan corong. Corong menyiratkan bahwa yang belum menerima Krisma
+ * adalah bagian dari penerima Komuni Pertama, padahal sensus mencatat setiap
+ * tahap atas seluruh umat terdaftar dan tidak menyediakan tabulasi silang antar
+ * tahap. Di sini setiap tahap punya lintasannya sendiri pada penyebut yang sama:
+ * sudah, belum, dan belum ada catatan.
+ */
+import { n, p } from "../../lib/format";
+import { css, kontainer, tip } from "../../lib/viz";
+
+interface Tahap {
+  label: string;
+  sudah: number;
+  belum: number;
+  tidakTercatat: number;
+}
+
+interface Props {
+  tahap: Tahap[];
+  penyebut: number;
+  penyebutLabel: string;
+  caption: string;
+  label: string;
+  catatan?: string;
+}
+
+const { tahap, penyebut, penyebutLabel, caption, label, catatan } = Astro.props;
+---
+
+<figure class="figur">
+  <figcaption>{caption}</figcaption>
+
+  <ul class="legenda" role="list">
+    <li class="legenda__item"><span class="tahap__sw tahap__seg--sudah" aria-hidden="true"></span>sudah menerima</li>
+    <li class="legenda__item"><span class="tahap__sw tahap__seg--belum" aria-hidden="true"></span>tercatat belum</li>
+    <li class="legenda__item"><span class="tahap__sw isi-celah" aria-hidden="true"></span>belum ada catatan</li>
+  </ul>
+
+  <ol class="tahap viz" {...kontainer(label)}>
+    {
+      tahap.map((t, i) => {
+        const jumlah = t.sudah + t.belum + t.tidakTercatat || 1;
+        const segmen = [
+          { kelas: "tahap__seg--sudah", n: t.sudah, judul: `${t.label}: sudah menerima`, seri: "base" },
+          { kelas: "tahap__seg--belum", n: t.belum, judul: `${t.label}: tercatat belum menerima`, seri: "muted" },
+          { kelas: "isi-celah", n: t.tidakTercatat, judul: `${t.label}: belum ada catatan`, seri: "gap" },
+        ].filter((s) => s.n > 0);
+        return (
+          <li class="tahap__baris">
+            <div class="tahap__kepala">
+              <span class="tahap__no">{String(i + 1).padStart(2, "0")}</span>
+              <span class="tahap__nama">{t.label}</span>
+              <span class="tahap__pct">{p((100 * t.sudah) / penyebut)}</span>
+            </div>
+            <div class="tahap__jalur">
+              {segmen.map((s) => (
+                <span
+                  class:list={["tahap__seg", s.kelas]}
+                  style={`width:${css((100 * s.n) / jumlah)}`}
+                  data-seri={s.seri}
+                  {...tip({
+                    judul: s.judul,
+                    nilai: `${n(s.n)} jiwa`,
+                    baris: [`${p((100 * s.n) / penyebut)} ${penyebutLabel}`],
+                  })}
+                />
+              ))}
+            </div>
+            <p class="tahap__ket">
+              sudah {n(t.sudah)} · belum {n(t.belum)} · belum ada catatan {n(t.tidakTercatat)}
+            </p>
+          </li>
+        );
+      })
+    }
+  </ol>
+
+  {catatan && <p class="tahap__catatan">{catatan}</p>}
+
+  <slot />
+</figure>
+
+<style>
+  .tahap {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-5);
+  }
+  .tahap__kepala {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+  }
+  .tahap__no {
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    color: var(--accent);
+  }
+  .tahap__nama {
+    flex: 1;
+    font-size: var(--size-body);
+    font-weight: var(--fw-bold);
+    color: var(--text-strong);
+  }
+  .tahap__pct {
+    font-size: clamp(1.375rem, 3vw, 1.75rem);
+    font-weight: var(--fw-black);
+    letter-spacing: var(--tracking-display);
+    line-height: 1;
+    color: var(--text-strong);
+  }
+  .tahap__jalur {
+    display: flex;
+    gap: 2px;
+    height: 22px;
+  }
+  .tahap__seg {
+    height: 100%;
+    min-width: 3px;
+  }
+  .tahap__seg:first-child {
+    border-radius: 4px 0 0 4px;
+  }
+  .tahap__seg:last-child {
+    border-radius: 0 4px 4px 0;
+  }
+  .tahap__seg:only-child {
+    border-radius: 4px;
+  }
+  .tahap__seg--sudah {
+    background: var(--mark-base);
+  }
+  .tahap__seg--belum {
+    background: var(--mark-muted);
+  }
+  .tahap__sw {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+  }
+  .tahap__ket {
+    margin-top: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    color: var(--text-muted);
+  }
+  .tahap__catatan {
+    margin-top: var(--space-5);
+    font-size: var(--size-caption);
+    color: var(--text-subtle);
+    max-width: var(--measure-prose);
+  }
+</style>

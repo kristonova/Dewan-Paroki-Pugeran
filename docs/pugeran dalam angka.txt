@@ -1,0 +1,20 @@
+(gimana cara deteksi duplicate value di data)
+
+
+1. grafik umur + jenis kelamin - umum (grafik penduduk)
+2 jumlah umat berdasarkan wilayah - umum  (diagram polar)
+3. jumlah KK berdasarkan wilayah - umum (diagram polar)
+4. suku - umum (diagram batang)
+5. hubungan dengan kepala Rumah Tangga - umum
+5. tingkat pendidikan (1. gabungan pendidikan antara katolik+non katolik 2. diagram pie chart perbandingan yg sekolah non katolik dengan yg katolik) - bid. pendidikan)
+4. profesi - bid. ekonomi 
+5. golongan darah - bid.kesehatan (diagram batang)
+6.  status sehat - bid.kesehatan (diagram )
+7. status gereja - bid. gerejawi
+8. status perkawinan - bid. gerejawi
+9. jenis pendidikan (S1 ke atas) - bid. pendidikan
+10. keterlibatan - bid. gerejawi
+11. jabatan sosial - bid. sosial 
+12. waktu baptis - bid. gerejawi
+13. keterlibatan gereja - bid. gerejawi (diagram pie chart)
+14. baptis di pugeran - krisma di pugeran

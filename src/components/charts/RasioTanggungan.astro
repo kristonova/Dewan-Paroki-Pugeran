@@ -1,0 +1,219 @@
+---
+/**
+ * RasioTanggungan — rasio ketergantungan sebagai perbandingan kotak. Dipakai di
+ * adegan 2.2.
+ *
+ * "36,8 per 100" adalah angka yang sulit dirasakan. Di sini 100 kotak usia
+ * produktif berdiri di samping kotak anak dan lansia yang ditanggungnya, pada
+ * satuan yang sama. Kotak tanggungan dibulatkan ke kotak utuh; angka rasio
+ * persisnya tertulis di atas dan di legenda.
+ */
+import type { Row } from "../../lib/data";
+import { d, n, p } from "../../lib/format";
+import { kontainer, tip } from "../../lib/viz";
+
+interface Props {
+  rows: Row[];
+  rasioAnak: number;
+  rasioLansia: number;
+  rasioTotal: number;
+  caption: string;
+  label: string;
+}
+
+const { rows, rasioAnak, rasioLansia, rasioTotal, caption, label } = Astro.props;
+
+const cari = (awal: string) => rows.find((r) => r.label.startsWith(awal));
+const anak = cari("0–14");
+const produktif = cari("15–64");
+const lansia = cari("65");
+const kotakAnak = Math.round(rasioAnak);
+const kotakLansia = Math.round(rasioLansia);
+---
+
+<figure class="figur">
+  <figcaption>{caption}</figcaption>
+
+  <div class="rasio viz" {...kontainer(label)}>
+    <p class="rasio__kepala">
+      <span class="rasio__angka">{d(rasioTotal, 1)}</span>
+      <span class="rasio__ket">jiwa usia nonproduktif untuk setiap <b>100 jiwa usia produktif</b></span>
+    </p>
+
+    <div class="rasio__bidang">
+      <div class="rasio__sisi">
+        <div class="rasio__grid" aria-hidden="true">
+          {Array.from({ length: 100 }, () => <i class="k k--produktif" data-g="produktif" />)}
+        </div>
+        <p class="rasio__cap">100 jiwa usia produktif</p>
+      </div>
+
+      <div class="rasio__panah" aria-hidden="true">
+        <span>menanggung</span>
+      </div>
+
+      <div class="rasio__sisi">
+        <div class="rasio__grid" aria-hidden="true">
+          {Array.from({ length: kotakAnak }, () => <i class="k k--anak" data-g="anak" data-kat="3" />)}
+          {Array.from({ length: kotakLansia }, () => <i class="k k--lansia" data-g="lansia" data-kat="4" />)}
+        </div>
+        <p class="rasio__cap">{d(rasioAnak, 1)} anak + {d(rasioLansia, 1)} lansia</p>
+      </div>
+    </div>
+
+    <ul class="rasio__legenda" role="list">
+      <li
+        {...tip({
+          judul: "Usia produktif, 15–64 tahun",
+          nilai: `${n(produktif?.n)} jiwa`,
+          grup: "produktif",
+          warna: "var(--mark-muted)",
+          baris: [produktif?.pct != null && `${p(produktif.pct)} dari umat`, "digambar sebagai 100 kotak pembanding"],
+        })}
+      >
+        <i class="k k--produktif" aria-hidden="true"></i>
+        <span>Usia produktif 15–64 tahun</span>
+        <b>{n(produktif?.n)}</b>
+      </li>
+      <li
+        {...tip({
+          judul: "Anak, 0–14 tahun",
+          nilai: `${d(rasioAnak, 1)} per 100 usia produktif`,
+          grup: "anak",
+          warna: "var(--kat-3)",
+          baris: [anak?.pct != null && `${n(anak.n)} jiwa · ${p(anak.pct)} dari umat`],
+        })}
+      >
+        <i class="k k--anak" aria-hidden="true"></i>
+        <span>Anak 0–14 tahun</span>
+        <b>{n(anak?.n)}</b>
+      </li>
+      <li
+        {...tip({
+          judul: "Lansia, 65 tahun ke atas",
+          nilai: `${d(rasioLansia, 1)} per 100 usia produktif`,
+          grup: "lansia",
+          warna: "var(--kat-4)",
+          baris: [lansia?.pct != null && `${n(lansia.n)} jiwa · ${p(lansia.pct)} dari umat`],
+        })}
+      >
+        <i class="k k--lansia" aria-hidden="true"></i>
+        <span>Lansia 65 tahun ke atas</span>
+        <b>{n(lansia?.n)}</b>
+      </li>
+    </ul>
+  </div>
+
+  <slot />
+</figure>
+
+<style>
+  .rasio__kepala {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-4);
+    margin: 0 0 var(--space-6);
+  }
+  .rasio__angka {
+    font-size: clamp(2.5rem, 6vw, 3.25rem);
+    font-weight: var(--fw-black);
+    letter-spacing: var(--tracking-display);
+    line-height: var(--lh-tight);
+    color: var(--accent);
+  }
+  .rasio__ket {
+    max-width: 26ch;
+    font-size: var(--size-body);
+    color: var(--text-body);
+  }
+  .rasio__ket b {
+    color: var(--text-strong);
+  }
+  .rasio__bidang {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--space-5) var(--space-6);
+  }
+  .rasio__grid {
+    display: grid;
+    grid-template-columns: repeat(10, 14px);
+    gap: 3px;
+  }
+  .k {
+    display: block;
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+  }
+  .k--produktif {
+    background: var(--mark-muted);
+  }
+  .k--anak {
+    background: var(--kat-3);
+  }
+  .k--lansia {
+    background: var(--kat-4);
+  }
+  .rasio__cap {
+    margin-top: var(--space-3);
+    font-size: var(--size-caption);
+    color: var(--text-muted);
+  }
+  .rasio__panah {
+    align-self: center;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  .rasio__panah::after {
+    content: "";
+    width: 36px;
+    height: 1px;
+    background: var(--text-subtle);
+  }
+  .rasio__legenda {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    margin: var(--space-6) 0 0;
+    padding: var(--space-4) 0 0;
+    border-top: 1px solid var(--border-hairline);
+    font-size: var(--size-caption);
+  }
+  .rasio__legenda li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--text-body);
+  }
+  .rasio__legenda .k {
+    width: 10px;
+    height: 10px;
+  }
+  .rasio__legenda b {
+    font-family: var(--font-mono);
+    font-weight: var(--fw-medium);
+    color: var(--text-strong);
+  }
+  @media (max-width: 600px) {
+    .rasio__panah {
+      width: 100%;
+    }
+    .rasio__grid {
+      grid-template-columns: repeat(10, 12px);
+      gap: 2.5px;
+    }
+    .rasio__grid .k {
+      width: 12px;
+      height: 12px;
+    }
+  }
+</style>

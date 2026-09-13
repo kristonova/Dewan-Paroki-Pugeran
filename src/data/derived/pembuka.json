@@ -1,0 +1,37 @@
+{
+  "0.0": {
+    "id": "0.0",
+    "penyebut": 12614,
+    "rows": [
+      {
+        "label": "jiwa",
+        "n": 12614,
+        "pct": null,
+        "disamarkan": false
+      },
+      {
+        "label": "keluarga",
+        "n": 4403,
+        "pct": null,
+        "disamarkan": false
+      },
+      {
+        "label": "lingkungan",
+        "n": 88,
+        "pct": null,
+        "disamarkan": false
+      },
+      {
+        "label": "wilayah",
+        "n": 19,
+        "pct": null,
+        "disamarkan": false
+      }
+    ],
+    "sumber": {
+      "berkas": "umat.dbf, lingkung.dbf, stasi.dbf",
+      "kolom": "NP, LINGKUNGAN, WILAYAH",
+      "penyebut": "seluruh baris terdaftar"
+    }
+  }
+}

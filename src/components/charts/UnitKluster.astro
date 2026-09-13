@@ -1,0 +1,130 @@
+---
+/**
+ * UnitKluster — satu titik satu jiwa, dikelompokkan per kategori. Dipakai di
+ * adegan 5.1 (catatan kesehatan khusus).
+ *
+ * Untuk jumlah yang kecil dan menyangkut orang, hitungan satu per satu lebih
+ * jujur daripada batang: 72 titik adalah 72 orang. Tidak ada titik yang dapat
+ * ditelusuri ke individu — urutannya tidak bermakna dan tidak ada label per
+ * titik. Satu kategori yang dibicarakan tafsir disorot merah.
+ */
+import type { Row } from "../../lib/data";
+import { n, p } from "../../lib/format";
+import { kontainer, tip } from "../../lib/viz";
+
+interface Props {
+  rows: Row[];
+  caption: string;
+  label: string;
+  sorot?: string;
+  penyebutLabel: string;
+  umatTotal: number;
+}
+
+const { rows, caption, label, sorot, penyebutLabel, umatTotal } = Astro.props;
+---
+
+<figure class="figur">
+  <figcaption>{caption}</figcaption>
+
+  <p class="kluster__kunci"><span class="kluster__contoh" aria-hidden="true"></span> = 1 jiwa</p>
+
+  <div class="kluster viz" {...kontainer(label)}>
+    {
+      rows.map((r) => {
+        const disorot = r.label === sorot;
+        return (
+          <div
+            class:list={["kluster__kartu", disorot && "kluster__kartu--sorot"]}
+            {...tip({
+              judul: r.label,
+              nilai: r.n === null ? "disamarkan" : `${n(r.n)} jiwa`,
+              warna: disorot ? "var(--mark-highlight)" : "var(--mark-base)",
+              baris: [
+                r.pct !== null && `${p(r.pct)} ${penyebutLabel}`,
+                r.n !== null && `${p((100 * r.n) / umatTotal, 2)} dari ${n(umatTotal)} umat`,
+              ],
+            })}
+          >
+            <p class="kluster__kepala">
+              <span class="kluster__n">{n(r.n)}</span>
+              <span class="kluster__nama">{r.label}</span>
+            </p>
+            <div class="kluster__titik" aria-hidden="true">
+              {Array.from({ length: r.n ?? 0 }, () => (
+                <i data-seri={disorot ? "highlight" : "base"} />
+              ))}
+            </div>
+          </div>
+        );
+      })
+    }
+  </div>
+
+  <slot />
+</figure>
+
+<style>
+  .kluster__kunci {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+    font-size: var(--size-caption);
+    color: var(--text-muted);
+  }
+  .kluster__contoh {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--mark-base);
+  }
+  .kluster {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: var(--space-3);
+  }
+  .kluster__kartu {
+    padding: var(--space-3) var(--space-4) var(--space-4);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-md);
+    background: var(--surface-card);
+  }
+  .kluster__kartu--sorot {
+    border-color: color-mix(in oklab, var(--mark-highlight) 45%, var(--border-hairline));
+  }
+  .kluster__kepala {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-3);
+  }
+  .kluster__n {
+    font-size: var(--size-h3);
+    font-weight: var(--fw-black);
+    letter-spacing: var(--tracking-display);
+    color: var(--text-strong);
+  }
+  .kluster__kartu--sorot .kluster__n {
+    color: var(--accent);
+  }
+  .kluster__nama {
+    font-size: var(--size-body-sm);
+    color: var(--text-body);
+    line-height: 1.3;
+  }
+  .kluster__titik {
+    display: grid;
+    grid-template-columns: repeat(12, 7px);
+    gap: 3px;
+  }
+  .kluster__titik i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--mark-base);
+  }
+  .kluster__kartu--sorot .kluster__titik i {
+    background: var(--mark-highlight);
+  }
+</style>

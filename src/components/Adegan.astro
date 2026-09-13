@@ -1,0 +1,56 @@
+---
+/**
+ * Adegan — struktur tetap yang dipakai seluruh 27 adegan bernomor:
+ * satu pertanyaan → satu visual → satu kalimat tafsir → sumber.
+ *
+ * Judul adegan selalu ditulis sebagai pertanyaan. Kalimat tafsir menyatakan apa
+ * yang terlihat, bukan apa yang seharusnya dilakukan; rekomendasi hanya muncul
+ * di bagian 6.1 (PRD §8.4).
+ */
+import type { Sumber } from "../lib/data";
+import { anchor } from "../lib/format";
+
+interface Props {
+  id: string;
+  pertanyaan: string;
+  tafsir: string;
+  sumber: Sumber;
+}
+
+const { id, pertanyaan, tafsir, sumber } = Astro.props;
+---
+
+<section class="adegan" id={anchor(id)} data-reveal aria-labelledby={`${anchor(id)}-judul`}>
+  <div class="adegan__head">
+    <span class="adegan__no" aria-hidden="true">{id}</span>
+    <h3 id={`${anchor(id)}-judul`}>
+      <span class="sr-only">Adegan {id}. </span>{pertanyaan}
+    </h3>
+  </div>
+
+  <div class="adegan__body">
+    <slot />
+
+    <p class="tafsir" set:html={tafsir} />
+
+    <p class="sumber">
+      <b>Sumber</b> {sumber.berkas} · <b>kolom</b> {sumber.kolom} · <b>penyebut</b> {sumber.penyebut}
+    </p>
+
+    <slot name="tabel" />
+  </div>
+</section>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>

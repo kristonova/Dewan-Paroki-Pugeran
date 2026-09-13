@@ -1,0 +1,142 @@
+---
+/**
+ * UnitKolom — kolom titik, satu titik mewakili sejumlah jiwa. Dipakai di
+ * adegan 2.3 (tiga kelompok usia anak).
+ *
+ * Grafik satuan membuat perbandingan antarkelompok terasa sebagai orang, bukan
+ * sebagai batang. Titik dibulatkan ke titik utuh; angka persisnya selalu tertulis
+ * di bawah kolom, jadi pembulatan tidak pernah menjadi satu-satunya bacaan.
+ */
+import type { Row } from "../../lib/data";
+import { n, p } from "../../lib/format";
+import { kontainer, tip } from "../../lib/viz";
+
+interface Props {
+  rows: Row[];
+  caption: string;
+  label: string;
+  sorot?: string;
+  /** Jumlah jiwa per titik. */
+  perTitik?: number;
+  penyebutLabel: string;
+}
+
+const { rows, caption, label, sorot, perTitik = 10, penyebutLabel } = Astro.props;
+---
+
+<figure class="figur">
+  <figcaption>{caption}</figcaption>
+
+  <p class="unit__kunci">
+    <span class="unit__titik" aria-hidden="true"></span> = {perTitik} jiwa, dibulatkan ke titik utuh
+  </p>
+
+  <div class="unit viz" {...kontainer(label)}>
+    {
+      rows.map((r) => {
+        const jumlah = Math.round((r.n ?? 0) / perTitik);
+        const disorot = r.label === sorot;
+        return (
+          <div
+            class="unit__kolom"
+            {...tip({
+              judul: r.label,
+              nilai: r.n === null ? "disamarkan" : `${n(r.n)} jiwa`,
+              warna: disorot ? "var(--mark-highlight)" : "var(--mark-base)",
+              baris: [r.pct !== null && `${p(r.pct)} ${penyebutLabel}`, `${jumlah} titik`],
+            })}
+          >
+            <div class="unit__tumpuk" aria-hidden="true">
+              {Array.from({ length: jumlah }, () => (
+                <span class:list={["unit__titik", disorot && "unit__titik--sorot"]} data-seri={disorot ? "highlight" : "base"} />
+              ))}
+            </div>
+            <span class:list={["unit__n", disorot && "unit__n--sorot"]}>{n(r.n)}</span>
+            <span class="unit__label">{r.label}</span>
+            <span class="unit__pct">{p(r.pct)}</span>
+          </div>
+        );
+      })
+    }
+  </div>
+
+  <slot />
+</figure>
+
+<style>
+  .unit {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    gap: var(--space-4);
+    padding-top: var(--space-2);
+  }
+  .unit__kunci {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-5);
+    font-size: var(--size-caption);
+    color: var(--text-muted);
+  }
+  .unit__kolom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    padding: var(--space-2);
+    border-radius: var(--radius-sm);
+  }
+  .unit__tumpuk {
+    --t: 11px;
+    display: flex;
+    flex-wrap: wrap-reverse;
+    align-content: flex-start;
+    gap: 3px;
+    width: calc(5 * var(--t) + 4 * 3px);
+    margin-bottom: var(--space-3);
+  }
+  .unit__titik {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--mark-base);
+    flex: none;
+  }
+  .unit__titik--sorot {
+    background: var(--mark-highlight);
+  }
+  .unit__n {
+    font-size: clamp(1.5rem, 3.4vw, 2rem);
+    font-weight: var(--fw-black);
+    line-height: var(--lh-tight);
+    letter-spacing: var(--tracking-display);
+    color: var(--text-strong);
+  }
+  .unit__n--sorot {
+    color: var(--accent);
+  }
+  .unit__label {
+    margin-top: var(--space-1);
+    font-size: var(--size-body-sm);
+    color: var(--text-body);
+    text-align: center;
+  }
+  .unit__pct {
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    color: var(--text-subtle);
+  }
+  @media (max-width: 480px) {
+    .unit__tumpuk {
+      --t: 8px;
+      gap: 2px;
+      width: calc(5 * var(--t) + 4 * 2px);
+    }
+    .unit__tumpuk .unit__titik {
+      width: 8px;
+      height: 8px;
+    }
+  }
+</style>

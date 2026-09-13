@@ -1,0 +1,592 @@
+{
+  "2.1": {
+    "id": "2.1",
+    "penyebut": 12544,
+    "rows": [
+      {
+        "label": "0–4",
+        "laki": {
+          "n": 53,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 66,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": 0,
+          "disamarkan": false
+        }
+      },
+      {
+        "label": "5–9",
+        "laki": {
+          "n": 206,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 206,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": 0,
+          "disamarkan": false
+        }
+      },
+      {
+        "label": "10–14",
+        "laki": {
+          "n": 374,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 369,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": 0,
+          "disamarkan": false
+        }
+      },
+      {
+        "label": "15–19",
+        "laki": {
+          "n": 418,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 384,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": 0,
+          "disamarkan": false
+        }
+      },
+      {
+        "label": "20–24",
+        "laki": {
+          "n": 417,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 405,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": 0,
+          "disamarkan": false
+        }
+      },
+      {
+        "label": "25–29",
+        "laki": {
+          "n": 447,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 439,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": null,
+          "disamarkan": true
+        }
+      },
+      {
+        "label": "30–34",
+        "laki": {
+          "n": 422,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 399,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": 14,
+          "disamarkan": false
+        }
+      },
+      {
+        "label": "35–39",
+        "laki": {
+          "n": 416,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 466,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": 13,
+          "disamarkan": false
+        }
+      },
+      {
+        "label": "40–44",
+        "laki": {
+          "n": 446,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 494,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": 12,
+          "disamarkan": false
+        }
+      },
+      {
+        "label": "45–49",
+        "laki": {
+          "n": 457,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 530,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": 14,
+          "disamarkan": false
+        }
+      },
+      {
+        "label": "50–54",
+        "laki": {
+          "n": 452,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 570,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": 11,
+          "disamarkan": false
+        }
+      },
+      {
+        "label": "55–59",
+        "laki": {
+          "n": 458,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 538,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": 14,
+          "disamarkan": false
+        }
+      },
+      {
+        "label": "60–64",
+        "laki": {
+          "n": 393,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 532,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": 7,
+          "disamarkan": false
+        }
+      },
+      {
+        "label": "65–69",
+        "laki": {
+          "n": 298,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 394,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": 6,
+          "disamarkan": false
+        }
+      },
+      {
+        "label": "70–74",
+        "laki": {
+          "n": 208,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 299,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": null,
+          "disamarkan": true
+        }
+      },
+      {
+        "label": "75–79",
+        "laki": {
+          "n": 193,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 226,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": null,
+          "disamarkan": true
+        }
+      },
+      {
+        "label": "80–84",
+        "laki": {
+          "n": 116,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 140,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": null,
+          "disamarkan": true
+        }
+      },
+      {
+        "label": "85–89",
+        "laki": {
+          "n": 53,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 81,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": 0,
+          "disamarkan": false
+        }
+      },
+      {
+        "label": "90–94",
+        "laki": {
+          "n": 13,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 42,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": null,
+          "disamarkan": true
+        }
+      },
+      {
+        "label": "95+",
+        "laki": {
+          "n": 7,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 20,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": 0,
+          "disamarkan": false
+        }
+      }
+    ],
+    "sumber": {
+      "berkas": "umat.dbf",
+      "kolom": "TGLLAHIR → umur pada 1 Februari 2019, KET1",
+      "penyebut": "12.544 jiwa yang umurnya dapat dihitung"
+    },
+    "median_umur": 43.9,
+    "umur_tidak_dapat_dihitung": 70,
+    "jenkel_tidak_tercatat": 160
+  },
+  "2.2": {
+    "id": "2.2",
+    "penyebut": 12544,
+    "rows": [
+      {
+        "label": "0–14 tahun",
+        "n": 1274,
+        "pct": 10.1,
+        "disamarkan": false
+      },
+      {
+        "label": "15–64 tahun",
+        "n": 9169,
+        "pct": 72.7,
+        "disamarkan": false
+      },
+      {
+        "label": "65 tahun ke atas",
+        "n": 2101,
+        "pct": 16.7,
+        "disamarkan": false
+      }
+    ],
+    "sumber": {
+      "berkas": "umat.dbf",
+      "kolom": "TGLLAHIR → umur pada 1 Februari 2019",
+      "penyebut": "12.544 jiwa yang umurnya dapat dihitung; persentase atas 12.614"
+    },
+    "rasio_ketergantungan": 36.8,
+    "rasio_anak": 13.9,
+    "rasio_lansia": 22.9
+  },
+  "2.3": {
+    "id": "2.3",
+    "penyebut": 1274,
+    "rows": [
+      {
+        "label": "0–4 tahun",
+        "n": 119,
+        "pct": 9.3,
+        "disamarkan": false
+      },
+      {
+        "label": "5–9 tahun",
+        "n": 412,
+        "pct": 32.3,
+        "disamarkan": false
+      },
+      {
+        "label": "10–14 tahun",
+        "n": 743,
+        "pct": 58.3,
+        "disamarkan": false
+      }
+    ],
+    "sumber": {
+      "berkas": "umat.dbf",
+      "kolom": "TGLLAHIR → umur pada 1 Februari 2019",
+      "penyebut": "1.274 jiwa berusia di bawah 15 tahun"
+    },
+    "rasio_balita_terhadap_atasnya": 0.29,
+    "rasio_balita_terhadap_1014": 0.16
+  },
+  "2.4": {
+    "id": "2.4",
+    "penyebut": 12614,
+    "rows": [
+      {
+        "label": "15–29 tahun",
+        "n": 2511,
+        "pct": 19.9,
+        "disamarkan": false
+      }
+    ],
+    "sumber": {
+      "berkas": "umat.dbf",
+      "kolom": "TGLLAHIR → umur pada 1 Februari 2019",
+      "penyebut": "12.614 jiwa terdaftar"
+    },
+    "umur_15_19": 802,
+    "umur_20_24": 822,
+    "umur_25_29": 887
+  },
+  "2.5": {
+    "id": "2.5",
+    "penyebut": 2101,
+    "rows": [
+      {
+        "label": "65–69",
+        "laki": {
+          "n": 298,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 394,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": 6,
+          "disamarkan": false
+        }
+      },
+      {
+        "label": "70–74",
+        "laki": {
+          "n": 208,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 299,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": null,
+          "disamarkan": true
+        }
+      },
+      {
+        "label": "75–79",
+        "laki": {
+          "n": 193,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 226,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": null,
+          "disamarkan": true
+        }
+      },
+      {
+        "label": "80–84",
+        "laki": {
+          "n": 116,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 140,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": null,
+          "disamarkan": true
+        }
+      },
+      {
+        "label": "85–89",
+        "laki": {
+          "n": 53,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 81,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": 0,
+          "disamarkan": false
+        }
+      },
+      {
+        "label": "90–94",
+        "laki": {
+          "n": 13,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 42,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": null,
+          "disamarkan": true
+        }
+      },
+      {
+        "label": "95+",
+        "laki": {
+          "n": 7,
+          "disamarkan": false
+        },
+        "perempuan": {
+          "n": 20,
+          "disamarkan": false
+        },
+        "tidak_tercatat": {
+          "n": 0,
+          "disamarkan": false
+        }
+      }
+    ],
+    "sumber": {
+      "berkas": "umat.dbf",
+      "kolom": "TGLLAHIR → umur pada 1 Februari 2019, KET1",
+      "penyebut": "2.101 jiwa berusia 65 tahun ke atas"
+    },
+    "lansia_65": 2101,
+    "lansia_65_pct": 16.7,
+    "lansia_80": 475,
+    "lansia_75": 895,
+    "band_9094": {
+      "laki": 13,
+      "perempuan": 42
+    }
+  },
+  "2.6": {
+    "id": "2.6",
+    "penyebut": 12614,
+    "rows": [
+      {
+        "label": "Laki-laki",
+        "n": 5852,
+        "pct": 46.4,
+        "disamarkan": false
+      },
+      {
+        "label": "Perempuan",
+        "n": 6602,
+        "pct": 52.3,
+        "disamarkan": false
+      },
+      {
+        "label": "Tidak tercatat",
+        "n": 160,
+        "pct": 1.3,
+        "disamarkan": false
+      }
+    ],
+    "sumber": {
+      "berkas": "umat.dbf",
+      "kolom": "KET1",
+      "penyebut": "12.614 jiwa terdaftar"
+    },
+    "rasio_jenis_kelamin": 88.6,
+    "tidak_tercatat": 160,
+    "per_kelompok_umur": [
+      {
+        "label": "0–14 tahun",
+        "laki": 633,
+        "perempuan": 641,
+        "rasio": 98.8
+      },
+      {
+        "label": "15–29 tahun",
+        "laki": 1282,
+        "perempuan": 1228,
+        "rasio": 104.4
+      },
+      {
+        "label": "30–44 tahun",
+        "laki": 1284,
+        "perempuan": 1359,
+        "rasio": 94.5
+      },
+      {
+        "label": "45–59 tahun",
+        "laki": 1367,
+        "perempuan": 1638,
+        "rasio": 83.5
+      },
+      {
+        "label": "60–74 tahun",
+        "laki": 899,
+        "perempuan": 1225,
+        "rasio": 73.4
+      },
+      {
+        "label": "75 tahun ke atas",
+        "laki": 382,
+        "perempuan": 509,
+        "rasio": 75.0
+      }
+    ]
+  }
+}

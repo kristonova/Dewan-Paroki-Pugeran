@@ -1,0 +1,314 @@
+---
+/**
+ * BubbleScatter — 88 lingkungan pada dua komponen indeks prioritas kunjungan.
+ * Dipakai di adegan 5.2, di atas tabel prioritas.
+ *
+ * Sumbu X: bagian umat berusia 65 tahun ke atas. Sumbu Y: bagian keluarga yang
+ * memerlukan bantuan. Luas titik sebanding jumlah jiwa lingkungan. Satu sumbu
+ * per arah, tidak pernah dua skala. Sepuluh indeks tertinggi disorot merah;
+ * lainnya netral. Warna kelompok tidak dipakai di sini karena sebar menampilkan
+ * semua pasangan sekaligus dan lima warna tidak lolos batas itu — kelompok
+ * dipilih lewat filter, bukan dibaca dari warna.
+ */
+import type { KelompokInfo, LingkunganRow } from "../../lib/data";
+import { kisi, q } from "../../lib/chart";
+import { d, n, p } from "../../lib/format";
+import { kontainer, median, tip } from "../../lib/viz";
+import FilterKelompok from "../FilterKelompok.astro";
+
+interface Props {
+  rows: LingkunganRow[];
+  kelompok: KelompokInfo[];
+  caption: string;
+  label: string;
+  teratas?: number;
+}
+
+const { rows, kelompok, caption, label, teratas = 10 } = Astro.props;
+
+const xs = rows.map((r) => r.p_lansia);
+const ys = rows.map((r) => r.p_bantuan);
+const gx = kisi(Math.max(...xs));
+const gy = kisi(Math.max(...ys));
+const ax = gx[gx.length - 1] ?? 1;
+const ay = gy[gy.length - 1] ?? 1;
+const mx = median(xs);
+const my = median(ys);
+const maksJiwa = Math.max(...rows.map((r) => r.jiwa));
+
+const LEBAR = { W: 900, H: 500, L: 62, R: 24, T: 24, B: 58, rMaks: 17, rHit: 9, label: 3, kelas: "sebar--lebar" };
+const SEMPIT = { W: 340, H: 400, L: 46, R: 12, T: 22, B: 52, rMaks: 10, rHit: 8, label: 1, kelas: "sebar--sempit" };
+type Geo = typeof LEBAR;
+
+const X = (g: Geo, v: number) => q(g.L + (v / ax) * (g.W - g.L - g.R));
+const Y = (g: Geo, v: number) => q(g.H - g.B - (v / ay) * (g.H - g.T - g.B));
+const R = (g: Geo, jiwa: number) => q(Math.max(2.5, Math.sqrt(jiwa / maksJiwa) * g.rMaks));
+
+const disorot = (r: LingkunganRow) => r.peringkat <= teratas;
+// Gambar: netral dulu, lalu yang disorot; yang besar di bawah yang kecil.
+const urutGambar = [...rows].sort(
+  (a, b) => Number(disorot(a)) - Number(disorot(b)) || b.jiwa - a.jiwa,
+);
+// Lapisan sentuh dan urutan keyboard: dari peringkat pertama.
+const urutPeringkat = [...rows].sort((a, b) => a.peringkat - b.peringkat);
+---
+
+<figure class="figur">
+  <figcaption>{caption}</figcaption>
+
+  <FilterKelompok kelompok={kelompok} />
+
+  <ul class="sebar-legenda" role="list">
+    <li><span class="sebar-sw sebar-sw--sorot" aria-hidden="true"></span>{teratas} indeks tertinggi</li>
+    <li><span class="sebar-sw sebar-sw--dasar" aria-hidden="true"></span>lingkungan lain</li>
+    <li>
+      <span class="sebar-ukuran" aria-hidden="true"><i></i><i></i></span>luas titik sebanding jumlah jiwa
+    </li>
+  </ul>
+
+  <div class="viz" {...kontainer(label)}>
+    {
+      [LEBAR, SEMPIT].map((g) => (
+        <svg class:list={["sebar", g.kelas]} viewBox={`0 0 ${g.W} ${g.H}`} aria-hidden="true">
+          <rect class="kuadran" x={X(g, mx)} y={g.T} width={q(g.W - g.R - X(g, mx))} height={q(Y(g, my) - g.T)} />
+
+          <g class="grid">
+            {gx.map((v) => (
+              <>
+                <line x1={X(g, v)} y1={g.T} x2={X(g, v)} y2={g.H - g.B} />
+                <text class="tick" x={X(g, v)} y={g.H - g.B + 17} text-anchor="middle">{d(v, 0)}%</text>
+              </>
+            ))}
+            {gy.map((v) => (
+              <>
+                <line x1={g.L} y1={Y(g, v)} x2={g.W - g.R} y2={Y(g, v)} />
+                <text class="tick" x={g.L - 8} y={q(Y(g, v) + 4)} text-anchor="end">{d(v, 0)}%</text>
+              </>
+            ))}
+          </g>
+
+          <line class="median" x1={X(g, mx)} y1={g.T} x2={X(g, mx)} y2={g.H - g.B} />
+          <line class="median" x1={g.L} y1={Y(g, my)} x2={g.W - g.R} y2={Y(g, my)} />
+          <text class="median-l" x={q(X(g, mx) + 5)} y={g.H - g.B - 6}>median {p(mx)}</text>
+          <text class="median-l" x={g.L + 6} y={q(Y(g, my) - 6)}>median {p(my)}</text>
+          {g.label > 1 && (
+            <text class="kuadran-l" x={g.W - g.R - 8} y={g.T + 16} text-anchor="end">
+              di atas median pada kedua ukuran
+            </text>
+          )}
+
+          <text class="judul-sumbu" x={q((g.L + g.W - g.R) / 2)} y={g.H - 12} text-anchor="middle">
+            umat berusia 65 tahun ke atas (% jiwa lingkungan)
+          </text>
+          <text
+            class="judul-sumbu"
+            transform={`translate(${g.label > 1 ? 16 : 12} ${q((g.T + g.H - g.B) / 2)}) rotate(-90)`}
+            text-anchor="middle"
+          >
+            keluarga memerlukan bantuan (%)
+          </text>
+
+          <g>
+            {urutGambar.map((r) => (
+              <circle
+                class:list={["gel", disorot(r) && "gel--sorot"]}
+                cx={X(g, r.p_lansia)}
+                cy={Y(g, r.p_bantuan)}
+                r={R(g, r.jiwa)}
+                data-g={r.label}
+                data-k={r.kelompok}
+                data-seri={disorot(r) ? "highlight" : "base"}
+              />
+            ))}
+          </g>
+
+          <g>
+            {urutPeringkat.slice(0, g.label).map((r) => {
+              const kanan = X(g, r.p_lansia) < g.W * 0.72;
+              const dx = (R(g, r.jiwa) + 5) * (kanan ? 1 : -1);
+              return (
+                <text
+                  class="nama"
+                  x={q(X(g, r.p_lansia) + dx)}
+                  y={q(Y(g, r.p_bantuan) + 4)}
+                  text-anchor={kanan ? "start" : "end"}
+                  data-k={r.kelompok}
+                >
+                  {r.peringkat}. {r.label}
+                </text>
+              );
+            })}
+          </g>
+
+          <g>
+            {urutPeringkat.map((r) => (
+              <circle
+                class="hit"
+                cx={X(g, r.p_lansia)}
+                cy={Y(g, r.p_bantuan)}
+                r={q(Math.max(R(g, r.jiwa), g.rHit))}
+                data-k={r.kelompok}
+                {...tip({
+                  judul: r.label,
+                  nilai: `Indeks ${d(r.skor, 1)}`,
+                  grup: r.label,
+                  warna: disorot(r) ? "var(--mark-highlight)" : "var(--mark-base)",
+                  baris: [
+                    `peringkat ${r.peringkat} dari ${rows.length} lingkungan`,
+                    `Wilayah ${r.wilayah} · ${r.kelompok}`,
+                    `65+ ${p(r.p_lansia)} · perlu bantuan ${p(r.p_bantuan)}`,
+                    `hidup sendiri ${p(r.p_solo)} · ${n(r.jiwa)} jiwa`,
+                  ],
+                })}
+              />
+            ))}
+          </g>
+        </svg>
+      ))
+    }
+  </div>
+
+  <slot />
+</figure>
+
+<style>
+  .sebar {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .sebar--sempit {
+    display: none;
+  }
+  @media (max-width: 640px) {
+    .sebar--lebar {
+      display: none;
+    }
+    .sebar--sempit {
+      display: block;
+    }
+  }
+  @media print {
+    .sebar--lebar {
+      display: block !important;
+    }
+    .sebar--sempit {
+      display: none !important;
+    }
+  }
+  .grid line {
+    stroke: var(--chart-grid);
+    stroke-width: 1;
+  }
+  .tick,
+  .median-l,
+  .judul-sumbu,
+  .kuadran-l {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    fill: var(--text-subtle);
+  }
+  .judul-sumbu {
+    font-family: var(--font-body);
+    font-size: 11.5px;
+    fill: var(--text-muted);
+  }
+  .kuadran {
+    fill: var(--surface-accent-soft);
+  }
+  .kuadran-l {
+    fill: var(--text-brand);
+    letter-spacing: 0.03em;
+  }
+  .median {
+    stroke: var(--text-subtle);
+    stroke-width: 1;
+  }
+  /* Label median dan kuadran berada di atas gelembung: beri halo kertas. */
+  .median-l,
+  .kuadran-l {
+    paint-order: stroke;
+    stroke: var(--surface-card);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    fill: var(--text-muted);
+  }
+  .kuadran-l {
+    fill: var(--text-brand);
+  }
+  .gel {
+    fill: var(--mark-base);
+    fill-opacity: 0.45;
+    stroke: var(--surface-card);
+    stroke-width: 1.5;
+  }
+  .gel--sorot {
+    fill: var(--mark-highlight);
+    fill-opacity: 0.88;
+  }
+  .gel:global(.is-aktif) {
+    fill-opacity: 1;
+    stroke: var(--text-strong);
+    stroke-width: 2;
+  }
+  .nama {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: var(--fw-medium);
+    fill: var(--text-strong);
+    paint-order: stroke;
+    stroke: var(--surface-card);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    pointer-events: none;
+  }
+  .hit {
+    fill: transparent;
+  }
+
+  .sebar-legenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin: 0 0 var(--space-4);
+    padding: 0;
+    list-style: none;
+    font-size: var(--size-caption);
+    color: var(--text-muted);
+  }
+  .sebar-legenda li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .sebar-sw {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .sebar-sw--sorot {
+    background: var(--mark-highlight);
+  }
+  .sebar-sw--dasar {
+    background: var(--mark-base);
+    opacity: 0.6;
+  }
+  .sebar-ukuran {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+  }
+  .sebar-ukuran i {
+    display: block;
+    border-radius: 50%;
+    border: 1.5px solid var(--text-muted);
+  }
+  .sebar-ukuran i:first-child {
+    width: 6px;
+    height: 6px;
+  }
+  .sebar-ukuran i:last-child {
+    width: 12px;
+    height: 12px;
+  }
+</style>

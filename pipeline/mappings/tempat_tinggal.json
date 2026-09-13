@@ -1,0 +1,20 @@
+{
+  "_kolom": "KET13 (pasangan label dari TMPTINGGAL)",
+  "_catatan": "Dua sumbu dibaca dari satu kolom: di dalam / di luar paroki, dan nama tempatnya. Umat yang tinggal di luar paroki tetap terdaftar di sini (PRD §13 butir 7).",
+  "di_dalam_paroki": {
+    "diParoki ...": "Tinggal di wilayah paroki",
+    "Kost diP": "Indekos di wilayah paroki"
+  },
+  "label": {
+    "Luar Negri": "Luar negeri",
+    "Luar paroki di Keuskupan": "Paroki lain di Keuskupan Agung Semarang",
+    "Luar Keuskupan": "Luar Keuskupan Agung Semarang",
+    "Makasar": "Makassar",
+    "Pangkalpinang": "Pangkal Pinang",
+    "Palangkaraya": "Palangka Raya",
+    "Tanjungkarang": "Tanjung Karang",
+    "Ambonia": "Ambon"
+  },
+  "_label_pemisah_paroki": " - ",
+  "_catatan_paroki": "Nilai yang memuat ' - ' adalah nama paroki lain; keduanya dihitung sebagai tinggal di luar paroki dan dikelompokkan menjadi 'Paroki lain'."
+}

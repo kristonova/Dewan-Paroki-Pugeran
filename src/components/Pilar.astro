@@ -1,0 +1,56 @@
+---
+/**
+ * Pilar — pembungkus satu dari lima pilar. Setiap pilar diberi label bidang
+ * karya Dewan Paroki yang dilayaninya, supaya ketua bidang dapat menemukan
+ * bagian yang menjadi wilayahnya (PRD §8.2, tujuan T2).
+ */
+interface Props {
+  no: number;
+  judul: string;
+  bidang: string[];
+  lead: string;
+  id: string;
+}
+
+const { no, judul, bidang, lead, id } = Astro.props;
+---
+
+<section class="pilar" id={id} aria-labelledby={`${id}-judul`}>
+  <div class="wrap">
+    <div class="pilar__head">
+      <span class="pilar__no" aria-hidden="true">{String(no).padStart(2, "0")}</span>
+      <h2 id={`${id}-judul`}>
+        <span class="sr-only">Pilar {no}. </span>{judul}
+      </h2>
+    </div>
+
+    <p class="sr-only">Bidang karya yang dilayani:</p>
+    <div class="pilar__bidang-baris">
+      {bidang.map((b) => <span class="pilar__bidang">{b}</span>)}
+    </div>
+
+    <hr class="rule-accent" />
+    <p class="pilar__lead">{lead}</p>
+
+    <slot />
+  </div>
+</section>
+
+<style>
+  .pilar__bidang-baris {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>

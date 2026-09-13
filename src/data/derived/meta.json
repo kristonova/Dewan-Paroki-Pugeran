@@ -1,0 +1,82 @@
+{
+  "paroki": "Hati Kudus Tuhan Yesus — Pugeran",
+  "snapshot": "2019-02-01",
+  "snapshot_label": "1 Februari 2019",
+  "snapshot_terkonfirmasi": false,
+  "snapshot_catatan": "Tanggal ekstraksi basis data belum tercatat di berkas sumber mana pun. Tanggal ini dipakai sebagai asumsi kerja dan masih menunggu konfirmasi pengelola basis data paroki.",
+  "ambang_penyamaran": 5,
+  "umat_total": 12614,
+  "keluarga_total": 4403,
+  "keluarga_umatkk": 4328,
+  "selisih_keluarga": 75,
+  "lingkungan_total": 88,
+  "wilayah_total": 19,
+  "lingkungan_master": 89,
+  "lingkungan_tanpa_jiwa": [
+    "Dukuh Selatan"
+  ],
+  "baris_paroki_lain": 6,
+  "umur_valid": 12544,
+  "umur_tidak_dapat_dihitung": 70,
+  "kelompok": [
+    {
+      "label": "Gereja Induk",
+      "slot": 1,
+      "wilayah": [
+        "Gereja Timur",
+        "Gereja Tengah Selatan",
+        "Gereja Barat Selatan",
+        "Gereja Barat Utara",
+        "Patehan",
+        "Gereja Tengah Utara",
+        "Kadipaten",
+        "Panembahan"
+      ],
+      "jiwa": 5480,
+      "lingkungan": 35
+    },
+    {
+      "label": "GBM",
+      "slot": 2,
+      "wilayah": [
+        "Ngestiharjo Kidul",
+        "Ngestiharjo Lor",
+        "Patangpuluhan",
+        "Wirobrajan",
+        "Ketanggungan"
+      ],
+      "jiwa": 3092,
+      "lingkungan": 25
+    },
+    {
+      "label": "Sempu",
+      "slot": 3,
+      "wilayah": [
+        "Bangunjiwo",
+        "Tamantirto",
+        "Kembaran"
+      ],
+      "jiwa": 1859,
+      "lingkungan": 14
+    },
+    {
+      "label": "Padokan",
+      "slot": 4,
+      "wilayah": [
+        "Jogonalan",
+        "Padokan"
+      ],
+      "jiwa": 1680,
+      "lingkungan": 10
+    },
+    {
+      "label": "Bangunharjo",
+      "slot": 5,
+      "wilayah": [
+        "Bangunharjo"
+      ],
+      "jiwa": 497,
+      "lingkungan": 4
+    }
+  ]
+}

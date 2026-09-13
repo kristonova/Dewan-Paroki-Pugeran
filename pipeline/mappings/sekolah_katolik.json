@@ -1,0 +1,13 @@
+{
+  "_kolom": "Penanda yang menempel pada KET4 sebagai akhiran.",
+  "_catatan": "Hanya 1.780 dari 12.614 jiwa memuat penanda ini. Adegan 4.2 melaporkan celah datanya, bukan menyimpulkan (PRD §12.1).",
+  "akhiran": {
+    " - K": "Sekolah Katolik",
+    " - NK": "Sekolah bukan Katolik",
+    "- K": "Sekolah Katolik",
+    "- NK": "Sekolah bukan Katolik",
+    "-K": "Sekolah Katolik",
+    "- NK ": "Sekolah bukan Katolik"
+  },
+  "tanpa_penanda": "Jenis sekolah tidak tercatat"
+}

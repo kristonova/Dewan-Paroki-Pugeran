@@ -1,0 +1,392 @@
+{
+  "3.1": {
+    "id": "3.1",
+    "penyebut": 12614,
+    "rows": [
+      {
+        "label": "Dibaptis",
+        "n": 12614,
+        "pct": 100.0,
+        "disamarkan": false
+      },
+      {
+        "label": "Sudah menerima Komuni Pertama",
+        "n": 10663,
+        "pct": 84.5,
+        "disamarkan": false
+      },
+      {
+        "label": "Sudah menerima Krisma",
+        "n": 8124,
+        "pct": 64.4,
+        "disamarkan": false
+      }
+    ],
+    "sumber": {
+      "berkas": "umat.dbf",
+      "kolom": "KOMUNI, STSKRISMA",
+      "penyebut": "12.614 jiwa terdaftar"
+    },
+    "komuni_belum": 1486,
+    "krisma_belum": 4028,
+    "tidak_tercatat": 465
+  },
+  "3.2": {
+    "id": "3.2",
+    "penyebut": 12614,
+    "rows": [
+      {
+        "label": "Dibaptis sebagai anak",
+        "n": 10240,
+        "pct": 81.2,
+        "disamarkan": false
+      },
+      {
+        "label": "Dibaptis sebagai remaja atau dewasa",
+        "n": 855,
+        "pct": 6.8,
+        "disamarkan": false
+      },
+      {
+        "label": "Sebelumnya Islam",
+        "n": 397,
+        "pct": 3.1,
+        "disamarkan": false
+      },
+      {
+        "label": "Tidak tercatat",
+        "n": 345,
+        "pct": 2.7,
+        "disamarkan": false
+      },
+      {
+        "label": "Jalan lain",
+        "n": 339,
+        "pct": 2.7,
+        "disamarkan": false
+      },
+      {
+        "label": "Masih katekumen",
+        "n": 193,
+        "pct": 1.5,
+        "disamarkan": false
+      },
+      {
+        "label": "Belum dibaptis",
+        "n": 161,
+        "pct": 1.3,
+        "disamarkan": false
+      },
+      {
+        "label": "Diterima dari gereja Kristen lain",
+        "n": 66,
+        "pct": 0.5,
+        "disamarkan": false
+      },
+      {
+        "label": "Sebelumnya Konghucu",
+        "n": 8,
+        "pct": 0.1,
+        "disamarkan": false
+      },
+      {
+        "label": "Sebelumnya Buddha",
+        "n": 6,
+        "pct": 0.0,
+        "disamarkan": false
+      },
+      {
+        "label": "Sebelumnya Hindu",
+        "n": null,
+        "pct": null,
+        "disamarkan": true
+      }
+    ],
+    "sumber": {
+      "berkas": "umat.dbf",
+      "kolom": "KET9",
+      "penyebut": "12.614 jiwa terdaftar"
+    },
+    "sebagai_anak": 10240,
+    "sebagai_anak_pct": 81.2
+  },
+  "3.3": {
+    "id": "3.3",
+    "penyebut": 12614,
+    "rows": [
+      {
+        "label": "Dibaptis di Pugeran",
+        "n": 5512,
+        "pct": 43.7,
+        "disamarkan": false
+      },
+      {
+        "label": "Menerima Krisma di Pugeran",
+        "n": 2827,
+        "pct": 22.4,
+        "disamarkan": false
+      }
+    ],
+    "sumber": {
+      "berkas": "umat.dbf",
+      "kolom": "TMPBAPTIS, TMPKRISMA → penanda 'di Pugeran'",
+      "penyebut": "12.614 jiwa terdaftar"
+    }
+  },
+  "3.4": {
+    "id": "3.4",
+    "penyebut": 12614,
+    "rows": [
+      {
+        "label": "Belum menikah",
+        "n": 5391,
+        "pct": 42.7,
+        "disamarkan": false
+      },
+      {
+        "label": "Perkawinan sah secara Katolik",
+        "n": 4938,
+        "pct": 39.1,
+        "disamarkan": false
+      },
+      {
+        "label": "Perkawinan sah dengan pasangan beda agama",
+        "n": 463,
+        "pct": 3.7,
+        "disamarkan": false
+      },
+      {
+        "label": "Perkawinan sah dengan pasangan beda gereja",
+        "n": 140,
+        "pct": 1.1,
+        "disamarkan": false
+      },
+      {
+        "label": "Menikah lagi",
+        "n": 530,
+        "pct": 4.2,
+        "disamarkan": false
+      },
+      {
+        "label": "Kawin belum sah menurut Gereja",
+        "n": 47,
+        "pct": 0.4,
+        "disamarkan": false
+      },
+      {
+        "label": "Hidup bersama tanpa perkawinan",
+        "n": 5,
+        "pct": 0.0,
+        "disamarkan": false
+      },
+      {
+        "label": "Perkawinan dengan akibat sipil",
+        "n": null,
+        "pct": null,
+        "disamarkan": true
+      },
+      {
+        "label": "Janda atau duda",
+        "n": 869,
+        "pct": 6.9,
+        "disamarkan": false
+      },
+      {
+        "label": "Ditinggalkan pasangan",
+        "n": 92,
+        "pct": 0.7,
+        "disamarkan": false
+      },
+      {
+        "label": "Imam, bruder, atau suster yang berkarya di Pugeran",
+        "n": 16,
+        "pct": 0.1,
+        "disamarkan": false
+      },
+      {
+        "label": "Imam, bruder, atau suster yang berasal dari Pugeran",
+        "n": 10,
+        "pct": 0.1,
+        "disamarkan": false
+      },
+      {
+        "label": "Tidak tercatat",
+        "n": 112,
+        "pct": 0.9,
+        "disamarkan": false
+      }
+    ],
+    "sumber": {
+      "berkas": "umat.dbf",
+      "kolom": "KET10",
+      "penyebut": "12.614 jiwa terdaftar"
+    },
+    "sah_katolik": 4938,
+    "belum_menikah": 5391
+  },
+  "3.5": {
+    "id": "3.5",
+    "penyebut": 12614,
+    "rows": [
+      {
+        "label": "Aktif di gereja paroki dan di lingkungan",
+        "n": 8112,
+        "pct": 64.3,
+        "disamarkan": false
+      },
+      {
+        "label": "Aktif di gereja, tidak aktif di lingkungan",
+        "n": 2404,
+        "pct": 19.1,
+        "disamarkan": false
+      },
+      {
+        "label": "Aktif di lingkungan, beribadat di paroki lain",
+        "n": 342,
+        "pct": 2.7,
+        "disamarkan": false
+      },
+      {
+        "label": "Aktif di gereja dan lingkungan paroki lain",
+        "n": 482,
+        "pct": 3.8,
+        "disamarkan": false
+      },
+      {
+        "label": "Tercatat tidak aktif",
+        "n": 897,
+        "pct": 7.1,
+        "disamarkan": false
+      },
+      {
+        "label": "Tidak tercatat",
+        "n": 377,
+        "pct": 3.0,
+        "disamarkan": false
+      }
+    ],
+    "sumber": {
+      "berkas": "umat.dbf",
+      "kolom": "KET14",
+      "penyebut": "12.614 jiwa terdaftar"
+    },
+    "aktif_gereja_lingkungan": 8112,
+    "aktif_gereja_lingkungan_pct": 64.3,
+    "tidak_aktif": 897,
+    "tidak_aktif_pct": 7.1
+  },
+  "3.6": {
+    "id": "3.6",
+    "penyebut": 1277,
+    "rows": [
+      {
+        "label": "Pengurus lingkungan",
+        "n": 977,
+        "pct": 76.5,
+        "disamarkan": false
+      },
+      {
+        "label": "Pengurus kelompok kategorial",
+        "n": 108,
+        "pct": 8.5,
+        "disamarkan": false
+      },
+      {
+        "label": "Pengurus tim kerja paroki",
+        "n": 79,
+        "pct": 6.2,
+        "disamarkan": false
+      },
+      {
+        "label": "Anggota Dewan Paroki",
+        "n": 71,
+        "pct": 5.6,
+        "disamarkan": false
+      },
+      {
+        "label": "Pengurus organisasi masyarakat Katolik",
+        "n": 42,
+        "pct": 3.3,
+        "disamarkan": false
+      }
+    ],
+    "sumber": {
+      "berkas": "umat.dbf",
+      "kolom": "KET15",
+      "penyebut": "1.277 jiwa dengan tugas pelayanan tercatat"
+    },
+    "total_pelayan": 1277,
+    "pelayan_pct": 10.1,
+    "umat_per_pelayan": 9.9
+  },
+  "3.7": {
+    "id": "3.7",
+    "penyebut": 654,
+    "rows": [
+      {
+        "label": "Islam",
+        "n": 236,
+        "pct": 36.1,
+        "disamarkan": false
+      },
+      {
+        "label": "Katekumen",
+        "n": 194,
+        "pct": 29.7,
+        "disamarkan": false
+      },
+      {
+        "label": "Meninggalkan Katolik, tidak beragama Kristen",
+        "n": 100,
+        "pct": 15.3,
+        "disamarkan": false
+      },
+      {
+        "label": "Kristen",
+        "n": 62,
+        "pct": 9.5,
+        "disamarkan": false
+      },
+      {
+        "label": "Agama atau kepercayaan lain",
+        "n": 39,
+        "pct": 6.0,
+        "disamarkan": false
+      },
+      {
+        "label": "Pindah ke gereja Kristen lain",
+        "n": 20,
+        "pct": 3.1,
+        "disamarkan": false
+      },
+      {
+        "label": "Hindu",
+        "n": null,
+        "pct": null,
+        "disamarkan": true
+      },
+      {
+        "label": "Buddha",
+        "n": null,
+        "pct": null,
+        "disamarkan": true
+      },
+      {
+        "label": "Konghucu",
+        "n": null,
+        "pct": null,
+        "disamarkan": true
+      }
+    ],
+    "sumber": {
+      "berkas": "umat.dbf",
+      "kolom": "KET11",
+      "penyebut": "654 anggota rumah tangga yang tidak Katolik"
+    },
+    "bukan_katolik": 654,
+    "keluarga_lintas_iman": 558,
+    "keluarga_lintas_iman_pct": 12.7,
+    "katekumen": 194,
+    "katolik": 11958
+  }
+}

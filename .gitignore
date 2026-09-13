@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.astro/
+pipeline/work/
+.venv/
+.Rproj.user/
+.RData
+.Rhistory

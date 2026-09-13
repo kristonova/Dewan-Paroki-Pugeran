@@ -1,0 +1,4 @@
+{
+  "_catatan": "Token mentah yang berarti 'tidak ada catatan'. Dinormalkan menjadi kategori 'Tidak tercatat' yang IKUT DIGAMBAR di grafik (PRD §6 aturan 4). Kosong bukan nol.",
+  "tokens": ["", "-", "--", "---", "bt", "BT", "Bt", ".", "..", "...", "....", ".....", "99", "?", "n/a", "N/A", "null"]
+}

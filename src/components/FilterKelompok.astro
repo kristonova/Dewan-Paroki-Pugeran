@@ -1,0 +1,32 @@
+---
+/**
+ * Legenda sekaligus filter lima kelompok wilayah. Tanpa JavaScript ia tetap
+ * terbaca sebagai legenda; dengan JavaScript, memilih satu kelompok meredupkan
+ * tanda kelompok lain di figur yang sama (components/InteraksiGrafik.astro).
+ */
+import type { KelompokInfo } from "../lib/data";
+import { n } from "../lib/format";
+import { kat } from "../lib/viz";
+
+interface Props {
+  kelompok: KelompokInfo[];
+  /** Tampilkan jumlah jiwa, bukan jumlah wilayah, di samping nama kelompok. */
+  jiwa?: boolean;
+}
+
+const { kelompok, jiwa = false } = Astro.props;
+---
+
+<div class="viz-filter" role="group" aria-label="Legenda dan filter kelompok wilayah">
+  <span class="viz-filter__label">Kelompok wilayah</span>
+  <button type="button" class="chip" data-filter="" aria-pressed="true">Semua</button>
+  {
+    kelompok.map((k) => (
+      <button type="button" class="chip" data-filter={k.label} aria-pressed="false">
+        <span class="chip__sw" style={`background:${kat(k.slot)}`} aria-hidden="true" />
+        {k.label}
+        <span class="chip__n">{jiwa ? `${n(k.jiwa)} jiwa` : `${k.wilayah.length} wil.`}</span>
+      </button>
+    ))
+  }
+</div>

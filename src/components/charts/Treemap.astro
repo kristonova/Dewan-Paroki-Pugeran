@@ -1,0 +1,283 @@
+---
+/**
+ * Treemap — bagian terhadap keseluruhan untuk banyak kategori. Dipakai di
+ * adegan 1.2 (wilayah, berwarna kelompok), 3.4 dan 4.4 (sorotan satu kategori).
+ *
+ * Dua mode:
+ *  · Berkelompok: kelompok wilayah menjadi kolom berurutan (baris pada layar
+ *    sempit), lalu wilayah disusun squarified di dalamnya. Urutan kolom tetap,
+ *    sehingga hanya kelompok yang bersebelahan di urutan palet yang bersentuhan.
+ *  · Sorotan: seluruh kotak netral, satu kategori yang dibicarakan tafsir merah,
+ *    "Tidak tercatat" berarsir.
+ *
+ * Label hanya ditulis bila muat di kotaknya; nilai kotak kecil tetap terbaca
+ * lewat tooltip dan tabel angka alternatif. Dua tata letak dirender dan dipilih
+ * lewat media query, sama seperti HorizontalBar.
+ */
+import type { KelompokInfo, Row } from "../../lib/data";
+import { potong, TIDAK_TERCATAT } from "../../lib/chart";
+import { n, p } from "../../lib/format";
+import { css, iris, kat, katTeks, kontainer, squarify, tip } from "../../lib/viz";
+import FilterKelompok from "../FilterKelompok.astro";
+
+interface Props {
+  rows: Row[];
+  caption: string;
+  label: string;
+  /** Akhiran persentase di tooltip, misalnya "dari 12.614 jiwa terdaftar". */
+  penyebutLabel: string;
+  satuan?: string;
+  kelompok?: KelompokInfo[];
+  sorot?: string[];
+  /** Kategori lipatan ("… lainnya") yang digambar lebih redup. */
+  redup?: string[];
+  /** Baris keterangan tambahan per label untuk tooltip. */
+  ekstra?: Record<string, string>;
+}
+
+const {
+  rows,
+  caption,
+  label,
+  penyebutLabel,
+  satuan = "jiwa",
+  kelompok,
+  sorot = [],
+  redup = [],
+  ekstra = {},
+} = Astro.props;
+
+const LEBAR = { W: 900, H: 480, arah: "mendatar" as const, kelas: "tm--lebar" };
+const SEMPIT = { W: 340, H: 540, arah: "menurun" as const, kelas: "tm--sempit" };
+type Geo = typeof LEBAR | typeof SEMPIT;
+
+const slotKelompok = new Map((kelompok ?? []).map((k) => [k.label, k.slot]));
+const digambar = rows.filter((r): r is Row & { n: number } => r.n !== null && r.n > 0);
+const samar = rows.filter((r) => r.n === null);
+
+interface Sel {
+  r: Row & { n: number };
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  pxW: number;
+  pxH: number;
+}
+interface Grup {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  sel: Sel[];
+}
+
+function tataLetak(g: Geo): Grup[] {
+  if (kelompok?.length) {
+    const grup = kelompok.map((k) => ({
+      nilai: digambar.filter((r) => r.kelompok === k.label).reduce((s, r) => s + r.n, 0),
+      data: k,
+    }));
+    return iris(grup, 0, 0, g.W, g.H, g.arah).map((b) => {
+      const anggota = digambar.filter((r) => r.kelompok === b.data.label);
+      const kotak = squarify(anggota.map((r) => ({ nilai: r.n, data: r })), 0, 0, b.w, b.h);
+      return {
+        x: (100 * b.x) / g.W,
+        y: (100 * b.y) / g.H,
+        w: (100 * b.w) / g.W,
+        h: (100 * b.h) / g.H,
+        sel: kotak.map((c) => ({
+          r: c.data,
+          x: (100 * c.x) / b.w,
+          y: (100 * c.y) / b.h,
+          w: (100 * c.w) / b.w,
+          h: (100 * c.h) / b.h,
+          pxW: c.w,
+          pxH: c.h,
+        })),
+      };
+    });
+  }
+  const kotak = squarify(digambar.map((r) => ({ nilai: r.n, data: r })), 0, 0, g.W, g.H);
+  return [
+    {
+      x: 0,
+      y: 0,
+      w: 100,
+      h: 100,
+      sel: kotak.map((c) => ({
+        r: c.data,
+        x: (100 * c.x) / g.W,
+        y: (100 * c.y) / g.H,
+        w: (100 * c.w) / g.W,
+        h: (100 * c.h) / g.H,
+        pxW: c.w,
+        pxH: c.h,
+      })),
+    },
+  ];
+}
+
+function gaya(r: Row): { kelas: string; style?: string; warna?: string; slot?: number } {
+  if (r.label === TIDAK_TERCATAT) return { kelas: "isi-celah tm-isi--celah" };
+  const slot = r.kelompok ? slotKelompok.get(r.kelompok) : undefined;
+  if (slot !== undefined) {
+    return { kelas: "", style: `background:${kat(slot)};color:${katTeks(slot)}`, warna: kat(slot), slot };
+  }
+  if (sorot.includes(r.label)) return { kelas: "tm-isi--sorot", warna: "var(--mark-highlight)" };
+  if (redup.includes(r.label)) return { kelas: "tm-isi--redup" };
+  return { kelas: "tm-isi--dasar", warna: "var(--tm-isi)" };
+}
+---
+
+<figure class="figur">
+  <figcaption>{caption}</figcaption>
+
+  {kelompok && <FilterKelompok kelompok={kelompok} jiwa />}
+
+  <div class="viz" {...kontainer(label)}>
+    {
+      [LEBAR, SEMPIT].map((g) => (
+        <div class:list={["tm", g.kelas]}>
+          {tataLetak(g).map((b) => (
+            <div class="tm-grup" style={`left:${css(b.x)};top:${css(b.y)};width:${css(b.w)};height:${css(b.h)}`}>
+              <div class="tm-grup__dalam">
+                {b.sel.map((c) => {
+                  const gy = gaya(c.r);
+                  // Label hanya ditulis bila benar-benar muat; teks tidak pernah
+                  // meluber keluar kotaknya. Lebar huruf diperkirakan per karakter.
+                  const teksNilai = `${n(c.r.n)} · ${p(c.r.pct)}`;
+                  const muatNama = c.pxW >= 58 && c.pxH >= 26;
+                  const muatNilai = c.pxW >= teksNilai.length * 6.5 + 16 && c.pxH >= 44;
+                  const huruf = Math.max(4, Math.floor((c.pxW - 16) / 6.9));
+                  return (
+                    <div
+                      class="tm-sel"
+                      style={`left:${css(c.x)};top:${css(c.y)};width:${css(c.w)};height:${css(c.h)}`}
+                      data-k={c.r.kelompok}
+                      {...tip({
+                        judul: c.r.label,
+                        nilai: `${n(c.r.n)} ${satuan}`,
+                        warna: gy.warna,
+                        baris: [
+                          c.r.pct !== null && `${p(c.r.pct)} ${penyebutLabel}`,
+                          c.r.kelompok && `kelompok ${c.r.kelompok}`,
+                          ekstra[c.r.label],
+                        ],
+                      })}
+                    >
+                      <div class:list={["tm-isi", gy.kelas]} style={gy.style} data-kat={gy.slot}>
+                        {muatNama && <span class="tm-nama">{potong(c.r.label, huruf)}</span>}
+                        {muatNilai && (
+                          <span class="tm-nilai">
+                            {n(c.r.n)} · {p(c.r.pct)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+
+  {
+    samar.length > 0 && (
+      <p class="tm-catatan">
+        Tidak digambar karena disamarkan (1–4 {satuan}): {samar.map((r) => r.label).join(", ")}.
+      </p>
+    )
+  }
+
+  <slot />
+</figure>
+
+<style>
+  .tm {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 900 / 480;
+  }
+  .tm--sempit {
+    display: none;
+    aspect-ratio: 340 / 540;
+  }
+  @media (max-width: 640px) {
+    .tm--lebar {
+      display: none;
+    }
+    .tm--sempit {
+      display: block;
+    }
+  }
+  @media print {
+    .tm--lebar {
+      display: block !important;
+    }
+    .tm--sempit {
+      display: none !important;
+    }
+  }
+  .tm-grup,
+  .tm-sel {
+    position: absolute;
+  }
+  .tm-grup__dalam {
+    position: absolute;
+    inset: 2px;
+  }
+  .tm-isi {
+    position: absolute;
+    inset: 1px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 5px 7px;
+    border-radius: 3px;
+    line-height: 1.2;
+  }
+  .tm-isi--dasar {
+    background: var(--tm-isi);
+    color: var(--tm-teks);
+  }
+  .tm-isi--redup {
+    background: var(--tm-redup);
+    color: var(--text-muted);
+  }
+  .tm-isi--sorot {
+    background: var(--mark-highlight);
+    color: #ffffff;
+  }
+  .tm-isi--celah {
+    color: var(--text-strong);
+  }
+  .tm-isi--celah .tm-nama,
+  .tm-isi--celah .tm-nilai {
+    align-self: flex-start;
+    padding: 0 3px;
+    border-radius: 2px;
+    background: var(--surface-card);
+  }
+  .tm-nama {
+    font-size: 12.5px;
+    font-weight: var(--fw-bold);
+    white-space: nowrap;
+    letter-spacing: -0.005em;
+  }
+  .tm-nilai {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.92;
+  }
+  .tm-catatan {
+    margin-top: var(--space-3);
+    font-size: var(--size-caption);
+    color: var(--text-subtle);
+  }
+</style>

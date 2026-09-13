@@ -1,0 +1,221 @@
+---
+/**
+ * RingMeter — satu rasio terhadap keseluruhan sebagai meter melingkar. Dipakai
+ * di adegan 1.5, 2.4, dan 3.3.
+ *
+ * Ini meter, bukan diagram lingkaran: lintasan netral adalah keseluruhan, isian
+ * berwarna adalah bagian yang dibicarakan, dan angkanya ditulis besar di tengah.
+ * Ujung busur dipotong rata, bukan membulat, supaya panjang busur tidak
+ * melebih-lebihkan nilainya. Beberapa segmen berurutan dipisah celah tipis.
+ */
+import { n, p } from "../../lib/format";
+import { kontainer, tip } from "../../lib/viz";
+
+export interface SegmenRing {
+  label: string;
+  n: number | null;
+  pct: number;
+  warna: string;
+}
+
+export interface Meter {
+  judul: string;
+  pusat: string;
+  subPusat: string;
+  keterangan?: string;
+  segmen: SegmenRing[];
+  sisa: { label: string; n: number | null; pct: number };
+  /** Akhiran persentase di tooltip, misalnya "dari 4.234 kepala keluarga". */
+  penyebutLabel: string;
+  satuan: string;
+}
+
+interface Props {
+  meter: Meter[];
+  caption: string;
+  label: string;
+}
+
+const { meter, caption, label } = Astro.props;
+const R = 80;
+const CELAH = 0.6;
+---
+
+<figure class="figur">
+  <figcaption>{caption}</figcaption>
+
+  <div class="rings viz" {...kontainer(label)}>
+    {
+      meter.map((m) => {
+        const jamak = m.segmen.length > 1;
+        let offset = 0;
+        return (
+          <div class="ring">
+            <div class="ring__gambar">
+              <svg viewBox="0 0 200 200" aria-hidden="true">
+                <circle
+                  class="ring__jalur"
+                  cx="100"
+                  cy="100"
+                  r={R}
+                  {...tip({
+                    judul: m.sisa.label,
+                    nilai: `${n(m.sisa.n)} ${m.satuan}`,
+                    baris: [`${p(m.sisa.pct)} ${m.penyebutLabel}`],
+                  })}
+                />
+                {m.segmen.map((s) => {
+                  const panjang = Math.max(0.2, s.pct - (jamak ? CELAH : 0));
+                  const elemen = (
+                    <circle
+                      class="ring__seg"
+                      cx="100"
+                      cy="100"
+                      r={R}
+                      pathLength="100"
+                      stroke={s.warna}
+                      stroke-dasharray={`${panjang.toFixed(2)} ${(100 - panjang).toFixed(2)}`}
+                      stroke-dashoffset={(-offset).toFixed(2)}
+                      transform="rotate(-90 100 100)"
+                      {...tip({
+                        judul: s.label,
+                        nilai: `${n(s.n)} ${m.satuan}`,
+                        warna: s.warna,
+                        baris: [`${p(s.pct)} ${m.penyebutLabel}`],
+                      })}
+                    />
+                  );
+                  offset += s.pct;
+                  return elemen;
+                })}
+              </svg>
+              <div class="ring__pusat" aria-hidden="true">
+                <b>{m.pusat}</b>
+                <span>{m.subPusat}</span>
+              </div>
+            </div>
+
+            <p class="ring__judul">{m.judul}</p>
+            <ul class="ring__legenda" role="list">
+              {m.segmen.map((s) => (
+                <li>
+                  <span class="ring__sw" style={`background:${s.warna}`} aria-hidden="true" />
+                  <span class="ring__nama">{s.label}</span>
+                  <b>{n(s.n)}</b>
+                </li>
+              ))}
+              <li>
+                <span class="ring__sw ring__sw--sisa" aria-hidden="true" />
+                <span class="ring__nama">{m.sisa.label}</span>
+                <b>{n(m.sisa.n)}</b>
+              </li>
+            </ul>
+            {m.keterangan && <p class="ring__ket">{m.keterangan}</p>}
+          </div>
+        );
+      })
+    }
+  </div>
+
+  <slot />
+</figure>
+
+<style>
+  .rings {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--space-8) var(--space-6);
+  }
+  .ring {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .ring__gambar {
+    position: relative;
+    width: min(100%, 13.5rem);
+    aspect-ratio: 1;
+  }
+  .ring__gambar svg {
+    width: 100%;
+    height: 100%;
+  }
+  .ring__jalur,
+  .ring__seg {
+    fill: none;
+    stroke-width: 18;
+    pointer-events: stroke;
+  }
+  .ring__jalur {
+    stroke: var(--ring-jalur);
+  }
+  .ring__pusat {
+    position: absolute;
+    inset: 22%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .ring__pusat b {
+    font-size: clamp(1.75rem, 4.2vw, 2.4rem);
+    font-weight: var(--fw-black);
+    letter-spacing: var(--tracking-display);
+    line-height: var(--lh-tight);
+    color: var(--text-strong);
+  }
+  .ring__pusat span {
+    margin-top: var(--space-1);
+    font-size: var(--size-micro);
+    line-height: 1.3;
+    color: var(--text-muted);
+  }
+  .ring__judul {
+    margin: var(--space-4) 0 var(--space-2);
+    font-size: var(--size-body-sm);
+    font-weight: var(--fw-bold);
+    color: var(--text-strong);
+  }
+  .ring__legenda {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: min(100%, 16rem);
+    font-size: var(--size-caption);
+  }
+  .ring__legenda li {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 3px 0;
+    border-bottom: 1px solid var(--border-hairline);
+    text-align: left;
+  }
+  .ring__legenda b {
+    font-family: var(--font-mono);
+    font-weight: var(--fw-medium);
+    color: var(--text-strong);
+    font-variant-numeric: tabular-nums;
+  }
+  .ring__nama {
+    color: var(--text-body);
+  }
+  .ring__sw {
+    width: 14px;
+    height: 3px;
+    border-radius: 2px;
+  }
+  .ring__sw--sisa {
+    background: var(--ring-jalur);
+    outline: 1px solid var(--border-hairline);
+  }
+  .ring__ket {
+    margin-top: var(--space-2);
+    max-width: 18rem;
+    font-size: var(--size-micro);
+    color: var(--text-subtle);
+  }
+</style>

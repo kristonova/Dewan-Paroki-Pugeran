@@ -1,0 +1,179 @@
+---
+/**
+ * Tata letak halaman. Satu rute, satu tata letak.
+ *
+ * JavaScript di halaman ini hanya mengerjakan lima hal: sakelar tema, progres
+ * baca, kemunculan adegan saat masuk layar, pendaftaran service worker, dan
+ * lapisan interaksi grafik (components/InteraksiGrafik.astro).
+ * Seluruh isi tetap terbaca ketika JavaScript dimatikan (PRD §11.1, §11.2).
+ */
+import SvgDefs from "../components/SvgDefs.astro";
+import InteraksiGrafik from "../components/InteraksiGrafik.astro";
+import "../styles/tokens.css";
+import "../styles/global.css";
+import "../styles/print.css";
+
+interface Props {
+  judul: string;
+  deskripsi: string;
+}
+
+const { judul, deskripsi } = Astro.props;
+
+const nav = [
+  { href: "#pilar-1", label: "Potret" },
+  { href: "#pilar-2", label: "Generasi" },
+  { href: "#pilar-3", label: "Menggereja" },
+  { href: "#pilar-4", label: "Penghidupan" },
+  { href: "#pilar-5", label: "Perhatian" },
+  { href: "#penutup", label: "Penutup" },
+];
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{judul}</title>
+    <meta name="description" content={deskripsi} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="./brand/sadasa-mark-red.png" type="image/png" />
+
+    {/* Huruf dimuat dari public/fonts/. Tidak ada satu pun permintaan ke domain luar. */}
+    <link rel="preload" href="./fonts/GothamNarrow-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="./fonts/GothamNarrow-700.woff2" as="font" type="font/woff2" crossorigin />
+
+    {/* Tema dipulihkan sebelum halaman digambar supaya tidak ada kedipan.
+        Bila JavaScript mati, halaman tetap terbuka dalam mode terang. */}
+    <script is:inline>
+      document.documentElement.classList.add("js");
+      try {
+        var t = localStorage.getItem("tema-pugeran");
+        if (t === "ink") document.documentElement.setAttribute("data-theme", "ink");
+      } catch (e) {
+        /* localStorage dapat ditolak; halaman tetap jalan dalam mode terang. */
+      }
+    </script>
+  </head>
+
+  <body>
+    <div class="progress no-print" aria-hidden="true"><div class="progress__bar" id="progress-bar"></div></div>
+
+    <a class="lewati" href="#pembuka">Lompat ke isi</a>
+
+    <header class="topbar no-print">
+      <span class="topbar__title">Umat Pugeran dalam Angka</span>
+      <span class="topbar__spacer"></span>
+      <nav class="topbar__nav" aria-label="Loncat ke pilar">
+        {nav.map((it) => <a href={it.href}>{it.label}</a>)}
+      </nav>
+      <button class="btn-ghost" id="tombol-tema" type="button" aria-pressed="false">
+        Mode gelap
+      </button>
+      <button class="btn-ghost" id="tombol-cetak" type="button">Cetak</button>
+    </header>
+
+    <SvgDefs />
+    <InteraksiGrafik />
+
+    <main>
+      <slot />
+    </main>
+
+    <script is:inline>
+      (function () {
+        // ── Sakelar tema. Mode gelap dipilih, tidak pernah diambil otomatis
+        //    dari preferensi sistem: ruang rapat paroki memakai proyektor.
+        var akar = document.documentElement;
+        var tombol = document.getElementById("tombol-tema");
+        function pasang(gelap) {
+          if (gelap) akar.setAttribute("data-theme", "ink");
+          else akar.removeAttribute("data-theme");
+          if (tombol) {
+            tombol.setAttribute("aria-pressed", gelap ? "true" : "false");
+            tombol.textContent = gelap ? "Mode terang" : "Mode gelap";
+          }
+          try {
+            localStorage.setItem("tema-pugeran", gelap ? "ink" : "terang");
+          } catch (e) {}
+        }
+        pasang(akar.getAttribute("data-theme") === "ink");
+        if (tombol) {
+          tombol.addEventListener("click", function () {
+            pasang(akar.getAttribute("data-theme") !== "ink");
+          });
+        }
+
+        var cetak = document.getElementById("tombol-cetak");
+        if (cetak) cetak.addEventListener("click", function () { window.print(); });
+
+        // ── Progres baca.
+        var bar = document.getElementById("progress-bar");
+        if (bar) {
+          var tik = false;
+          function gambar() {
+            var h = document.documentElement;
+            var maks = h.scrollHeight - h.clientHeight;
+            var v = maks > 0 ? (h.scrollTop || document.body.scrollTop) / maks : 0;
+            bar.style.width = Math.min(100, Math.max(0, v * 100)) + "%";
+            tik = false;
+          }
+          addEventListener("scroll", function () {
+            if (!tik) { tik = true; requestAnimationFrame(gambar); }
+          }, { passive: true });
+          gambar();
+        }
+
+        // ── Kemunculan adegan. Gerak dibatasi pada opasitas dan pergeseran
+        //    halus, dan seluruhnya dimatikan pada prefers-reduced-motion.
+        var halus = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var adegan = document.querySelectorAll("[data-reveal]");
+        // Jaring pengaman: bila pengamat tidak pernah menyala (tab latar,
+        // cetak, mesin render tanpa tata letak), adegan tetap ditampilkan.
+        setTimeout(function () {
+          adegan.forEach(function (el) { el.classList.add("is-in"); });
+        }, 2500);
+
+        if (halus || !("IntersectionObserver" in window)) {
+          adegan.forEach(function (el) { el.classList.add("is-in"); });
+        } else {
+          var io = new IntersectionObserver(function (entri) {
+            entri.forEach(function (e) {
+              if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); }
+            });
+          }, { rootMargin: "0px 0px -8% 0px", threshold: 0.04 });
+          adegan.forEach(function (el) { io.observe(el); });
+        }
+
+        // ── Service worker: setelah satu kali dibuka, halaman terbuka penuh
+        //    tanpa jaringan. Dilewati ketika berkas dibuka langsung dari USB
+        //    (protokol file:), karena di sana halaman memang sudah lokal.
+        if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
+          addEventListener("load", function () {
+            navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(function () {});
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  .lewati {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    background: var(--surface-brand);
+    color: var(--text-on-brand);
+    padding: var(--space-3) var(--space-5);
+    border-radius: 0 0 var(--radius-md) 0;
+    font-size: var(--size-body-sm);
+    text-decoration: none;
+  }
+  .lewati:focus {
+    left: 0;
+  }
+</style>

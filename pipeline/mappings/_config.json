@@ -1,0 +1,14 @@
+{
+  "_catatan": "Ambang pelipatan ekor kategori. Tidak ada ambang yang ditulis langsung di dalam kode (PRD §14 kriteria data).",
+  "fold": {
+    "suku":        { "keep": 8,  "label_lain": "Suku lainnya" },
+    "bidang_studi":{ "keep": 15, "label_lain": "Bidang studi lainnya" },
+    "pekerjaan":   { "keep": 14, "label_lain": "Pekerjaan lainnya" },
+    "tempat_luar": { "keep": 8,  "label_lain": "Kota/negara lainnya" }
+  },
+  "indeks_kerentanan": {
+    "_catatan": "PRD §8.3 adegan 5.2 dan §17.4 pertanyaan terbuka #4: usulan awal bobot sama rata.",
+    "bobot": { "lansia": 0.3333, "perlu_bantuan": 0.3333, "rumah_tangga_satu_orang": 0.3334 },
+    "minimal_jiwa_lingkungan": 5
+  }
+}

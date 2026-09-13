@@ -1,0 +1,11 @@
+{
+  "_kolom": "KET14 (pasangan label dari STSGEREJA)",
+  "_catatan": "Keaktifan adalah penilaian petugas sensus, bukan ukuran objektif (PRD §13 butir 4).",
+  "G+L aktif": "Aktif di gereja paroki dan di lingkungan",
+  "Gereja": "Aktif di gereja, tidak aktif di lingkungan",
+  "G nonP, L aktif": "Aktif di lingkungan, beribadat di paroki lain",
+  "G+L luar P": "Aktif di gereja dan lingkungan paroki lain",
+  "G, L aktif luar P": "Aktif di gereja dan lingkungan paroki lain",
+  "non A": "Tercatat tidak aktif",
+  "N (P)": "Tercatat tidak aktif"
+}

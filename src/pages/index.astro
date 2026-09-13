@@ -1,0 +1,1108 @@
+---
+/**
+ * Satu-satunya rute. Cerita panjang dari pembuka sampai penutup.
+ *
+ * Urutan bacanya mengikat: potret dasar → struktur generasi → hidup menggereja
+ * → karya dan penghidupan → titik-titik kerentanan → agenda pastoral dan
+ * kejujuran soal data yang belum ada. Ini bukan dashboard: tidak ada filter,
+ * tidak ada penelusuran individu, tidak ada pencarian nama.
+ */
+import Cerita from "../layouts/Cerita.astro";
+import Adegan from "../components/Adegan.astro";
+import Pilar from "../components/Pilar.astro";
+import TabelAlt from "../components/TabelAlt.astro";
+import StatCards from "../components/charts/StatCards.astro";
+import HorizontalBar from "../components/charts/HorizontalBar.astro";
+import PopulationPyramid from "../components/charts/PopulationPyramid.astro";
+import HeatTable from "../components/charts/HeatTable.astro";
+import DataGapCard from "../components/charts/DataGapCard.astro";
+import SebaranLingkungan from "../components/charts/SebaranLingkungan.astro";
+import Treemap from "../components/charts/Treemap.astro";
+import BubbleScatter from "../components/charts/BubbleScatter.astro";
+import KolomLolipop from "../components/charts/KolomLolipop.astro";
+import UnitKolom from "../components/charts/UnitKolom.astro";
+import RingMeter from "../components/charts/RingMeter.astro";
+import ZoomBreakdown from "../components/charts/ZoomBreakdown.astro";
+import RasioTanggungan from "../components/charts/RasioTanggungan.astro";
+import Dumbbell from "../components/charts/Dumbbell.astro";
+import GarisRasio from "../components/charts/GarisRasio.astro";
+import TahapanTrack from "../components/charts/TahapanTrack.astro";
+import Waffle from "../components/charts/Waffle.astro";
+import Hemisiklus from "../components/charts/Hemisiklus.astro";
+import BatangDivergen from "../components/charts/BatangDivergen.astro";
+import UnitKluster from "../components/charts/UnitKluster.astro";
+import KotakBersarang from "../components/charts/KotakBersarang.astro";
+
+import {
+  adegan, angka, kelompok, lingkunganRows, meta, nilai, objek, penutup, pyramidRows,
+  type Row,
+} from "../lib/data";
+import { anchor, d, n, p, sel, tanggal } from "../lib/format";
+import {
+  adeganTeks, agenda, babak, batasTafsir, halaman, kamus, pembuka, pilar,
+  penutupTeks, prinsipData,
+} from "../i18n/id";
+
+const SNAPSHOT = tanggal(meta.snapshot);
+
+/** Baris tabel angka alternatif baku: label, jumlah, persentase. */
+const tabelBaris = (rows: Row[]) =>
+  rows.map((r) => [r.label, sel(r.n, r.disamarkan), r.pct === null ? "–" : p(r.pct)]);
+
+const KOLOM_BAKU = [{ judul: "Kategori" }, { judul: "Jiwa", num: true }, { judul: "Persen", num: true }];
+
+const a = (id: string) => adeganTeks(id);
+const s = (id: string) => adegan(id).sumber;
+
+const PENYEBUT_UMAT = `dari ${n(meta.umat_total)} jiwa terdaftar`;
+
+/** Persentase satu baris adegan menurut labelnya; 0 bila disamarkan. */
+const pctBaris = (id: string, label: string) => adegan(id).rows.find((r) => r.label === label)?.pct ?? 0;
+
+/** Jumlah beberapa baris adegan; baris yang disamarkan tidak ikut dijumlahkan. */
+const jumlahBaris = (id: string, label: string[]) =>
+  adegan(id).rows.filter((r) => label.includes(r.label)).reduce((t, r) => t + (r.n ?? 0), 0);
+
+// Tooltip treemap wilayah menyebut jumlah lingkungannya.
+const lingkunganPerWilayah = Object.fromEntries(
+  adegan("1.2").rows.map((w) => [
+    w.label,
+    `${adegan("1.3").rows.filter((r) => r.wilayah === w.label).length} lingkungan`,
+  ]),
+);
+
+// Adegan 1.6: suku terbesar menjadi bagian dominan, sisanya dirinci.
+const sukuTerbesar = objek<{ label: string; n: number }>("1.6", "terbesar");
+const rincianSuku = adegan("1.6").rows.filter((r) => r.label !== sukuTerbesar.label);
+
+// Adegan 3.2 memuat sebelas kategori; waffle melipatnya menjadi lima kelompok.
+const AGAMA_SEBELUMNYA = adegan("3.2").rows
+  .filter((r) => r.label.startsWith("Sebelumnya ") && r.n !== null)
+  .map((r) => r.label);
+const JALAN_LAIN_32 = ["Jalan lain", "Masih katekumen", "Belum dibaptis", "Diterima dari gereja Kristen lain"];
+const SAMAR_32 = adegan("3.2").rows.filter((r) => r.n === null).map((r) => r.label);
+
+// Berkas unduhan data agregat untuk perencanaan karya pastoral Dewan Paroki.
+const unduhan = [
+  ["lingkungan.csv", "Ringkasan 88 lingkungan dan indeks prioritas kunjungan pastoral"],
+  ["wilayah.csv", "Sebaran jumlah umat di 19 wilayah"],
+  ["piramida_usia.csv", "Data piramida usia umat dalam kelompok lima tahunan"],
+  ["ukuran_rumah_tangga.csv", "Distribusi ukuran susunan keluarga"],
+  ["pendidikan.csv", "Tingkat pendidikan formal umat"],
+  ["pekerjaan.csv", "Daftar lengkap 74 kategori profesi dan pekerjaan umat"],
+  ["bidang_studi.csv", "Daftar lengkap 66 rumpun bidang studi keilmuan umat"],
+  ["suku.csv", "Keragaman latar belakang suku umat"],
+  ["status_perkawinan.csv", "Sebaran status perkawinan umat"],
+  ["status_gereja.csv", "Tingkat keaktifan umat di paroki dan lingkungan"],
+  ["status_kesehatan.csv", "Catatan kebutuhan kesehatan khusus umat"],
+  ["golongan_darah.csv", "Distribusi golongan darah umat"],
+  ["waktu_baptis.csv", "Latar waktu dan jalur penerimaan Sakramen Baptis"],
+  ["agama.csv", "Agama seluruh anggota keluarga, termasuk yang Katolik"],
+  ["keterlibatan.csv", "Ragam keterlibatan tugas pelayanan pastoral"],
+  ["tempat_tinggal.csv", "Persebaran tempat tinggal dan domisili umat"],
+  ["ekonomi_keluarga.csv", "Kondisi kesejahteraan ekonomi keluarga menurut catatan sensus"],
+];
+---
+
+<Cerita judul={`${halaman.judul} — ${halaman.subjudul}`} deskripsi={halaman.deskripsi}>
+  {/* ═══ PEMBUKA 0.0 ═══════════════════════════════════════════════════════ */}
+  <section class="hero" id="pembuka" aria-labelledby="pembuka-judul">
+    <div class="wrap">
+      <img class="hero__mark" src="./brand/sadasa-logo-white.png" alt="SADASA Academy" width="640" height="118" />
+      <span class="eyebrow hero__eyebrow">{pembuka.eyebrow}</span>
+      <h1 id="pembuka-judul">{pembuka.judul}</h1>
+      <p class="hero__lead">{pembuka.lead}</p>
+
+      <div class="hero__figures">
+        {
+          adegan("0.0").rows.map((r) => (
+            <div class="hero__figure">
+              <span class="n">{n(r.n)}</span>
+              <span class="l">{r.label}</span>
+            </div>
+          ))
+        }
+      </div>
+
+      <p class="hero__note">{pembuka.catatan}</p>
+    </div>
+  </section>
+
+  {/* ═══ BABAK I ═══════════════════════════════════════════════════════════ */}
+  <section class="babak" id={babak[0]!.id}>
+    <div class="wrap">
+      <span class="babak__label">{babak[0]!.label}</span>
+      <h2>{babak[0]!.judul}</h2>
+      <p class="babak__lead">{babak[0]!.lead}</p>
+    </div>
+  </section>
+
+  {/* ═══ PILAR 1 ═══════════════════════════════════════════════════════════ */}
+  <Pilar no={pilar[0]!.no} id={pilar[0]!.id} judul={pilar[0]!.judul} bidang={pilar[0]!.bidang} lead={pilar[0]!.lead}>
+    <Adegan id="1.1" pertanyaan={a("1.1").pertanyaan} tafsir={a("1.1").tafsir} sumber={s("1.1")}>
+      <StatCards
+        judul={a("1.1").label}
+        kartu={[
+          { nilai: meta.umat_total, label: "jiwa terdaftar", sorot: true },
+          { nilai: meta.keluarga_total, label: "keluarga" },
+          { nilai: d(angka("1.1", "rata_rata_per_keluarga"), 2), label: "rata-rata jiwa per keluarga",
+            sub: `median ${d(angka("1.1", "median_per_keluarga"), 0)}` },
+          { nilai: angka("1.1", "terbesar"), label: "jiwa pada keluarga terbesar" },
+        ]}
+      />
+      <TabelAlt
+        slot="tabel"
+        judul="data skala dasar paroki"
+        keterangan={a("1.1").caption}
+        kolom={[{ judul: "Ukuran" }, { judul: "Nilai", num: true }]}
+        baris={[
+          ["Jiwa terdaftar", n(meta.umat_total)],
+          ["Jumlah keluarga", n(meta.keluarga_total)],
+          ["Rata-rata anggota per keluarga", d(angka("1.1", "rata_rata_per_keluarga"), 2)],
+          ["Median anggota per keluarga", d(angka("1.1", "median_per_keluarga"), 0)],
+          ["Jumlah anggota keluarga terbesar", n(angka("1.1", "terbesar"))],
+          ["Jumlah lingkungan", n(meta.lingkungan_total)],
+          ["Jumlah wilayah", n(meta.wilayah_total)],
+        ]}
+      />
+    </Adegan>
+
+    <Adegan id="1.2" pertanyaan={a("1.2").pertanyaan} tafsir={a("1.2").tafsir} sumber={s("1.2")}>
+      <Treemap
+        rows={adegan("1.2").rows}
+        caption={a("1.2").caption}
+        label={a("1.2").label}
+        kelompok={kelompok}
+        penyebutLabel={`dari ${n(adegan("1.2").penyebut)} jiwa berkode wilayah Pugeran`}
+        ekstra={lingkunganPerWilayah}
+      />
+      <TabelAlt
+        slot="tabel"
+        judul="sebaran jumlah umat menurut wilayah"
+        keterangan={a("1.2").caption}
+        kolom={[{ judul: "Wilayah" }, { judul: "Kelompok" }, { judul: "Jiwa", num: true }, { judul: "Persen", num: true }]}
+        baris={adegan("1.2").rows.map((r) => [r.label, r.kelompok ?? "–", sel(r.n, r.disamarkan), p(r.pct)])}
+      />
+    </Adegan>
+
+    <Adegan id="1.3" pertanyaan={a("1.3").pertanyaan} tafsir={a("1.3").tafsir} sumber={s("1.3")}>
+      <SebaranLingkungan
+        rows={adegan("1.3").rows}
+        wilayah={adegan("1.2").rows}
+        kelompok={kelompok}
+        caption={a("1.3").caption}
+        label={a("1.3").label}
+        median={angka("1.3", "median")}
+        sorot={[objek<{ label: string }>("1.3", "terbesar").label, objek<{ label: string }>("1.3", "terkecil").label]}
+      />
+      <TabelAlt
+        slot="tabel"
+        judul="sebaran jumlah umat di 88 lingkungan"
+        keterangan={a("1.3").caption}
+        gulir
+        kolom={[{ judul: "Lingkungan" }, { judul: "Wilayah" }, { judul: "Kelompok" }, { judul: "Jiwa", num: true }, { judul: "Persen", num: true }]}
+        baris={adegan("1.3").rows.map((r) => [r.label, r.wilayah ?? "–", r.kelompok ?? "–", sel(r.n, r.disamarkan), p(r.pct)])}
+      />
+    </Adegan>
+
+    <Adegan id="1.4" pertanyaan={a("1.4").pertanyaan} tafsir={a("1.4").tafsir} sumber={s("1.4")}>
+      <KolomLolipop
+        rows={adegan("1.4").rows}
+        caption={a("1.4").caption}
+        label={a("1.4").label}
+        sorot="1"
+        satuan="keluarga"
+        akhiran=" anggota keluarga"
+        penyebutLabel={`dari ${n(meta.keluarga_total)} keluarga`}
+        labelSumbu="jumlah anggota dalam satu keluarga"
+      />
+      <TabelAlt
+        slot="tabel"
+        judul="distribusi ukuran keluarga"
+        keterangan={a("1.4").caption}
+        kolom={[{ judul: "Jumlah anggota keluarga" }, { judul: "Keluarga", num: true }, { judul: "Persen", num: true }]}
+        baris={tabelBaris(adegan("1.4").rows)}
+      />
+    </Adegan>
+
+    <Adegan id="1.5" pertanyaan={a("1.5").pertanyaan} tafsir={a("1.5").tafsir} sumber={s("1.5")}>
+      <RingMeter
+        caption={a("1.5").caption}
+        label={a("1.5").label}
+        meter={[{
+          judul: "Kepala keluarga perempuan",
+          pusat: p(angka("1.5", "perempuan_pct")),
+          subPusat: "dikepalai perempuan",
+          segmen: [{ label: "Perempuan", n: angka("1.5", "perempuan"), pct: angka("1.5", "perempuan_pct"), warna: "var(--series-1)" }],
+          sisa: { label: "Laki-laki", n: nilai("1.5", "Laki-laki"), pct: pctBaris("1.5", "Laki-laki") },
+          penyebutLabel: `dari ${n(angka("1.5", "penyebut"))} kepala keluarga yang jenis kelaminnya tercatat`,
+          satuan: "kepala keluarga",
+          keterangan: `${n(angka("1.5", "tidak_tercatat"))} kepala keluarga tanpa catatan jenis kelamin tidak masuk hitungan.`,
+        }]}
+      />
+      <TabelAlt
+        slot="tabel"
+        judul="komposisi jenis kelamin kepala keluarga"
+        keterangan={a("1.5").caption}
+        kolom={KOLOM_BAKU}
+        baris={[
+          ...tabelBaris(adegan("1.5").rows),
+          ["Tidak tercatat", n(angka("1.5", "tidak_tercatat")), "–"],
+          ["Total kepala keluarga terdaftar", n(angka("1.5", "total_kk")), "–"],
+        ]}
+      />
+    </Adegan>
+
+    <Adegan id="1.6" pertanyaan={a("1.6").pertanyaan} tafsir={a("1.6").tafsir} sumber={s("1.6")}>
+      <ZoomBreakdown
+        caption={a("1.6").caption}
+        label={a("1.6").label}
+        total={{ label: "Umat terdaftar", n: meta.umat_total }}
+        dominan={{ label: `Suku ${sukuTerbesar.label}`, n: sukuTerbesar.n }}
+        fokus={{ label: "suku lain dan belum tercatat", n: meta.umat_total - sukuTerbesar.n }}
+        rincian={rincianSuku}
+        rincianPenyebut={PENYEBUT_UMAT}
+        sorot={rincianSuku[0] ? [rincianSuku[0].label] : []}
+      />
+      <TabelAlt
+        slot="tabel"
+        judul="keragaman latar belakang suku umat"
+        keterangan={a("1.6").caption}
+        kolom={KOLOM_BAKU}
+        baris={tabelBaris(adegan("1.6").rows)}
+      />
+    </Adegan>
+  </Pilar>
+
+  {/* ═══ PILAR 2 ═══════════════════════════════════════════════════════════ */}
+  <Pilar no={pilar[1]!.no} id={pilar[1]!.id} judul={pilar[1]!.judul} bidang={pilar[1]!.bidang} lead={pilar[1]!.lead}>
+    <Adegan id="2.1" pertanyaan={a("2.1").pertanyaan} tafsir={a("2.1").tafsir} sumber={s("2.1")}>
+      <PopulationPyramid
+        rows={pyramidRows("2.1")}
+        caption={a("2.1").caption}
+        label={a("2.1").label}
+        snapshot={SNAPSHOT}
+        median={angka("2.1", "median_umur")}
+      />
+      <TabelAlt
+        slot="tabel"
+        judul="struktur piramida usia umat"
+        keterangan={a("2.1").caption}
+        gulir
+        kolom={[{ judul: "Rentang usia" }, { judul: "Laki-laki", num: true }, { judul: "Perempuan", num: true }, { judul: "Jenis kelamin belum tercatat", num: true }]}
+        baris={pyramidRows("2.1").map((r) => [
+          r.label, sel(r.laki.n, r.laki.disamarkan), sel(r.perempuan.n, r.perempuan.disamarkan),
+          sel(r.tidak_tercatat.n, r.tidak_tercatat.disamarkan),
+        ])}
+      />
+    </Adegan>
+
+    <Adegan id="2.2" pertanyaan={a("2.2").pertanyaan} tafsir={a("2.2").tafsir} sumber={s("2.2")}>
+      <RasioTanggungan
+        rows={adegan("2.2").rows}
+        rasioAnak={angka("2.2", "rasio_anak")}
+        rasioLansia={angka("2.2", "rasio_lansia")}
+        rasioTotal={angka("2.2", "rasio_ketergantungan")}
+        caption={a("2.2").caption}
+        label={a("2.2").label}
+      />
+      <TabelAlt
+        slot="tabel"
+        judul="komposisi tiga kelompok usia"
+        keterangan={a("2.2").caption}
+        kolom={KOLOM_BAKU}
+        baris={[
+          ...tabelBaris(adegan("2.2").rows),
+          ["Rasio ketergantungan", d(angka("2.2", "rasio_ketergantungan"), 1), "–"],
+          ["Usia belum dapat dihitung", n(meta.umur_tidak_dapat_dihitung), "–"],
+        ]}
+      />
+    </Adegan>
+
+    <Adegan id="2.3" pertanyaan={a("2.3").pertanyaan} tafsir={a("2.3").tafsir} sumber={s("2.3")}>
+      <UnitKolom
+        rows={adegan("2.3").rows}
+        caption={a("2.3").caption}
+        label={a("2.3").label}
+        sorot="0–4 tahun"
+        penyebutLabel={`dari ${n(angka("2.3", "penyebut"))} anak berusia di bawah 15 tahun`}
+      />
+      <TabelAlt
+        slot="tabel"
+        judul="perbandingan tiga kelompok usia anak"
+        keterangan={a("2.3").caption}
+        kolom={KOLOM_BAKU}
+        baris={tabelBaris(adegan("2.3").rows)}
+      />
+    </Adegan>
+
+    <Adegan id="2.4" pertanyaan={a("2.4").pertanyaan} tafsir={a("2.4").tafsir} sumber={s("2.4")}>
+      <RingMeter
+        caption={a("2.4").caption}
+        label={a("2.4").label}
+        meter={[{
+          judul: "Orang muda berusia 15–29 tahun",
+          pusat: p(pctBaris("2.4", "15–29 tahun")),
+          subPusat: "dari seluruh umat",
+          segmen: [
+            { label: "15–19 tahun", n: angka("2.4", "umur_15_19"), pct: (100 * angka("2.4", "umur_15_19")) / meta.umat_total, warna: "var(--ramp-3)" },
+            { label: "20–24 tahun", n: angka("2.4", "umur_20_24"), pct: (100 * angka("2.4", "umur_20_24")) / meta.umat_total, warna: "var(--ramp-4)" },
+            { label: "25–29 tahun", n: angka("2.4", "umur_25_29"), pct: (100 * angka("2.4", "umur_25_29")) / meta.umat_total, warna: "var(--ramp-5)" },
+          ],
+          sisa: { label: "Umat lainnya", n: meta.umat_total - nilai("2.4", "15–29 tahun"), pct: 100 - pctBaris("2.4", "15–29 tahun") },
+          penyebutLabel: PENYEBUT_UMAT,
+          satuan: "jiwa",
+        }]}
+      />
+      <TabelAlt
+        slot="tabel"
+        judul="komposisi kelompok orang muda (15–29 tahun)"
+        keterangan={a("2.4").caption}
+        kolom={KOLOM_BAKU}
+        baris={[
+          ["15–19 tahun", n(angka("2.4", "umur_15_19")), p((100 * angka("2.4", "umur_15_19")) / meta.umat_total)],
+          ["20–24 tahun", n(angka("2.4", "umur_20_24")), p((100 * angka("2.4", "umur_20_24")) / meta.umat_total)],
+          ["25–29 tahun", n(angka("2.4", "umur_25_29")), p((100 * angka("2.4", "umur_25_29")) / meta.umat_total)],
+          ["Total usia 15–29 tahun", n(nilai("2.4", "15–29 tahun")), p(adegan("2.4").rows[0]?.pct ?? null)],
+        ]}
+      />
+    </Adegan>
+
+    <Adegan id="2.5" pertanyaan={a("2.5").pertanyaan} tafsir={a("2.5").tafsir} sumber={s("2.5")}>
+      <Dumbbell rows={pyramidRows("2.5")} caption={a("2.5").caption} label={a("2.5").label} />
+      <TabelAlt
+        slot="tabel"
+        judul="profil warga lanjut usia (65 tahun ke atas)"
+        keterangan={a("2.5").caption}
+        kolom={[{ judul: "Rentang usia" }, { judul: "Laki-laki", num: true }, { judul: "Perempuan", num: true }, { judul: "Jenis kelamin belum tercatat", num: true }]}
+        baris={[
+          ...pyramidRows("2.5").map((r) => [
+            r.label, sel(r.laki.n, r.laki.disamarkan), sel(r.perempuan.n, r.perempuan.disamarkan),
+            sel(r.tidak_tercatat.n, r.tidak_tercatat.disamarkan),
+          ]),
+          ["Total usia 65 tahun ke atas", "–", "–", n(angka("2.5", "lansia_65"))],
+          ["Total usia 80 tahun ke atas", "–", "–", n(angka("2.5", "lansia_80"))],
+        ]}
+      />
+    </Adegan>
+
+    <Adegan id="2.6" pertanyaan={a("2.6").pertanyaan} tafsir={a("2.6").tafsir} sumber={s("2.6")}>
+      <GarisRasio
+        titik={objek<{ label: string; laki: number; perempuan: number; rasio: number | null }[]>("2.6", "per_kelompok_umur")}
+        rasioTotal={angka("2.6", "rasio_jenis_kelamin")}
+        totalLaki={nilai("2.6", "Laki-laki")}
+        totalPerempuan={nilai("2.6", "Perempuan")}
+        tidakTercatat={angka("2.6", "tidak_tercatat")}
+        caption={a("2.6").caption}
+        label={a("2.6").label}
+        idUnik="rasio-26"
+      />
+      <TabelAlt
+        slot="tabel"
+        judul="rasio jenis kelamin menurut kelompok usia"
+        keterangan="Rasio jumlah laki-laki per 100 perempuan pada setiap kelompok rentang usia lima belas tahunan."
+        kolom={[{ judul: "Rentang usia" }, { judul: "Laki-laki", num: true }, { judul: "Perempuan", num: true }, { judul: "Laki-laki per 100 perempuan", num: true }]}
+        baris={objek<{ label: string; laki: number; perempuan: number; rasio: number | null }[]>("2.6", "per_kelompok_umur")
+          .map((r) => [r.label, n(r.laki), n(r.perempuan), r.rasio === null ? "–" : d(r.rasio, 1)])}
+      />
+    </Adegan>
+  </Pilar>
+
+  {/* ═══ BABAK II ══════════════════════════════════════════════════════════ */}
+  <section class="babak" id={babak[1]!.id}>
+    <div class="wrap">
+      <span class="babak__label">{babak[1]!.label}</span>
+      <h2>{babak[1]!.judul}</h2>
+      <p class="babak__lead">{babak[1]!.lead}</p>
+    </div>
+  </section>
+
+  {/* ═══ PILAR 3 ═══════════════════════════════════════════════════════════ */}
+  <Pilar no={pilar[2]!.no} id={pilar[2]!.id} judul={pilar[2]!.judul} bidang={pilar[2]!.bidang} lead={pilar[2]!.lead}>
+    <Adegan id="3.1" pertanyaan={a("3.1").pertanyaan} tafsir={a("3.1").tafsir} sumber={s("3.1")}>
+      <TahapanTrack
+        caption={a("3.1").caption}
+        label={a("3.1").label}
+        penyebut={meta.umat_total}
+        penyebutLabel={PENYEBUT_UMAT}
+        catatan={`${n(angka("3.1", "tidak_tercatat"))} umat belum memiliki catatan kelengkapan setelah baptis, sehingga berada di luar kategori "sudah" maupun "belum".`}
+        tahap={[
+          { label: "Baptis", sudah: nilai("3.1", "Dibaptis"), belum: 0, tidakTercatat: 0 },
+          { label: "Komuni Pertama", sudah: nilai("3.1", "Sudah menerima Komuni Pertama"), belum: angka("3.1", "komuni_belum"), tidakTercatat: angka("3.1", "tidak_tercatat") },
+          { label: "Krisma", sudah: nilai("3.1", "Sudah menerima Krisma"), belum: angka("3.1", "krisma_belum"), tidakTercatat: angka("3.1", "tidak_tercatat") },
+        ]}
+      />
+      <TabelAlt
+        slot="tabel"
+        judul="tahapan penerimaan sakramen inisiasi"
+        keterangan={a("3.1").caption}
+        kolom={[{ judul: "Tahap Sakramen" }, { judul: "Sudah Menerima", num: true }, { judul: "Belum Menerima", num: true }, { judul: "Belum Ada Catatan", num: true }]}
+        baris={[
+          ["Baptis", n(meta.umat_total), "0", "0"],
+          ["Komuni Pertama", n(nilai("3.1", "Sudah menerima Komuni Pertama")), n(angka("3.1", "komuni_belum")), n(angka("3.1", "tidak_tercatat"))],
+          ["Krisma", n(nilai("3.1", "Sudah menerima Krisma")), n(angka("3.1", "krisma_belum")), n(angka("3.1", "tidak_tercatat"))],
+        ]}
+      />
+    </Adegan>
+
+    <Adegan id="3.2" pertanyaan={a("3.2").pertanyaan} tafsir={a("3.2").tafsir} sumber={s("3.2")}>
+      <Waffle
+        caption={a("3.2").caption}
+        label={a("3.2").label}
+        total={meta.umat_total}
+        penyebutLabel={PENYEBUT_UMAT}
+        kategori={[
+          { label: "Dibaptis sebagai anak", n: nilai("3.2", "Dibaptis sebagai anak"), slot: 1 },
+          { label: "Dibaptis sebagai remaja atau dewasa", n: nilai("3.2", "Dibaptis sebagai remaja atau dewasa"), slot: 2 },
+          { label: "Sebelumnya beragama lain", n: jumlahBaris("3.2", AGAMA_SEBELUMNYA), slot: 3,
+            ket: AGAMA_SEBELUMNYA.map((l) => l.replace("Sebelumnya ", "")).join(", ") },
+          { label: "Jalan lain", n: jumlahBaris("3.2", JALAN_LAIN_32), slot: 4,
+            ket: `termasuk ${JALAN_LAIN_32.slice(1).join(", ").toLowerCase().replace("kristen", "Kristen")}` },
+          { label: "Tidak tercatat", n: nilai("3.2", "Tidak tercatat"), celah: true },
+        ]}
+        catatan={SAMAR_32.length ? `${SAMAR_32.join(", ")}: 1–4 jiwa, disamarkan dan tidak ikut digambar.` : undefined}
+      />
+      <TabelAlt slot="tabel" judul="waktu dan jalur penerimaan Sakramen Baptis" keterangan={a("3.2").caption}
+        kolom={KOLOM_BAKU} baris={tabelBaris(adegan("3.2").rows)} />
+    </Adegan>
+
+    <Adegan id="3.3" pertanyaan={a("3.3").pertanyaan} tafsir={a("3.3").tafsir} sumber={s("3.3")}>
+      <RingMeter
+        caption={a("3.3").caption}
+        label={a("3.3").label}
+        meter={adegan("3.3").rows.map((r) => ({
+          judul: r.label,
+          pusat: p(r.pct),
+          subPusat: "dari seluruh umat",
+          segmen: [{ label: r.label, n: r.n, pct: r.pct ?? 0, warna: "var(--kat-2)" }],
+          sisa: { label: "Di tempat lain atau tidak tercatat", n: r.n === null ? null : meta.umat_total - r.n, pct: 100 - (r.pct ?? 0) },
+          penyebutLabel: PENYEBUT_UMAT,
+          satuan: "jiwa",
+        }))}
+      />
+      <TabelAlt slot="tabel" judul="penerimaan sakramen inisiasi di Paroki Pugeran" keterangan={a("3.3").caption}
+        kolom={KOLOM_BAKU} baris={tabelBaris(adegan("3.3").rows)} />
+    </Adegan>
+
+    <Adegan id="3.4" pertanyaan={a("3.4").pertanyaan} tafsir={a("3.4").tafsir} sumber={s("3.4")}>
+      <Treemap rows={adegan("3.4").rows} caption={a("3.4").caption} label={a("3.4").label}
+        penyebutLabel={PENYEBUT_UMAT} sorot={["Perkawinan sah secara Katolik"]} />
+      <TabelAlt slot="tabel" judul="sebaran status perkawinan umat" keterangan={a("3.4").caption}
+        kolom={KOLOM_BAKU} baris={tabelBaris(adegan("3.4").rows)} />
+    </Adegan>
+
+    <Adegan id="3.5" pertanyaan={a("3.5").pertanyaan} tafsir={a("3.5").tafsir} sumber={s("3.5")}>
+      <Hemisiklus
+        caption={a("3.5").caption}
+        label={a("3.5").label}
+        total={meta.umat_total}
+        penyebutLabel={PENYEBUT_UMAT}
+        pusat={{ nilai: p(angka("3.5", "aktif_gereja_lingkungan_pct")), label: "aktif di gereja paroki dan di lingkungan" }}
+        kategori={adegan("3.5").rows.map((r, i) => (r.label === "Tidak tercatat"
+          ? { label: r.label, n: r.n, celah: true }
+          : { label: r.label, n: r.n, slot: i + 1 }))}
+      />
+      <TabelAlt slot="tabel" judul="tingkat keaktifan di gereja paroki dan lingkungan" keterangan={a("3.5").caption}
+        kolom={KOLOM_BAKU} baris={tabelBaris(adegan("3.5").rows)} />
+    </Adegan>
+
+    <Adegan id="3.6" pertanyaan={a("3.6").pertanyaan} tafsir={a("3.6").tafsir} sumber={s("3.6")}>
+      <ZoomBreakdown
+        caption={a("3.6").caption}
+        label={a("3.6").label}
+        kepala={[
+          { nilai: n(angka("3.6", "total_pelayan")), label: "umat mengemban tugas pelayanan tercatat" },
+          { nilai: `1 : ${d(angka("3.6", "umat_per_pelayan"), 1)}`, label: "satu pelayan berbanding umat" },
+        ]}
+        total={{ label: "Umat terdaftar", n: meta.umat_total }}
+        dominan={{ label: "Tanpa tugas pelayanan tercatat", n: meta.umat_total - angka("3.6", "total_pelayan") }}
+        fokus={{ label: "pelayan pastoral", n: angka("3.6", "total_pelayan") }}
+        rincian={adegan("3.6").rows}
+        rincianPenyebut={`dari ${n(angka("3.6", "total_pelayan"))} pelayan`}
+        sorot={["Pengurus lingkungan"]}
+      />
+      <TabelAlt slot="tabel" judul="ragam bidang tugas pelayanan pastoral" keterangan={a("3.6").caption}
+        kolom={[{ judul: "Bidang Tugas" }, { judul: "Jiwa", num: true }, { judul: "Persen dari Total Pelayan", num: true }]}
+        baris={tabelBaris(adegan("3.6").rows)} />
+    </Adegan>
+
+    <Adegan id="3.7" pertanyaan={a("3.7").pertanyaan} tafsir={a("3.7").tafsir} sumber={s("3.7")}>
+      <StatCards
+        judul="Keluarga lintas iman"
+        kartu={[
+          { nilai: angka("3.7", "bukan_katolik"), label: "anggota keluarga non-Katolik", sorot: true },
+          { nilai: angka("3.7", "keluarga_lintas_iman"), label: "keluarga dengan anggota non-Katolik",
+            sub: `${p(angka("3.7", "keluarga_lintas_iman_pct"))} dari ${n(meta.keluarga_total)} keluarga` },
+          { nilai: angka("3.7", "katekumen"), label: "katekumen dalam persiapan baptis" },
+        ]}
+      />
+      <div class="sela"></div>
+      <ZoomBreakdown
+        caption={a("3.7").caption}
+        label={a("3.7").label}
+        total={{ label: "Umat terdaftar", n: meta.umat_total }}
+        dominan={{ label: "Katolik", n: angka("3.7", "katolik") }}
+        fokus={{ label: "anggota keluarga non-Katolik", n: angka("3.7", "bukan_katolik") }}
+        rincian={adegan("3.7").rows}
+        rincianPenyebut={`dari ${n(angka("3.7", "bukan_katolik"))} anggota non-Katolik`}
+        sorot={["Katekumen"]}
+      />
+      <TabelAlt slot="tabel" judul="komposisi agama anggota keluarga non-Katolik" keterangan={a("3.7").caption}
+        kolom={[{ judul: "Agama" }, { judul: "Jiwa", num: true }, { judul: "Persen dari 654", num: true }]}
+        baris={tabelBaris(adegan("3.7").rows)} />
+    </Adegan>
+  </Pilar>
+
+  {/* ═══ PILAR 4 ═══════════════════════════════════════════════════════════ */}
+  <Pilar no={pilar[3]!.no} id={pilar[3]!.id} judul={pilar[3]!.judul} bidang={pilar[3]!.bidang} lead={pilar[3]!.lead}>
+    <Adegan id="4.1" pertanyaan={a("4.1").pertanyaan} tafsir={a("4.1").tafsir} sumber={s("4.1")}>
+      <HorizontalBar rows={adegan("4.1").rows} caption={a("4.1").caption} label={a("4.1").label}
+        sorot="SLTA" penyebutLabel={PENYEBUT_UMAT} />
+      <TabelAlt slot="tabel" judul="jenjang pendidikan tertinggi umat" keterangan={a("4.1").caption}
+        kolom={[{ judul: "Jenjang" }, { judul: "Jiwa", num: true }, { judul: "Persen", num: true }]}
+        baris={[
+          ...tabelBaris(adegan("4.1").rows),
+          ["Pendidikan tinggi (diploma hingga doktoral)", n(angka("4.1", "pendidikan_tinggi")), p(angka("4.1", "pendidikan_tinggi_pct"))],
+        ]} />
+    </Adegan>
+
+    <Adegan id="4.2" pertanyaan={a("4.2").pertanyaan} tafsir={a("4.2").tafsir} sumber={s("4.2")}>
+      <Waffle
+        caption={a("4.2").caption}
+        label={a("4.2").label}
+        total={meta.umat_total}
+        penyebutLabel={PENYEBUT_UMAT}
+        kategori={[
+          ...adegan("4.2").rows.map((r, i) => ({
+            label: r.label, n: r.n, slot: i + 1,
+            ket: r.pct === null ? undefined : `${p(r.pct)} dari yang memiliki catatan`,
+          })),
+          { label: "Jenis sekolah belum tercatat", n: angka("4.2", "tanpa_penanda"), celah: true },
+        ]}
+      />
+      <DataGapCard
+        judul="catatan jenis sekolah (sekolah Katolik)"
+        kosong={angka("4.2", "tanpa_penanda")}
+        dari={meta.umat_total}
+        pct={angka("4.2", "tanpa_penanda_pct")}
+        akibat={`Catatan mengenai jenis sekolah saat ini baru mencakup ${n(angka("4.2", "penyebut"))} dari ${n(meta.umat_total)} jiwa. Oleh sebab itu, informasi ini belum dapat digunakan untuk menarik kesimpulan umum mengenai keseluruhan umat paroki.`}
+        usul="Disarankan untuk mendata jenis sekolah pada sensus berikutnya guna mendukung perencanaan reksa pastoral bidang pendidikan."
+      />
+      <TabelAlt slot="tabel" judul="kategori jenis sekolah" keterangan={a("4.2").caption}
+        kolom={[{ judul: "Jenis sekolah" }, { judul: "Jiwa", num: true }, { judul: "Persen dari yang tercatat", num: true }]}
+        baris={[
+          ...tabelBaris(adegan("4.2").rows),
+          ["Data jenis sekolah belum tercatat", n(angka("4.2", "tanpa_penanda")), p(angka("4.2", "tanpa_penanda_pct"))],
+        ]} />
+    </Adegan>
+
+    <Adegan id="4.3" pertanyaan={a("4.3").pertanyaan} tafsir={a("4.3").tafsir} sumber={s("4.3")}>
+      <HorizontalBar rows={adegan("4.3").rows} caption={a("4.3").caption} label={a("4.3").label}
+        sorot="Ekonomi" penyebutLabel={`dari ${n(angka("4.3", "terisi"))} jiwa yang memiliki catatan bidang studi`} />
+      <TabelAlt slot="tabel" judul="lima belas bidang studi terbesar umat" keterangan={a("4.3").caption}
+        kolom={[{ judul: "Bidang studi" }, { judul: "Jiwa", num: true }, { judul: "Persen dari yang tercatat", num: true }]}
+        baris={tabelBaris(adegan("4.3").rows)} />
+    </Adegan>
+
+    <Adegan id="4.4" pertanyaan={a("4.4").pertanyaan} tafsir={a("4.4").tafsir} sumber={s("4.4")}>
+      <Treemap rows={adegan("4.4").rows} caption={a("4.4").caption} label={a("4.4").label}
+        penyebutLabel={PENYEBUT_UMAT} sorot={["Swasta"]} redup={["Pekerjaan lainnya"]} />
+      <TabelAlt slot="tabel" judul="distribusi profesi dan mata pencaharian umat" keterangan={a("4.4").caption}
+        kolom={KOLOM_BAKU} baris={tabelBaris(adegan("4.4").rows)} />
+    </Adegan>
+
+    <Adegan id="4.5" pertanyaan={a("4.5").pertanyaan} tafsir={a("4.5").tafsir} sumber={s("4.5")}>
+      <BatangDivergen
+        caption={a("4.5").caption}
+        label={a("4.5").label}
+        kiri={{ label: "Berkecukupan dan bisa membantu", n: nilai("4.5", "Berkecukupan dan bisa membantu"), pct: pctBaris("4.5", "Berkecukupan dan bisa membantu") }}
+        tengah={{ label: "Biasa atau cukup", n: nilai("4.5", "Biasa atau cukup"), pct: pctBaris("4.5", "Biasa atau cukup") }}
+        kanan={{ label: "Memerlukan bantuan", n: nilai("4.5", "Memerlukan bantuan"), pct: pctBaris("4.5", "Memerlukan bantuan") }}
+        penyebutLabel={`dari ${n(angka("4.5", "penyebut"))} keluarga yang tercatat`}
+        catatan={`${n(angka("4.5", "tidak_tercatat"))} keluarga tanpa catatan kondisi ekonomi tidak digambar.`}
+      />
+      <TabelAlt slot="tabel" judul="klasifikasi kondisi ekonomi keluarga umat" keterangan={a("4.5").caption}
+        kolom={[{ judul: "Kategori" }, { judul: "Keluarga", num: true }, { judul: "Persen", num: true }]}
+        baris={[
+          ...tabelBaris(adegan("4.5").rows),
+          ["Tidak tercatat", n(angka("4.5", "tidak_tercatat")), "–"],
+          ["Total keluarga terdaftar dalam berkas sensus", n(angka("4.5", "total_kk")), "–"],
+        ]} />
+    </Adegan>
+
+    <Adegan id="4.6" pertanyaan={a("4.6").pertanyaan} tafsir={a("4.6").tafsir} sumber={s("4.6")}>
+      <ZoomBreakdown
+        caption={a("4.6").caption}
+        label={a("4.6").label}
+        total={{ label: "Umat terdaftar", n: meta.umat_total }}
+        dominan={{ label: "Tanpa catatan peran publik", n: meta.umat_total - angka("4.6", "total") }}
+        fokus={{ label: "pemegang peran publik", n: angka("4.6", "total") }}
+        rincian={adegan("4.6").rows}
+        rincianPenyebut={`dari ${n(angka("4.6", "total"))} pemegang peran publik`}
+        sorot={["Pengurus RT, RW, atau desa"]}
+      />
+      <TabelAlt slot="tabel" judul="ragam peran publik kemasyarakatan yang diemban umat" keterangan={a("4.6").caption}
+        kolom={[{ judul: "Peran" }, { judul: "Jiwa", num: true }, { judul: "Persen dari 563", num: true }]}
+        baris={tabelBaris(adegan("4.6").rows)} />
+    </Adegan>
+  </Pilar>
+
+  {/* ═══ BABAK III ═════════════════════════════════════════════════════════ */}
+  <section class="babak" id={babak[2]!.id}>
+    <div class="wrap">
+      <span class="babak__label">{babak[2]!.label}</span>
+      <h2>{babak[2]!.judul}</h2>
+      <p class="babak__lead">{babak[2]!.lead}</p>
+    </div>
+  </section>
+
+  {/* ═══ PILAR 5 ═══════════════════════════════════════════════════════════ */}
+  <Pilar no={pilar[4]!.no} id={pilar[4]!.id} judul={pilar[4]!.judul} bidang={pilar[4]!.bidang} lead={pilar[4]!.lead}>
+    <Adegan id="5.1" pertanyaan={a("5.1").pertanyaan} tafsir={a("5.1").tafsir} sumber={s("5.1")}>
+      <UnitKluster rows={adegan("5.1").rows} caption={a("5.1").caption} label={a("5.1").label}
+        sorot="Sakit menahun" umatTotal={meta.umat_total}
+        penyebutLabel={`dari ${n(angka("5.1", "total"))} jiwa bercatatan khusus`} />
+      <TabelAlt slot="tabel" judul="catatan kebutuhan kesehatan khusus" keterangan={a("5.1").caption}
+        kolom={[{ judul: "Catatan" }, { judul: "Jiwa", num: true }, { judul: "Persen dari 286", num: true }]}
+        baris={[
+          ...tabelBaris(adegan("5.1").rows),
+          ["Kondisi sehat umum tanpa catatan khusus", n(angka("5.1", "normal")), "–"],
+          ["Data kesehatan belum tercatat", n(angka("5.1", "tidak_tercatat")), "–"],
+        ]} />
+    </Adegan>
+
+    <Adegan id="5.2" pertanyaan={a("5.2").pertanyaan} tafsir={a("5.2").tafsir} sumber={s("5.2")}>
+      <BubbleScatter
+        rows={lingkunganRows("5.2")}
+        kelompok={kelompok}
+        caption={a("5.2").captionVisual ?? a("5.2").caption}
+        label={a("5.2").labelVisual ?? a("5.2").label}
+      />
+      <div class="sela"></div>
+      <HeatTable
+        rows={lingkunganRows("5.2")}
+        kelompok={kelompok}
+        caption={a("5.2").caption}
+        label={a("5.2").label}
+        rumus={objek<{ keterangan: string; bobot: Record<string, number>; batas: string }>("5.2", "rumus")}
+      />
+    </Adegan>
+
+    <Adegan id="5.3" pertanyaan={a("5.3").pertanyaan} tafsir={a("5.3").tafsir} sumber={s("5.3")}>
+      <KotakBersarang
+        rows={adegan("5.3").rows}
+        caption={a("5.3").caption}
+        label={a("5.3").label}
+        satuan={["keluarga", "jiwa", "jiwa"]}
+        penyebutLabel={[`dari ${n(meta.keluarga_total)} keluarga`, "dari rumah tangga satu orang", "dari rumah tangga satu orang"]}
+      />
+      <TabelAlt slot="tabel" judul="warga lanjut usia yang tinggal seorang diri" keterangan={a("5.3").caption}
+        kolom={[{ judul: "Kelompok" }, { judul: "Jumlah", num: true }, { judul: "Persen", num: true }]}
+        baris={tabelBaris(adegan("5.3").rows)} />
+    </Adegan>
+
+    <Adegan id="5.4" pertanyaan={a("5.4").pertanyaan} tafsir={a("5.4").tafsir} sumber={s("5.4")}>
+      <HorizontalBar rows={adegan("5.4").rows} caption={a("5.4").caption} label={a("5.4").label}
+        sorot="Jakarta" penyebutLabel={`dari ${n(angka("5.4", "total"))} jiwa yang tinggal di luar wilayah paroki`} />
+      <TabelAlt slot="tabel" judul="persebaran domisili di luar wilayah paroki" keterangan={a("5.4").caption}
+        kolom={[{ judul: "Tempat" }, { judul: "Jiwa", num: true }, { judul: "Persen dari 373", num: true }]}
+        baris={[
+          ...tabelBaris(adegan("5.4").rows),
+          ["Indekos di dalam wilayah paroki", n(angka("5.4", "indekos")), "–"],
+          ["Data tempat tinggal belum tercatat", n(angka("5.4", "tidak_tercatat")), "–"],
+        ]} />
+    </Adegan>
+
+    <Adegan id="5.5" pertanyaan={a("5.5").pertanyaan} tafsir={a("5.5").tafsir} sumber={s("5.5")}>
+      <HorizontalBar rows={adegan("5.5").rows} caption={a("5.5").caption} label={a("5.5").label}
+        sorot="Tercatat tidak aktif" penyebutLabel={PENYEBUT_UMAT} />
+      <TabelAlt slot="tabel" judul="keaktifan umat yang jarang bersekutu" keterangan={a("5.5").caption}
+        kolom={KOLOM_BAKU} baris={tabelBaris(adegan("5.5").rows)} />
+    </Adegan>
+
+    <Adegan id="5.6" pertanyaan={a("5.6").pertanyaan} tafsir={a("5.6").tafsir} sumber={s("5.6")}>
+      <Waffle
+        caption={a("5.6").caption}
+        label={a("5.6").label}
+        total={meta.umat_total}
+        penyebutLabel={PENYEBUT_UMAT}
+        kategori={adegan("5.6").rows.map((r, i) => (r.label === "Tidak tercatat"
+          ? { label: "Golongan darah belum tercatat", n: r.n, celah: true }
+          : { label: `Golongan darah ${r.label}`, n: r.n, slot: i + 1 }))}
+      />
+      <DataGapCard
+        judul="catatan golongan darah"
+        kosong={angka("5.6", "tidak_tercatat")}
+        dari={meta.umat_total}
+        pct={angka("5.6", "tidak_tercatat_pct")}
+        akibat={`Catatan golongan darah saat ini baru terdata pada ${n(angka("5.6", "tercatat"))} jiwa. Untuk warga selebihnya, paroki belum dapat memfasilitasi pencarian pendonor darah yang cocok secara cepat dalam situasi darurat.`}
+        usul="Pencatatan golongan darah sangat dianjurkan untuk dilengkapi melalui pendataan di tingkat lingkungan karena manfaat kemanusiaannya yang langsung dan nyata."
+      />
+      <TabelAlt slot="tabel" judul="distribusi golongan darah umat" keterangan={a("5.6").caption}
+        kolom={KOLOM_BAKU} baris={tabelBaris(adegan("5.6").rows)} />
+    </Adegan>
+  </Pilar>
+
+  {/* ═══ PENUTUP ═══════════════════════════════════════════════════════════ */}
+  <section class="pilar penutup-bagian" id="penutup" aria-labelledby="penutup-judul">
+    <div class="wrap">
+      <div class="pilar__head">
+        <span class="pilar__no" aria-hidden="true">06</span>
+        <h2 id="penutup-judul">Dari Data Menjadi Pijakan Kebijakan Pastoral</h2>
+      </div>
+      <hr class="rule-accent" />
+
+      {/* ── 6.1 ───────────────────────────────────────────────────────────── */}
+      <div class="adegan" id="adegan-6-1" data-reveal>
+        <div class="adegan__head">
+          <span class="adegan__no" aria-hidden="true">6.1</span>
+          <h3>{penutupTeks.agendaJudul}</h3>
+        </div>
+        <p class="prose">{penutupTeks.agendaLead}</p>
+        <div class="agenda">
+          {
+            agenda.map((it, i) => (
+              <article class="agenda__kartu">
+                <span class="agenda__no">{String(i + 1).padStart(2, "0")}</span>
+                <h4>{it.judul}</h4>
+                <p>{it.isi}</p>
+                <p class="agenda__rujuk">
+                  Dari adegan{" "}
+                  {it.rujuk.map((r, j) => (
+                    <>
+                      {j > 0 ? ", " : ""}
+                      <a href={`#${anchor(r)}`}>{r}</a>
+                    </>
+                  ))}
+                </p>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+
+      {/* ── 6.2 ───────────────────────────────────────────────────────────── */}
+      <div class="adegan" id="adegan-6-2" data-reveal>
+        <div class="adegan__head">
+          <span class="adegan__no" aria-hidden="true">6.2</span>
+          <h3>{penutupTeks.celahJudul}</h3>
+        </div>
+        <p class="prose">{penutupTeks.celahLead}</p>
+
+        <div class="figur">
+          <table class="metode-tabel">
+            <caption>Rincian kolom data sensus dengan tingkat kekosongan tertinggi, diurutkan dari persentase terbesar.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Data yang Belum Lengkap</th>
+                <th scope="col" class="num">Jumlah Belum Tercatat</th>
+                <th scope="col" class="num">Persen</th>
+                <th scope="col">Implikasi bagi Penafsiran Data</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                [...penutup.celah_data].sort((x, y) => y.pct - x.pct).map((c) => (
+                  <tr>
+                    <th scope="row">
+                      {c.kolom}
+                      {c.adegan && (
+                        <>
+                          {" "}
+                          <a class="rujuk" href={`#${anchor(c.adegan)}`}>adegan {c.adegan}</a>
+                        </>
+                      )}
+                    </th>
+                    <td class="num">{n(c.kosong)} dari {n(c.dari)}</td>
+                    <td class="num">{p(c.pct)}</td>
+                    <td>{c.akibat}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <h4 class="sub">{penutupTeks.anomaliJudul}</h4>
+        <p class="prose">{penutupTeks.anomaliLead}</p>
+        <div class="figur">
+          <table class="metode-tabel">
+            <caption>Daftar anomali dan diskrepansi data yang dilaporkan secara transparan untuk verifikasi.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Catatan Anomali</th>
+                <th scope="col" class="num">Jumlah Kasus</th>
+                <th scope="col">Tindak Lanjut Penanganan</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                penutup.anomali.map((an) => (
+                  <tr>
+                    <th scope="row">{an.temuan}</th>
+                    <td class="num">
+                      {n(an.jumlah)}
+                      {an.kelompok !== null && <span class="kel"> dalam {n(an.kelompok)} kelompok</span>}
+                    </td>
+                    <td>{an.perlakuan}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <h4 class="sub">{penutupTeks.usulanJudul}</h4>
+        <ol class="usulan">
+          {
+            penutup.usulan_pembaruan.map((u) => (
+              <li>
+                {u.usul}
+                {u.besaran !== null && (
+                  <span class="usulan__n">
+                    {" — "}{n(u.besaran)} {u.satuan}
+                  </span>
+                )}
+                {u.adegan && (
+                  <>
+                    {" "}
+                    <a class="rujuk" href={`#${anchor(u.adegan)}`}>adegan {u.adegan}</a>
+                  </>
+                )}
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+
+      {/* ── 6.3 ───────────────────────────────────────────────────────────── */}
+      <div class="adegan" id="adegan-6-3" data-reveal>
+        <div class="adegan__head">
+          <span class="adegan__no" aria-hidden="true">6.3</span>
+          <h3>{penutupTeks.metodeJudul}</h3>
+        </div>
+        <p class="prose">{penutupTeks.metodeLead}</p>
+
+        <div class="metode">
+          <table>
+            <caption>Parameter dan Metadata Sensus Paroki</caption>
+            <tbody>
+              <tr>
+                <th scope="row">Paroki</th>
+                <td>{meta.paroki}</td>
+              </tr>
+              <tr>
+                <th scope="row">Tanggal potret</th>
+                <td>
+                  {SNAPSHOT}
+                  {!meta.snapshot_terkonfirmasi && (
+                    <>
+                      {" "}
+                      <b>(asumsi kerja, belum dikonfirmasi)</b>. {meta.snapshot_catatan}
+                    </>
+                  )}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Berkas sumber</th>
+                <td>
+                  <code>umat.dbf</code> ({n(meta.umat_total)} baris), <code>umatkk.dbf</code>{" "}
+                  ({n(meta.keluarga_umatkk)} baris), <code>lingkung.dbf</code>{" "}
+                  ({n(meta.lingkungan_master)} baris), <code>stasi.dbf</code> ({n(meta.wilayah_total)} baris).
+                  Berkas <code>.dbf</code> dibaca langsung; turunan <code>.csv</code> dan{" "}
+                  <code>.xlsx</code> hasil konversi manual sebelumnya tidak dipakai, agar hanya ada satu
+                  sumber untuk satu fakta.
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Jumlah keluarga</th>
+                <td>
+                  Seluruh analisis memakai basis data {n(meta.keluarga_total)} keluarga dari <code>umat.dbf</code>.
+                  Berkas <code>umatkk.dbf</code> mencatat {n(meta.keluarga_umatkk)} keluarga — selisih{" "}
+                  {n(meta.selisih_keluarga)}. Setiap adegan yang memakai berkas kepala keluarga menyebut
+                  penyebutnya sendiri.
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Hierarki</th>
+                <td>
+                  Keuskupan → paroki → {n(meta.wilayah_total)} wilayah →{" "}
+                  {n(meta.lingkungan_total)} lingkungan → {n(meta.keluarga_total)} keluarga →{" "}
+                  {n(meta.umat_total)} jiwa. Daftar resmi memuat {n(meta.lingkungan_master)} lingkungan;{" "}
+                  {meta.lingkungan_tanpa_jiwa.length > 0
+                    ? `${meta.lingkungan_tanpa_jiwa.join(", ")} tidak memuat satu jiwa pun pada potret ini.`
+                    : "seluruhnya memuat umat."}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Ambang penyamaran</th>
+                <td>
+                  Sel bernilai 1 sampai {meta.ambang_penyamaran - 1} jiwa ditulis "disamarkan" guna melindungi kerahasiaan data pribadi warga.
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Distribusi</th>
+                <td>
+                  Internal. Dokumen ini disusun khusus untuk kepentingan reksa pastoral Dewan Paroki Pugeran. Tidak dipublikasikan secara terbuka di internet dan tidak memuat data identitas perorangan, sehingga aman dibuka pada lingkungan paroki maupun media luring.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4 class="sub">Lima Prinsip Etika dan Keamanan Pengolahan Data</h4>
+        <div class="agenda">
+          {
+            prinsipData.map((pr, i) => (
+              <article class="agenda__kartu">
+                <span class="agenda__no">{String(i + 1).padStart(2, "0")}</span>
+                <h4>{pr.judul}</h4>
+                <p>{pr.isi}</p>
+              </article>
+            ))
+          }
+        </div>
+
+        <h4 class="sub">{penutupTeks.batasJudul}</h4>
+        <ol class="batas-list">
+          {
+            batasTafsir.map((bt) => (
+              <li>
+                <b>{bt.judul}</b> {bt.isi}
+              </li>
+            ))
+          }
+        </ol>
+
+        <h4 class="sub">{penutupTeks.kamusJudul}</h4>
+        <div class="metode">
+          <table>
+            <caption>
+              Glosarium istilah pastoral dan teknis yang dipergunakan dalam penyajian profil umat.
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Istilah Pastoral / Teknis</th>
+                <th scope="col">Penjelasan Makna</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                kamus.map(([istilah, arti]) => (
+                  <tr>
+                    <th scope="row">{istilah}</th>
+                    <td>{arti}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <h4 class="sub">{penutupTeks.unduhJudul}</h4>
+        <p class="prose">{penutupTeks.unduhLead}</p>
+        <div class="unduhan">
+          {unduhan.map(([berkas, ket]) => <a href={`./data/${berkas}`} title={ket}>{berkas}</a>)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ═══ KAKI ══════════════════════════════════════════════════════════════ */}
+  <footer class="foot">
+    <div class="wrap foot__row">
+      <div>
+        <p>
+          <b>{halaman.judul}</b> — {halaman.subjudul}.<br />
+          Potret pangkalan data sensus per {SNAPSHOT}. Dokumen perencanaan pastoral internal Dewan Paroki; tidak diterbitkan daring.
+        </p>
+        <p class="mono-label">
+          Disusun dengan sistem desain SADASA Academy · PT Sadasa Akademi Indonesia
+        </p>
+      </div>
+      <div>
+        <img class="foot__mark foot__mark--light" src="./brand/sadasa-logo-red.png" alt="SADASA Academy"
+          width="640" height="118" />
+        <img class="foot__mark foot__mark--ink" src="./brand/sadasa-logo-white.png" alt="SADASA Academy"
+          width="640" height="118" />
+      </div>
+    </div>
+  </footer>
+</Cerita>
+
+<style>
+  .sela {
+    height: var(--space-6);
+  }
+  .stats--rapat {
+    margin-top: var(--space-5);
+  }
+  .sub {
+    margin-top: var(--space-12);
+    margin-bottom: var(--space-3);
+    font-size: var(--size-h3);
+  }
+  .metode-tabel {
+    font-size: var(--size-body-sm);
+  }
+  .metode-tabel caption {
+    text-align: left;
+    font-size: var(--size-caption);
+    color: var(--text-subtle);
+    padding-bottom: var(--space-3);
+  }
+  .metode-tabel th,
+  .metode-tabel td {
+    text-align: left;
+    padding: var(--space-3);
+    border-bottom: 1px solid var(--border-hairline);
+    vertical-align: top;
+  }
+  .metode-tabel thead th {
+    font-size: var(--size-caption);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: var(--fw-medium);
+  }
+  .metode-tabel td.num,
+  .metode-tabel th.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .metode-tabel tbody th {
+    font-weight: var(--fw-medium);
+    color: var(--text-strong);
+    min-width: 12rem;
+  }
+  .kel {
+    display: block;
+    font-size: var(--size-micro);
+    color: var(--text-subtle);
+    font-weight: var(--fw-regular);
+  }
+  .rujuk {
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    color: var(--text-brand);
+    white-space: nowrap;
+  }
+  .usulan {
+    max-width: var(--measure-prose);
+    padding-left: var(--space-5);
+    font-size: var(--size-body);
+  }
+  .usulan li {
+    margin-bottom: var(--space-2);
+  }
+  .usulan__n {
+    font-family: var(--font-mono);
+    font-size: var(--size-body-sm);
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .figur table {
+    width: 100%;
+  }
+</style>

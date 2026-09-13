@@ -1,0 +1,25 @@
+{
+  "_catatan": "Lima kelompok wilayah Paroki HKTY Pugeran. Sumber: pemecahan berkas kerja paroki di data/processed (data_grejainduk, data_gbm, data_sempu, data_padokan, data_bangunharjo_full_features), dikonfirmasi pemilik proyek pada 13 September 2026 sebagai pengelompokan yang dipakai paroki. Kunci wilayah adalah kode WILAYAH di stasi.dbf. Urutan daftar menentukan urutan tampil DAN slot warna --kat-1 sampai --kat-5; jangan diubah tanpa menjalankan ulang npm run validate:palette.",
+  "kelompok": [
+    {
+      "label": "Gereja Induk",
+      "wilayah": ["30006003", "30006004", "30006005", "30006006", "30006008", "30006014", "30006016", "30006019"]
+    },
+    {
+      "label": "GBM",
+      "wilayah": ["30006010", "30006011", "30006012", "30006015", "30006018"]
+    },
+    {
+      "label": "Sempu",
+      "wilayah": ["30006002", "30006009", "30006017"]
+    },
+    {
+      "label": "Padokan",
+      "wilayah": ["30006007", "30006013"]
+    },
+    {
+      "label": "Bangunharjo",
+      "wilayah": ["30006001"]
+    }
+  ]
+}

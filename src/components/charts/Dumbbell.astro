@@ -1,0 +1,204 @@
+---
+/**
+ * Dumbbell — dua nilai per kelompok umur, dihubungkan garis selisih. Dipakai di
+ * adegan 2.5 (laki-laki dan perempuan berusia 65 tahun ke atas).
+ *
+ * Panjang garis penghubung adalah selisihnya, sehingga melebarnya jarak antara
+ * perempuan dan laki-laki pada usia tua terbaca tanpa menghitung. Warna jenis
+ * kelamin sama dengan piramida usia di adegan 2.1.
+ */
+import type { PyramidRow } from "../../lib/data";
+import { kisi } from "../../lib/chart";
+import { d, n } from "../../lib/format";
+import { css, kontainer, tip } from "../../lib/viz";
+
+interface Props {
+  rows: PyramidRow[];
+  caption: string;
+  label: string;
+  akhiran?: string;
+}
+
+const { rows, caption, label, akhiran = " tahun" } = Astro.props;
+
+const maks = Math.max(...rows.flatMap((r) => [r.laki.n ?? 0, r.perempuan.n ?? 0]));
+const garis = kisi(maks);
+const atas = garis[garis.length - 1] ?? 1;
+const pos = (v: number) => css((v / atas) * 100);
+
+const WARNA_L = "var(--series-3)";
+const WARNA_P = "var(--series-1)";
+
+const baris = rows.map((r) => {
+  const l = r.laki.n;
+  const pr = r.perempuan.n;
+  const tt = r.tidak_tercatat.n ?? 0;
+  if (l === null || pr === null) return { r, l, pr, tt, lengkap: false as const };
+  return { r, l, pr, tt, lengkap: true as const, lo: Math.min(l, pr), hi: Math.max(l, pr) };
+});
+---
+
+<figure class="figur">
+  <figcaption>{caption}</figcaption>
+
+  <ul class="legenda" role="list">
+    <li class="legenda__item"><span class="db__sw" style={`background:${WARNA_L}`} aria-hidden="true"></span>Laki-laki</li>
+    <li class="legenda__item"><span class="db__sw" style={`background:${WARNA_P}`} aria-hidden="true"></span>Perempuan</li>
+  </ul>
+
+  <div class="db viz" {...kontainer(label)}>
+    <div class="db__sumbu" aria-hidden="true">
+      <span></span>
+      <div class="db__skala">
+        {garis.map((v, i) => <span class:list={[i === 0 && "db__tick--awal"]} style={`left:${pos(v)}`}>{n(v)}</span>)}
+      </div>
+      <span class="db__kepala-selisih">selisih</span>
+    </div>
+
+    <div class="db__isi">
+      <div class="db__kisi" aria-hidden="true">
+        {garis.map((v) => <span style={`left:${pos(v)}`} />)}
+      </div>
+
+      {
+        baris.map((b) => (
+          <div
+            class="db__baris"
+            {...tip({
+              judul: `${b.r.label}${akhiran}`,
+              nilai: `${b.l === null ? "disamarkan" : n(b.l)} laki-laki · ${b.pr === null ? "disamarkan" : n(b.pr)} perempuan`,
+              baris: [
+                b.lengkap && `selisih ${n(b.hi - b.lo)}, ${b.pr > b.l ? "perempuan" : "laki-laki"} lebih banyak`,
+                b.lengkap && b.pr > 0 && `rasio ${d((100 * b.l) / b.pr, 1)} laki-laki per 100 perempuan`,
+                b.tt > 0 && `${n(b.tt)} jiwa tanpa catatan jenis kelamin`,
+              ],
+            })}
+          >
+            <span class="db__label">{b.r.label}</span>
+            <div class="db__jalur">
+              {b.lengkap && (
+                <span class="db__garis" style={`left:${pos(b.lo)};width:${css(((b.hi - b.lo) / atas) * 100)}`} />
+              )}
+              {b.l !== null && <span class="db__titik" style={`left:${pos(b.l)};background:${WARNA_L}`} data-seri="3" />}
+              {b.pr !== null && <span class="db__titik" style={`left:${pos(b.pr)};background:${WARNA_P}`} data-seri="1" />}
+            </div>
+            <span class="db__selisih">
+              {b.lengkap ? `+${n(b.hi - b.lo)} ${b.pr >= b.l ? "P" : "L"}` : "disamarkan"}
+            </span>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <slot />
+</figure>
+
+<style>
+  .db {
+    --label-w: 5.5rem;
+    --selisih-w: 5.5rem;
+  }
+  .db__sw {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .db__sumbu,
+  .db__baris {
+    display: grid;
+    grid-template-columns: var(--label-w) 1fr var(--selisih-w);
+    align-items: center;
+  }
+  .db__skala {
+    position: relative;
+    height: 1.2rem;
+  }
+  .db__skala span {
+    position: absolute;
+    bottom: 0;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    color: var(--text-subtle);
+  }
+  .db__skala .db__tick--awal {
+    transform: none;
+  }
+  /* Angka sumbu terakhir rata kanan, supaya tidak menabrak judul kolom selisih. */
+  .db__skala span:last-child {
+    transform: translateX(-100%);
+  }
+  .db__kepala-selisih {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+    color: var(--text-subtle);
+  }
+  .db__isi {
+    position: relative;
+  }
+  .db__kisi {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--label-w);
+    right: var(--selisih-w);
+    pointer-events: none;
+  }
+  .db__kisi span {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--chart-grid);
+  }
+  .db__baris {
+    min-height: 38px;
+    border-radius: var(--radius-sm);
+  }
+  .db__label {
+    font-family: var(--font-mono);
+    font-size: var(--size-body-sm);
+    color: var(--text-body);
+  }
+  .db__jalur {
+    position: relative;
+    height: 38px;
+  }
+  .db__garis {
+    position: absolute;
+    top: 50%;
+    height: 2px;
+    margin-top: -1px;
+    background: var(--mark-muted);
+  }
+  .db__titik {
+    position: absolute;
+    top: 50%;
+    width: 13px;
+    height: 13px;
+    margin: -6.5px 0 0 -6.5px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--surface-card);
+  }
+  .db__selisih {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: var(--size-caption);
+    color: var(--text-strong);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (max-width: 600px) {
+    .db {
+      --label-w: 3.4rem;
+      --selisih-w: 3.6rem;
+    }
+    .db__label,
+    .db__selisih {
+      font-size: var(--size-micro);
+    }
+  }
+</style>

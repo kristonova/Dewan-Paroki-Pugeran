@@ -1,0 +1,170 @@
+---
+/**
+ * Hemisiklus — 100 kursi setengah lingkaran, satu kursi satu persen. Dipakai di
+ * adegan 3.5 (keaktifan umat).
+ *
+ * Paroki adalah persekutuan yang berkumpul; sebaran keaktifan dibaca sebagai
+ * ruang yang terisi. Kursi diurutkan dari kiri ke kanan sehingga setiap
+ * kategori menempati satu sektor utuh. Kursi "belum tercatat" berarsir.
+ */
+import { n, p } from "../../lib/format";
+import { kat, kontainer, kursiHemisiklus, sisaTerbesar, tip } from "../../lib/viz";
+import type { KategoriUnit } from "./Waffle.astro";
+
+interface Props {
+  kategori: KategoriUnit[];
+  total: number;
+  penyebutLabel: string;
+  satuan?: string;
+  pusat: { nilai: string; label: string };
+  caption: string;
+  label: string;
+}
+
+const { kategori, total, penyebutLabel, satuan = "jiwa", pusat, caption, label } = Astro.props;
+
+const tampil = kategori.filter((k): k is KategoriUnit & { n: number } => k.n !== null);
+const unit = sisaTerbesar(tampil.map((k) => k.n), 100);
+const kursi = kursiHemisiklus(100, 6, 200, 196, 80, 186);
+const isiKursi = tampil.flatMap((k, i) => Array.from({ length: unit[i] ?? 0 }, () => k));
+const warnaDari = (k: KategoriUnit) => (k.celah ? undefined : k.slot ? kat(k.slot) : k.warna);
+---
+
+<figure class="figur">
+  <figcaption>{caption}</figcaption>
+
+  <div class="hemi viz" {...kontainer(label)}>
+    <div class="hemi__gambar">
+      <svg viewBox="0 0 400 208" aria-hidden="true">
+        {
+          kursi.map((s, i) => {
+            const k = isiKursi[i];
+            if (!k) return null;
+            return (
+              <circle
+                class="kursi"
+                cx={s.x}
+                cy={s.y}
+                r="8.4"
+                fill={k.celah ? "url(#arsir-celah)" : warnaDari(k)}
+                data-g={k.label}
+                data-kat={k.slot}
+                data-seri={k.celah ? "gap" : undefined}
+              />
+            );
+          })
+        }
+      </svg>
+      <div class="hemi__pusat" aria-hidden="true">
+        <b>{pusat.nilai}</b>
+        <span>{pusat.label}</span>
+      </div>
+    </div>
+
+    <ul class="hemi__legenda" role="list">
+      {
+        tampil.map((k, i) => {
+          const pct = (100 * k.n) / total;
+          return (
+            <li
+              class="hemi__item"
+              {...tip({
+                judul: k.label,
+                nilai: `${n(k.n)} ${satuan}`,
+                grup: k.label,
+                warna: warnaDari(k),
+                baris: [`${p(pct)} ${penyebutLabel}`, `${unit[i] ?? 0} dari 100 kursi`],
+              })}
+            >
+              <span
+                class:list={["hemi__sw", k.celah && "isi-celah"]}
+                style={warnaDari(k) ? `background:${warnaDari(k)}` : undefined}
+                aria-hidden="true"
+              />
+              <span class="hemi__nama">{k.label}</span>
+              <span class="hemi__pct">{p(pct)}</span>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+
+  <slot />
+</figure>
+
+<style>
+  .hemi {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-6) var(--space-10);
+  }
+  .hemi__gambar {
+    position: relative;
+    flex: 1 1 22rem;
+    max-width: 30rem;
+  }
+  .hemi__gambar svg {
+    width: 100%;
+    height: auto;
+  }
+  .kursi {
+    stroke: var(--surface-card);
+    stroke-width: 1.5;
+  }
+  .hemi__pusat {
+    position: absolute;
+    left: 50%;
+    bottom: 2%;
+    transform: translateX(-50%);
+    width: 36%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    pointer-events: none;
+  }
+  .hemi__pusat b {
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    font-weight: var(--fw-black);
+    letter-spacing: var(--tracking-display);
+    line-height: var(--lh-tight);
+    color: var(--text-strong);
+  }
+  .hemi__pusat span {
+    font-size: var(--size-micro);
+    line-height: 1.3;
+    color: var(--text-muted);
+  }
+  .hemi__legenda {
+    flex: 1 1 16rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .hemi__item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border-hairline);
+  }
+  .hemi__sw {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+  .hemi__nama {
+    font-size: var(--size-body-sm);
+    color: var(--text-body);
+    line-height: 1.35;
+  }
+  .hemi__pct {
+    font-size: var(--size-body);
+    font-weight: var(--fw-bold);
+    color: var(--text-strong);
+    font-variant-numeric: tabular-nums;
+  }
+</style>

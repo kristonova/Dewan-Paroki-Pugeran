@@ -1,0 +1,355 @@
+---
+/**
+ * SebaranLingkungan — 88 lingkungan sebagai titik, dikelompokkan per wilayah
+ * dan per kelompok wilayah. Dipakai di adegan 1.3.
+ *
+ * Satu baris per wilayah. Garis tipis merentang dari lingkungan terkecil ke
+ * terbesar di wilayah itu, sehingga lebar variasi terbaca di dalam wilayah dan
+ * antarwilayah sekaligus. Warna mengikuti lima kelompok wilayah; wilayahnya
+ * sendiri dibedakan lewat posisi dan label, bukan warna — 19 warna tidak dapat
+ * dibedakan mata. Menyentuh satu titik atau nama wilayah menyalakan seluruh
+ * wilayah itu.
+ *
+ * HTML, bukan SVG: label tetap pada ukuran huruf halaman di layar sempit.
+ */
+import type { KelompokInfo, Row } from "../../lib/data";
+import { kisi } from "../../lib/chart";
+import { d, n } from "../../lib/format";
+import { css, kat, kontainer, tip } from "../../lib/viz";
+import FilterKelompok from "../FilterKelompok.astro";
+
+interface Props {
+  /** Baris adegan 1.3: lingkungan, wilayah, kelompok, jumlah jiwa. */
+  rows: Row[];
+  /** Baris adegan 1.2: wilayah terurut dari jumlah jiwa terbesar. */
+  wilayah: Row[];
+  kelompok: KelompokInfo[];
+  median: number;
+  caption: string;
+  label: string;
+  /** Lingkungan yang diberi label langsung, misalnya yang terbesar dan terkecil. */
+  sorot?: string[];
+}
+
+const { rows, wilayah, kelompok, median, caption, label, sorot = [] } = Astro.props;
+
+const bernilai = rows.filter((r): r is Row & { n: number } => r.n !== null);
+const maks = Math.max(...bernilai.map((r) => r.n));
+const garis = kisi(maks);
+const atas = garis[garis.length - 1] ?? 1;
+const pos = (v: number) => (v / atas) * 100;
+
+const peringkat = new Map<string, number>(
+  [...bernilai].sort((a, b) => b.n - a.n).map((r, i) => [r.label, i + 1]),
+);
+
+const blok = kelompok.map((k) => ({
+  k,
+  baris: wilayah
+    .filter((w) => w.kelompok === k.label)
+    .map((w) => {
+      const anggota = bernilai.filter((r) => r.wilayah === w.label).sort((a, b) => a.n - b.n);
+      const nilai = anggota.map((r) => r.n);
+      return { w, anggota, min: Math.min(...nilai), maks: Math.max(...nilai) };
+    }),
+}));
+---
+
+<figure class="figur">
+  <figcaption>{caption}</figcaption>
+
+  <FilterKelompok kelompok={kelompok} />
+
+  <div class="sebaran viz" {...kontainer(label)}>
+    <div class="sebaran__sumbu" aria-hidden="true">
+      <span class="sebaran__sumbu-judul">jiwa per lingkungan</span>
+      <div class="sebaran__skala">
+        {garis.map((v, i) => (
+          <span class:list={["sebaran__tick", i === 0 && "sebaran__tick--awal"]} style={`left:${css(pos(v))}`}>
+            {n(v)}
+          </span>
+        ))}
+      </div>
+    </div>
+
+    <div class="sebaran__isi">
+      <div class="sebaran__kisi" aria-hidden="true">
+        {garis.map((v) => <span class="sebaran__garis" style={`left:${css(pos(v))}`} />)}
+        <span class="sebaran__median" style={`left:${css(pos(median))}`}>
+          <em>median {d(median, 1)}</em>
+        </span>
+      </div>
+
+      {
+        blok.map(({ k, baris }) => (
+          <div class="sebaran__kelompok" data-k={k.label}>
+            <p class="sebaran__kelompok-judul">
+              <span class="sebaran__sw" style={`background:${kat(k.slot)}`} aria-hidden="true" />
+              <span class="sebaran__kelompok-nama">{k.label}</span>
+              <span class="sebaran__kelompok-n">
+                {k.wilayah.length} wilayah · {k.lingkungan} lingkungan · {n(k.jiwa)} jiwa
+              </span>
+            </p>
+
+            {baris.map(({ w, anggota, min, maks: terbesar }) => (
+              <div class="sebaran__baris">
+                <span
+                  class="sebaran__wil"
+                  {...tip({
+                    judul: `Wilayah ${w.label}`,
+                    nilai: `${n(w.n)} jiwa`,
+                    grup: w.label,
+                    warna: kat(k.slot),
+                    baris: [
+                      `${anggota.length} lingkungan · kelompok ${k.label}`,
+                      `terkecil ${n(min)} · terbesar ${n(terbesar)} jiwa`,
+                    ],
+                  })}
+                >
+                  {w.label}
+                </span>
+                <div class="sebaran__jalur">
+                  <span
+                    class="sebaran__rentang"
+                    data-g={w.label}
+                    style={`left:${css(pos(min))};width:${css(pos(terbesar - min))};background:${kat(k.slot)}`}
+                  />
+                  {anggota.map((r) => (
+                    <span
+                      class="sebaran__titik"
+                      style={`left:${css(pos(r.n))};--c:${kat(k.slot)}`}
+                      data-kat={k.slot}
+                      {...tip({
+                        judul: r.label,
+                        nilai: `${n(r.n)} jiwa`,
+                        grup: w.label,
+                        warna: kat(k.slot),
+                        baris: [
+                          `Wilayah ${w.label} · ${k.label}`,
+                          `peringkat ${peringkat.get(r.label)} dari ${bernilai.length} lingkungan`,
+                          `${d(r.n / median, 1)}× median paroki`,
+                        ],
+                      })}
+                    >
+                      {sorot.includes(r.label) && (
+                        <span class:list={["sebaran__anotasi", pos(r.n) > 70 && "sebaran__anotasi--kiri"]}>
+                          {r.label} · {n(r.n)}
+                        </span>
+                      )}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <slot />
+</figure>
+
+<style>
+  .sebaran {
+    --label-w: 11.5rem;
+  }
+  .sebaran__sumbu {
+    display: grid;
+    grid-template-columns: var(--label-w) 1fr;
+    align-items: end;
+    margin-bottom: var(--space-1);
+  }
+  .sebaran__sumbu-judul {
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+  .sebaran__skala {
+    position: relative;
+    height: 1.2rem;
+  }
+  .sebaran__tick {
+    position: absolute;
+    bottom: 0;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    color: var(--text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+  .sebaran__tick--awal {
+    transform: none;
+  }
+
+  .sebaran__isi {
+    position: relative;
+  }
+  .sebaran__kisi {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--label-w);
+    right: 0;
+    pointer-events: none;
+  }
+  .sebaran__garis {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--chart-grid);
+  }
+  .sebaran__median {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1.5px;
+    background: var(--text-muted);
+  }
+  .sebaran__median em {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    transform: translateX(-50%);
+    margin-top: var(--space-1);
+    white-space: nowrap;
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    color: var(--text-muted);
+  }
+
+  .sebaran__kelompok {
+    position: relative;
+    padding-top: var(--space-3);
+  }
+  .sebaran__kelompok + .sebaran__kelompok {
+    margin-top: var(--space-2);
+    border-top: 1px solid var(--border-hairline);
+  }
+  .sebaran__kelompok-judul {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+    width: max-content;
+    max-width: 100%;
+    margin: 0 0 var(--space-1);
+    padding-right: var(--space-2);
+    background: var(--surface-card);
+  }
+  .sebaran__sw {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex: none;
+  }
+  .sebaran__kelompok-nama {
+    font-size: var(--size-caption);
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--text-strong);
+  }
+  .sebaran__kelompok-n {
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    color: var(--text-subtle);
+  }
+
+  .sebaran__baris {
+    display: grid;
+    grid-template-columns: var(--label-w) 1fr;
+    align-items: center;
+    min-height: 30px;
+  }
+  .sebaran__wil {
+    padding-right: var(--space-3);
+    font-size: var(--size-body-sm);
+    color: var(--text-body);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  .sebaran__jalur {
+    position: relative;
+    height: 30px;
+  }
+  .sebaran__rentang {
+    position: absolute;
+    top: 50%;
+    height: 2px;
+    margin-top: -1px;
+    border-radius: 2px;
+    opacity: 0.4;
+  }
+  .sebaran__titik {
+    position: absolute;
+    top: 50%;
+    width: 22px;
+    height: 22px;
+    margin: -11px 0 0 -11px;
+    border-radius: 50%;
+  }
+  .sebaran__titik::before {
+    content: "";
+    position: absolute;
+    inset: 5.5px;
+    border-radius: 50%;
+    background: var(--c);
+    box-shadow: 0 0 0 2px var(--surface-card);
+  }
+  .sebaran__titik:global(.is-aktif)::before {
+    inset: 3.5px;
+  }
+  /* Label langsung duduk di atas titik tetangga: latar kertas dan garis rambut
+     menjaganya tetap terbaca tanpa memindahkan titik mana pun. */
+  .sebaran__anotasi {
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%);
+    margin-left: 1px;
+    padding: 1px var(--space-2);
+    white-space: nowrap;
+    font-size: var(--size-micro);
+    font-weight: var(--fw-medium);
+    color: var(--text-strong);
+    background: var(--surface-card);
+    border-radius: var(--radius-xs);
+    box-shadow: 0 0 0 1px var(--border-hairline);
+    pointer-events: none;
+  }
+  .sebaran__anotasi--kiri {
+    left: auto;
+    right: 100%;
+    margin: 0 1px 0 0;
+  }
+
+  @media (max-width: 640px) {
+    .sebaran {
+      --label-w: 0px;
+    }
+    .sebaran__sumbu,
+    .sebaran__baris {
+      grid-template-columns: 1fr;
+    }
+    .sebaran__baris {
+      min-height: 0;
+      padding-top: var(--space-1);
+    }
+    .sebaran__wil {
+      font-size: var(--size-caption);
+      padding-right: 0;
+    }
+    .sebaran__jalur {
+      height: 24px;
+    }
+  }
+</style>

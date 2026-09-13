@@ -1,0 +1,206 @@
+---
+/**
+ * BatangDivergen — skala berurutan tiga tingkat, berpusat pada titik tengah
+ * netral. Dipakai di adegan 4.5 (kondisi ekonomi keluarga).
+ *
+ * Kategori tengah ("biasa atau cukup") dibelah dua di sekitar garis nol dan
+ * digambar netral; kedua ujung skala memanjang ke arah berlawanan dengan
+ * pasangan warna divergen yang sudah divalidasi. Panjang kedua sisi dapat
+ * dibandingkan langsung dari garis nol.
+ */
+import { n, p } from "../../lib/format";
+import { css, kontainer, tip } from "../../lib/viz";
+
+interface Kategori {
+  label: string;
+  n: number;
+  pct: number;
+}
+
+interface Props {
+  kiri: Kategori;
+  tengah: Kategori;
+  kanan: Kategori;
+  penyebutLabel: string;
+  satuan?: string;
+  caption: string;
+  label: string;
+  catatan?: string;
+}
+
+const { kiri, tengah, kanan, penyebutLabel, satuan = "keluarga", caption, label, catatan } = Astro.props;
+
+const separuh = tengah.pct / 2;
+const jangkau = Math.max(kiri.pct, kanan.pct) + separuh;
+const skala = (50 / jangkau) * 0.97;
+const awalTengah = 50 - separuh * skala;
+const akhirTengah = 50 + separuh * skala;
+const lebarKiri = kiri.pct * skala;
+const lebarKanan = kanan.pct * skala;
+---
+
+<figure class="figur">
+  <figcaption>{caption}</figcaption>
+
+  <div class="dv viz" {...kontainer(label)}>
+    <div class="dv__sisi-set">
+      <div class="dv__sisi" data-g="kiri">
+        <span class="dv__angka">{p(kiri.pct)}</span>
+        <span class="dv__nama"><span class="dv__sw dv__sw--kiri" aria-hidden="true"></span>{kiri.label}</span>
+        <span class="dv__n">{n(kiri.n)} {satuan}</span>
+      </div>
+      <div class="dv__sisi dv__sisi--kanan" data-g="kanan">
+        <span class="dv__angka">{p(kanan.pct)}</span>
+        <span class="dv__nama">{kanan.label}<span class="dv__sw dv__sw--kanan" aria-hidden="true"></span></span>
+        <span class="dv__n">{n(kanan.n)} {satuan}</span>
+      </div>
+    </div>
+
+    <div class="dv__jalur">
+      <span
+        class="dv__seg dv__seg--kiri"
+        style={`left:${css(awalTengah - lebarKiri)};width:${css(lebarKiri)}`}
+        {...tip({ judul: kiri.label, nilai: `${n(kiri.n)} ${satuan}`, grup: "kiri", warna: "var(--div-low)", baris: [`${p(kiri.pct)} ${penyebutLabel}`] })}
+      />
+      <span
+        class="dv__seg dv__seg--tengah"
+        style={`left:${css(awalTengah)};width:${css(akhirTengah - awalTengah)}`}
+        {...tip({ judul: tengah.label, nilai: `${n(tengah.n)} ${satuan}`, grup: "tengah", baris: [`${p(tengah.pct)} ${penyebutLabel}`, "titik tengah skala"] })}
+      >
+        <span class="dv__dalam">{tengah.label} · {p(tengah.pct)}</span>
+      </span>
+      <span
+        class="dv__seg dv__seg--kanan"
+        style={`left:${css(akhirTengah)};width:${css(lebarKanan)}`}
+        {...tip({ judul: kanan.label, nilai: `${n(kanan.n)} ${satuan}`, grup: "kanan", warna: "var(--div-high)", baris: [`${p(kanan.pct)} ${penyebutLabel}`] })}
+      />
+      <span class="dv__nol" aria-hidden="true"></span>
+    </div>
+
+    <div class="dv__arah" aria-hidden="true">
+      <span>← lebih berkecukupan</span>
+      <span>lebih membutuhkan →</span>
+    </div>
+  </div>
+
+  {catatan && <p class="dv__catatan">{catatan}</p>}
+
+  <slot />
+</figure>
+
+<style>
+  .dv__sisi-set {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-6);
+    margin-bottom: var(--space-4);
+  }
+  .dv__sisi {
+    display: flex;
+    flex-direction: column;
+    max-width: 48%;
+  }
+  .dv__sisi--kanan {
+    align-items: flex-end;
+    text-align: right;
+  }
+  .dv__angka {
+    font-size: clamp(1.75rem, 4.4vw, 2.5rem);
+    font-weight: var(--fw-black);
+    letter-spacing: var(--tracking-display);
+    line-height: var(--lh-tight);
+    color: var(--text-strong);
+  }
+  .dv__nama {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+    font-size: var(--size-body-sm);
+    color: var(--text-body);
+  }
+  .dv__n {
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    color: var(--text-muted);
+  }
+  .dv__sw {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    flex: none;
+  }
+  .dv__sw--kiri {
+    background: var(--div-low);
+  }
+  .dv__sw--kanan {
+    background: var(--div-high);
+  }
+  .dv__jalur {
+    position: relative;
+    height: 48px;
+  }
+  /* Segmen di atas garis nol: garis hanya tampak sebagai tanda di atas dan di
+     bawah batang, tidak pernah mencoret label kategori tengah. */
+  .dv__seg {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    bottom: 0;
+  }
+  .dv__seg--kiri {
+    background: var(--div-low);
+    border-radius: 4px 0 0 4px;
+    margin-right: 2px;
+  }
+  .dv__seg--tengah {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--div-mid);
+    border-left: 2px solid var(--surface-card);
+    border-right: 2px solid var(--surface-card);
+  }
+  .dv__seg--kanan {
+    background: var(--div-high);
+    border-radius: 0 4px 4px 0;
+  }
+  .dv__dalam {
+    padding: 0 var(--space-2);
+    font-size: var(--size-caption);
+    font-weight: var(--fw-medium);
+    color: var(--text-strong);
+    white-space: nowrap;
+  }
+  .dv__nol {
+    position: absolute;
+    left: 50%;
+    top: -6px;
+    bottom: -6px;
+    width: 1px;
+    background: var(--text-muted);
+    pointer-events: none;
+  }
+  .dv__arah {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    color: var(--text-subtle);
+  }
+  .dv__catatan {
+    margin-top: var(--space-4);
+    font-size: var(--size-caption);
+    color: var(--text-subtle);
+    max-width: var(--measure-prose);
+  }
+  @media (max-width: 600px) {
+    .dv__dalam {
+      font-size: var(--size-micro);
+      white-space: normal;
+      text-align: center;
+      line-height: 1.2;
+    }
+  }
+</style>

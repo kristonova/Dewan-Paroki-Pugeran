@@ -1,0 +1,270 @@
+---
+/**
+ * GarisRasio — rasio jenis kelamin menurut kelompok umur, terhadap garis 100.
+ * Dipakai di adegan 2.6.
+ *
+ * Garis 100 berarti laki-laki dan perempuan sama banyak. Bidang di atasnya
+ * diwarnai laki-laki, di bawahnya perempuan, dengan warna yang sama seperti
+ * piramida usia. Satu sumbu Y. Titik potong garis dengan kelompok umur yang
+ * disentuh diperlihatkan lewat garis bidik dan tooltip.
+ */
+import { kisi, q } from "../../lib/chart";
+import { d, n } from "../../lib/format";
+import { kontainer, tip } from "../../lib/viz";
+
+interface Titik {
+  label: string;
+  laki: number;
+  perempuan: number;
+  rasio: number | null;
+}
+
+interface Props {
+  titik: Titik[];
+  rasioTotal: number;
+  totalLaki: number;
+  totalPerempuan: number;
+  tidakTercatat: number;
+  caption: string;
+  label: string;
+  /** Awalan id klip SVG; harus unik di halaman. */
+  idUnik: string;
+}
+
+const { titik, rasioTotal, totalLaki, totalPerempuan, tidakTercatat, caption, label, idUnik } = Astro.props;
+
+const nilai = titik.map((t) => t.rasio).filter((v): v is number => v !== null);
+const yMin = Math.min(60, Math.floor(Math.min(...nilai) / 10) * 10 - 10);
+const yMaks = Math.max(110, Math.ceil(Math.max(...nilai) / 10) * 10);
+const ticks = kisi(yMaks - yMin).map((v) => v + yMin).filter((v) => v <= yMaks);
+
+const LEBAR = { W: 760, H: 320, L: 46, R: 112, T: 20, B: 46, pendek: false, kelas: "garis--lebar" };
+const SEMPIT = { W: 340, H: 290, L: 34, R: 12, T: 18, B: 44, pendek: true, kelas: "garis--sempit" };
+type Geo = typeof LEBAR;
+
+const kolomW = (g: Geo) => (g.W - g.L - g.R) / titik.length;
+const X = (g: Geo, i: number) => q(g.L + kolomW(g) * (i + 0.5));
+const Y = (g: Geo, v: number) => q(g.T + ((yMaks - v) / (yMaks - yMin)) * (g.H - g.T - g.B));
+const pendek = (s: string) => s.replace(" tahun ke atas", "+").replace(" tahun", "");
+
+function jalur(g: Geo): { garis: string; bidang: string } {
+  const pt = titik
+    .map((t, i) => (t.rasio === null ? null : `${X(g, i)} ${Y(g, t.rasio)}`))
+    .filter((v): v is string => v !== null);
+  const awal = titik.findIndex((t) => t.rasio !== null);
+  const akhir = titik.length - 1 - [...titik].reverse().findIndex((t) => t.rasio !== null);
+  return {
+    garis: `M${pt.join(" L")}`,
+    bidang: `M${X(g, awal)} ${Y(g, 100)} L${pt.join(" L")} L${X(g, akhir)} ${Y(g, 100)} Z`,
+  };
+}
+---
+
+<figure class="figur">
+  <figcaption>{caption}</figcaption>
+
+  <ul class="garis-ringkas" role="list">
+    <li><b>{n(totalLaki)}</b> laki-laki</li>
+    <li><b>{n(totalPerempuan)}</b> perempuan</li>
+    <li><b>{d(rasioTotal, 1)}</b> laki-laki per 100 perempuan</li>
+    {tidakTercatat > 0 && <li><b>{n(tidakTercatat)}</b> tanpa catatan</li>}
+  </ul>
+  <ul class="legenda" role="list">
+    <li class="legenda__item"><span class="garis-sw garis-sw--l" aria-hidden="true"></span>di atas 100: laki-laki lebih banyak</li>
+    <li class="legenda__item"><span class="garis-sw garis-sw--p" aria-hidden="true"></span>di bawah 100: perempuan lebih banyak</li>
+  </ul>
+
+  <div class="viz" {...kontainer(label)}>
+    {
+      [LEBAR, SEMPIT].map((g) => {
+        const j = jalur(g);
+        const idAtas = `${idUnik}-atas-${g.kelas}`;
+        const idBawah = `${idUnik}-bawah-${g.kelas}`;
+        const terakhir = titik.length - 1;
+        const rasioTerakhir = titik[terakhir]?.rasio ?? null;
+        return (
+          <svg class:list={["garis", g.kelas]} viewBox={`0 0 ${g.W} ${g.H}`} aria-hidden="true">
+            <defs>
+              <clipPath id={idAtas}>
+                <rect x="0" y="0" width={g.W} height={Y(g, 100)} />
+              </clipPath>
+              <clipPath id={idBawah}>
+                <rect x="0" y={Y(g, 100)} width={g.W} height={q(g.H - Y(g, 100))} />
+              </clipPath>
+            </defs>
+
+            <g class="grid">
+              {ticks.map((v) => (
+                <>
+                  <line x1={g.L} y1={Y(g, v)} x2={g.W - g.R} y2={Y(g, v)} />
+                  <text class="tick" x={g.L - 8} y={q(Y(g, v) + 4)} text-anchor="end">{v}</text>
+                </>
+              ))}
+            </g>
+
+            <path class="bidang bidang--l" d={j.bidang} clip-path={`url(#${idAtas})`} />
+            <path class="bidang bidang--p" d={j.bidang} clip-path={`url(#${idBawah})`} />
+
+            <line class="dasar" x1={g.L} y1={Y(g, 100)} x2={g.W - g.R} y2={Y(g, 100)} />
+            <line class="rujukan" x1={g.L} y1={Y(g, rasioTotal)} x2={g.W - g.R} y2={Y(g, rasioTotal)} />
+            {!g.pendek && (
+              <>
+                <text class="dasar-l" x={g.W - g.R + 8} y={q(Y(g, 100) + 4)}>100 = seimbang</text>
+                <text class="rujukan-l" x={g.W - g.R + 8} y={q(Y(g, rasioTotal) + 4)}>semua umat {d(rasioTotal, 1)}</text>
+              </>
+            )}
+
+            <path class="jalur" d={j.garis} />
+
+            {titik.map((t, i) => (
+              <g
+                class="kolom"
+                {...tip({
+                  judul: t.label,
+                  nilai: t.rasio === null ? "tidak dapat dihitung" : `${d(t.rasio, 1)} laki-laki per 100 perempuan`,
+                  baris: [`${n(t.laki)} laki-laki · ${n(t.perempuan)} perempuan`],
+                })}
+              >
+                <rect x={q(X(g, i) - kolomW(g) / 2)} y={g.T} width={q(kolomW(g))} height={g.H - g.T - g.B + 30} fill="transparent" />
+                <line class="bidik" x1={X(g, i)} y1={g.T} x2={X(g, i)} y2={g.H - g.B} />
+                {t.rasio !== null && <circle class="titik" cx={X(g, i)} cy={Y(g, t.rasio)} r="4.5" />}
+                <text class="nama" x={X(g, i)} y={g.H - g.B + 20} text-anchor="middle">
+                  {g.pendek ? pendek(t.label) : t.label}
+                </text>
+              </g>
+            ))}
+
+            {rasioTerakhir !== null && (
+              <text class="nilai-akhir" x={q(X(g, terakhir) + (g.pendek ? -8 : 10))} y={q(Y(g, rasioTerakhir) - 10)} text-anchor={g.pendek ? "end" : "start"}>
+                {d(rasioTerakhir, 1)}
+              </text>
+            )}
+          </svg>
+        );
+      })
+    }
+  </div>
+
+  <slot />
+</figure>
+
+<style>
+  .garis {
+    width: 100%;
+    height: auto;
+  }
+  .garis--sempit {
+    display: none;
+  }
+  @media (max-width: 640px) {
+    .garis--lebar {
+      display: none;
+    }
+    .garis--sempit {
+      display: block;
+    }
+  }
+  @media print {
+    .garis--lebar {
+      display: block !important;
+    }
+    .garis--sempit {
+      display: none !important;
+    }
+  }
+  .garis-ringkas {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    margin: 0 0 var(--space-3);
+    padding: 0;
+    font-size: var(--size-caption);
+    color: var(--text-muted);
+  }
+  .garis-ringkas b {
+    font-size: var(--size-body);
+    color: var(--text-strong);
+    font-weight: var(--fw-bold);
+  }
+  .garis-sw {
+    width: 14px;
+    height: 10px;
+    border-radius: 2px;
+  }
+  .garis-sw--l {
+    background: color-mix(in oklab, var(--series-3) 28%, transparent);
+    border-top: 2px solid var(--series-3);
+  }
+  .garis-sw--p {
+    background: color-mix(in oklab, var(--series-1) 32%, transparent);
+    border-bottom: 2px solid var(--series-1);
+  }
+  .grid line {
+    stroke: var(--chart-grid);
+    stroke-width: 1;
+  }
+  .tick,
+  .dasar-l,
+  .rujukan-l,
+  .nama {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    fill: var(--text-subtle);
+  }
+  .nama {
+    font-family: var(--font-body);
+    font-size: 12px;
+    fill: var(--text-body);
+  }
+  .dasar-l {
+    fill: var(--text-muted);
+  }
+  .bidang--l {
+    fill: var(--series-3);
+    fill-opacity: 0.14;
+  }
+  .bidang--p {
+    fill: var(--series-1);
+    fill-opacity: 0.18;
+  }
+  .dasar {
+    stroke: var(--chart-axis);
+    stroke-width: 1.5;
+  }
+  .rujukan {
+    stroke: var(--text-subtle);
+    stroke-width: 1;
+    opacity: 0.6;
+  }
+  .jalur {
+    fill: none;
+    stroke: var(--text-strong);
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    pointer-events: none;
+  }
+  .titik {
+    fill: var(--text-strong);
+    stroke: var(--surface-card);
+    stroke-width: 2;
+  }
+  .bidik {
+    stroke: var(--text-muted);
+    stroke-width: 1;
+    opacity: 0;
+  }
+  .kolom:global(.is-aktif) .bidik {
+    opacity: 1;
+  }
+  .kolom:global(.is-aktif) .titik {
+    fill: var(--accent);
+  }
+  .nilai-akhir {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: var(--fw-bold);
+    fill: var(--text-strong);
+  }
+</style>

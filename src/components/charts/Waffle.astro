@@ -1,0 +1,182 @@
+---
+/**
+ * Waffle — 100 kotak, satu kotak satu persen. Dipakai di adegan 3.2, 4.2, 5.6.
+ *
+ * Bagian terhadap keseluruhan yang langsung terhitung: 81 kotak dari 100 tidak
+ * perlu dibaca dari sumbu. Kotak dibagi dengan metode sisa terbesar sehingga
+ * selalu tepat 100. Kategori mengisi kotak berurutan dari kiri atas, jadi setiap
+ * kategori menempati satu wilayah utuh dan hanya kategori yang bersebelahan di
+ * urutan palet yang bersentuhan. "Belum tercatat" selalu berarsir.
+ *
+ * Menyentuh satu kotak menyalakan seluruh kotak kategorinya; isi tooltip dipinjam
+ * dari baris legenda kategori itu.
+ */
+import { n, p } from "../../lib/format";
+import { kat, kontainer, sisaTerbesar, tip } from "../../lib/viz";
+
+export interface KategoriUnit {
+  label: string;
+  n: number | null;
+  /** Slot palet kategori 1–5; diabaikan bila `celah`. */
+  slot?: number;
+  /** Warna netral atau sorotan bila bukan slot kategori. */
+  warna?: string;
+  celah?: boolean;
+  ket?: string;
+}
+
+interface Props {
+  kategori: KategoriUnit[];
+  total: number;
+  /** Akhiran persentase, misalnya "dari 12.614 jiwa terdaftar". */
+  penyebutLabel: string;
+  satuan?: string;
+  caption: string;
+  label: string;
+  catatan?: string;
+}
+
+const { kategori, total, penyebutLabel, satuan = "jiwa", caption, label, catatan } = Astro.props;
+
+const tampil = kategori.filter((k): k is KategoriUnit & { n: number } => k.n !== null);
+const unit = sisaTerbesar(tampil.map((k) => k.n), 100);
+const warnaDari = (k: KategoriUnit) => (k.celah ? undefined : k.slot ? kat(k.slot) : k.warna);
+const sel = tampil.flatMap((k, i) => Array.from({ length: unit[i] ?? 0 }, () => k));
+const perKotak = Math.round(total / 100);
+---
+
+<figure class="figur">
+  <figcaption>{caption}</figcaption>
+
+  <div class="waffle viz" {...kontainer(label)}>
+    <div class="waffle__kiri">
+      <div class="waffle__grid" aria-hidden="true">
+        {
+          sel.map((k) => (
+            <span
+              class:list={["waffle__sel", k.celah && "isi-celah"]}
+              style={warnaDari(k) ? `background:${warnaDari(k)}` : undefined}
+              data-g={k.label}
+              data-kat={k.slot}
+              data-seri={k.celah ? "gap" : undefined}
+            />
+          ))
+        }
+      </div>
+      <p class="waffle__kunci">1 kotak = 1% · ±{n(perKotak)} {satuan}</p>
+    </div>
+
+    <ul class="waffle__legenda" role="list">
+      {
+        tampil.map((k, i) => {
+          const pct = (100 * k.n) / total;
+          return (
+            <li
+              class="waffle__item"
+              {...tip({
+                judul: k.label,
+                nilai: `${n(k.n)} ${satuan}`,
+                grup: k.label,
+                warna: warnaDari(k),
+                baris: [`${p(pct)} ${penyebutLabel}`, `${unit[i] ?? 0} dari 100 kotak`, k.ket],
+              })}
+            >
+              <span
+                class:list={["waffle__sw", k.celah && "isi-celah"]}
+                style={warnaDari(k) ? `background:${warnaDari(k)}` : undefined}
+                aria-hidden="true"
+              />
+              <span class="waffle__nama">
+                {k.label}
+                {k.ket && <small>{k.ket}</small>}
+              </span>
+              <span class="waffle__pct">{p(pct)}</span>
+              <span class="waffle__n">{n(k.n)}</span>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+
+  {catatan && <p class="waffle__catatan">{catatan}</p>}
+
+  <slot />
+</figure>
+
+<style>
+  .waffle {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--space-6) var(--space-10);
+  }
+  .waffle__kiri {
+    flex: 0 1 17rem;
+    min-width: 12rem;
+  }
+  .waffle__grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 3px;
+  }
+  .waffle__sel {
+    aspect-ratio: 1;
+    border-radius: 2px;
+  }
+  .waffle__kunci {
+    margin-top: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    color: var(--text-subtle);
+  }
+  .waffle__legenda {
+    flex: 1 1 18rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .waffle__item {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border-hairline);
+  }
+  .waffle__sw {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+  }
+  .waffle__nama {
+    font-size: var(--size-body-sm);
+    color: var(--text-body);
+    line-height: 1.35;
+  }
+  .waffle__nama small {
+    display: block;
+    font-size: var(--size-micro);
+    color: var(--text-subtle);
+  }
+  .waffle__pct {
+    font-size: var(--size-body);
+    font-weight: var(--fw-bold);
+    color: var(--text-strong);
+    font-variant-numeric: tabular-nums;
+  }
+  .waffle__n {
+    min-width: 3.5rem;
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: var(--size-caption);
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .waffle__catatan {
+    margin-top: var(--space-4);
+    font-size: var(--size-caption);
+    color: var(--text-subtle);
+    max-width: var(--measure-prose);
+  }
+</style>

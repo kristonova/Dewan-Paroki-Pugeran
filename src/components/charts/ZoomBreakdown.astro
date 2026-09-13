@@ -1,0 +1,303 @@
+---
+/**
+ * ZoomBreakdown — satu bagian besar, lalu bagian kecilnya diperbesar. Dipakai di
+ * adegan 1.6, 3.6, 3.7, dan 4.6.
+ *
+ * Banyak kategori umat berbentuk "satu mayoritas dan ekor panjang". Batang
+ * biasa membuat ekornya tak terbaca. Di sini lintasan atas memperlihatkan
+ * proporsi sebenarnya, dan corong membawa pembaca ke rincian bagian kecil pada
+ * skala yang dapat dibaca. Skala rincian tertulis di judulnya, sehingga
+ * perbesaran tidak disangka proporsi terhadap keseluruhan.
+ */
+import type { Row } from "../../lib/data";
+import { TIDAK_TERCATAT } from "../../lib/chart";
+import { n, p } from "../../lib/format";
+import { css, kontainer, tip } from "../../lib/viz";
+
+interface Bagian {
+  label: string;
+  n: number;
+}
+
+interface Props {
+  caption: string;
+  label: string;
+  total: Bagian;
+  dominan: Bagian;
+  fokus: Bagian;
+  rincian: Row[];
+  /** Akhiran persentase baris rincian, misalnya "dari 1.277 pelayan". */
+  rincianPenyebut: string;
+  satuan?: string;
+  sorot?: string[];
+  kepala?: { nilai: string; label: string }[];
+}
+
+const {
+  caption,
+  label,
+  total,
+  dominan,
+  fokus,
+  rincian,
+  rincianPenyebut,
+  satuan = "jiwa",
+  sorot = [],
+  kepala,
+} = Astro.props;
+
+const bagianDominan = (100 * dominan.n) / total.n;
+const bagianFokus = (100 * fokus.n) / total.n;
+const awalFokus = 100 - bagianFokus;
+const maks = Math.max(1, ...rincian.map((r) => r.n ?? 0));
+---
+
+<figure class="figur">
+  <figcaption>{caption}</figcaption>
+
+  {
+    kepala && (
+      <dl class="zoom__kepala">
+        {kepala.map((k) => (
+          <div>
+            <dd>{k.nilai}</dd>
+            <dt>{k.label}</dt>
+          </div>
+        ))}
+      </dl>
+    )
+  }
+
+  <div class="zoom viz" {...kontainer(label)}>
+    <div class="zoom__atas">
+      <span>{total.label} · {n(total.n)} {satuan}</span>
+      <span class="zoom__fokus-l">{fokus.label} <b>{p(bagianFokus)}</b></span>
+    </div>
+
+    <div class="zoom__jalur">
+      <span
+        class="zoom__dominan"
+        style={`width:${css(bagianDominan)}`}
+        {...tip({
+          judul: dominan.label,
+          nilai: `${n(dominan.n)} ${satuan}`,
+          warna: "var(--mark-muted)",
+          baris: [`${p(bagianDominan)} dari ${n(total.n)} ${satuan}`],
+        })}
+      >
+        <span class="zoom__dalam">{dominan.label} · {p(bagianDominan)}</span>
+      </span>
+      <span
+        class="zoom__fokus"
+        style={`width:${css(bagianFokus)}`}
+        data-seri="highlight"
+        {...tip({
+          judul: fokus.label,
+          nilai: `${n(fokus.n)} ${satuan}`,
+          warna: "var(--mark-highlight)",
+          baris: [`${p(bagianFokus)} dari ${n(total.n)} ${satuan}`, "dirinci di bawah"],
+        })}
+      />
+    </div>
+
+    <svg class="zoom__corong" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true">
+      <polygon points={`${awalFokus.toFixed(2)},0 100,0 100,26 0,26`} />
+    </svg>
+
+    <div class="zoom__rinci">
+      <p class="zoom__rinci-judul">
+        Rincian: {fokus.label}
+        <span>skala diperbesar · {n(fokus.n)} {satuan}</span>
+      </p>
+      <ul class="zoom__daftar" role="list">
+        {
+          rincian.map((r) => {
+            const celah = r.label === TIDAK_TERCATAT;
+            const disorot = sorot.includes(r.label);
+            return (
+              <li
+                class="zoom__baris"
+                {...tip({
+                  judul: r.label,
+                  nilai: r.n === null ? "disamarkan" : `${n(r.n)} ${satuan}`,
+                  warna: disorot ? "var(--mark-highlight)" : r.n === null || celah ? undefined : "var(--mark-base)",
+                  baris: [
+                    r.pct !== null && `${p(r.pct)} ${rincianPenyebut}`,
+                    r.n === null && `1–4 ${satuan}, tidak ditulis apa adanya`,
+                  ],
+                })}
+              >
+                <span class="zoom__nama">{r.label}</span>
+                <span class="zoom__bar">
+                  {r.n !== null && (
+                    <span
+                      class:list={["zoom__isi", celah && "isi-celah", disorot && "zoom__isi--sorot"]}
+                      style={`width:${css(Math.max(1, (100 * r.n) / maks))}`}
+                      data-seri={celah ? "gap" : disorot ? "highlight" : "base"}
+                    />
+                  )}
+                </span>
+                <span class="zoom__nilai">{r.n === null ? "disamarkan" : `${n(r.n)} · ${p(r.pct)}`}</span>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </div>
+
+  <slot />
+</figure>
+
+<style>
+  .zoom__kepala {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-8);
+    margin: 0 0 var(--space-6);
+  }
+  .zoom__kepala div {
+    display: flex;
+    flex-direction: column;
+  }
+  .zoom__kepala dd {
+    margin: 0;
+    font-size: clamp(1.5rem, 3.4vw, 2rem);
+    font-weight: var(--fw-black);
+    letter-spacing: var(--tracking-display);
+    line-height: var(--lh-tight);
+    color: var(--text-strong);
+  }
+  .zoom__kepala dt {
+    margin-top: var(--space-1);
+    font-size: var(--size-caption);
+    color: var(--text-muted);
+  }
+  .zoom__atas {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-2);
+    font-size: var(--size-caption);
+    color: var(--text-muted);
+  }
+  .zoom__fokus-l {
+    text-align: right;
+  }
+  .zoom__fokus-l b {
+    color: var(--text-strong);
+  }
+  .zoom__jalur {
+    display: flex;
+    gap: 2px;
+    height: 40px;
+  }
+  .zoom__dominan,
+  .zoom__fokus {
+    height: 100%;
+    border-radius: 4px;
+  }
+  .zoom__dominan {
+    display: flex;
+    align-items: center;
+    padding: 0 var(--space-3);
+    background: var(--tm-isi);
+    color: var(--tm-teks);
+    min-width: 0;
+  }
+  .zoom__dalam {
+    font-size: var(--size-caption);
+    font-weight: var(--fw-medium);
+    white-space: nowrap;
+  }
+  .zoom__fokus {
+    flex: none;
+    min-width: 4px;
+    background: var(--mark-highlight);
+  }
+  .zoom__corong {
+    display: block;
+    width: 100%;
+    height: 26px;
+  }
+  .zoom__corong polygon {
+    fill: var(--surface-accent-soft);
+  }
+  .zoom__rinci {
+    padding: var(--space-4) var(--space-5);
+    background: var(--surface-accent-soft);
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+  }
+  .zoom__rinci-judul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-1) var(--space-3);
+    margin: 0 0 var(--space-3);
+    font-size: var(--size-body-sm);
+    font-weight: var(--fw-bold);
+    color: var(--text-strong);
+  }
+  .zoom__rinci-judul span {
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    font-weight: var(--fw-regular);
+    color: var(--text-muted);
+  }
+  .zoom__daftar {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .zoom__baris {
+    display: grid;
+    grid-template-columns: minmax(8rem, 15rem) 1fr 7.5rem;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 5px 0;
+  }
+  .zoom__nama {
+    font-size: var(--size-body-sm);
+    color: var(--text-body);
+  }
+  .zoom__bar {
+    height: 12px;
+  }
+  .zoom__isi {
+    display: block;
+    height: 100%;
+    border-radius: 0 3px 3px 0;
+    background: var(--mark-base);
+  }
+  .zoom__isi--sorot {
+    background: var(--mark-highlight);
+  }
+  /* Gaya komponen menimpa utilitas global; arsir "belum tercatat" dipasang ulang. */
+  .zoom__isi.isi-celah {
+    background-color: var(--surface-card);
+    background-image: repeating-linear-gradient(45deg, var(--mark-gap) 0 1.5px, transparent 1.5px 5px);
+    box-shadow: inset 0 0 0 1px var(--mark-gap);
+  }
+  .zoom__nilai {
+    font-family: var(--font-mono);
+    font-size: var(--size-caption);
+    color: var(--text-strong);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  @media (max-width: 600px) {
+    .zoom__baris {
+      grid-template-columns: 1fr auto;
+      gap: 2px var(--space-3);
+    }
+    .zoom__bar {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      height: 8px;
+    }
+    .zoom__rinci {
+      padding: var(--space-3) var(--space-4);
+    }
+  }
+</style>
