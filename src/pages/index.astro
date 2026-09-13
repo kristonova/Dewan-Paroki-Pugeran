@@ -117,7 +117,7 @@ const unduhan = [
         {
           adegan("0.0").rows.map((r) => (
             <div class="hero__figure">
-              <span class="n">{n(r.n)}</span>
+              <span class="n" data-count={r.n ?? 0}>{n(r.n)}</span>
               <span class="l">{r.label}</span>
             </div>
           ))

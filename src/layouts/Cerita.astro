@@ -147,6 +147,52 @@ const nav = [
           adegan.forEach(function (el) { io.observe(el); });
         }
 
+        // ── Animasi hitung naik pada angka headline pembuka.
+        // Angka "muter-muter" dari 0 ke nilai akhir saat bagian pembuka
+        // masuk ke layar. Dibatasi prefers-reduced-motion.
+        var angkaHero = document.querySelectorAll("[data-count]");
+        if (angkaHero.length && !halus && "IntersectionObserver" in window) {
+          // Formatkan angka ke gaya Indonesia (titik ribuan)
+          function formatID(v) {
+            var s = Math.round(v).toString();
+            var hasil = "";
+            for (var i = s.length - 1, j = 0; i >= 0; i--, j++) {
+              if (j > 0 && j % 3 === 0) hasil = "." + hasil;
+              hasil = s[i] + hasil;
+            }
+            return hasil;
+          }
+
+          function animasiHitung(el) {
+            var target = parseInt(el.getAttribute("data-count"), 10) || 0;
+            if (target === 0) return;
+            var durasi = 1800; // milidetik
+            var mulai = null;
+            el.textContent = "0";
+
+            function langkah(ts) {
+              if (!mulai) mulai = ts;
+              var lewat = ts - mulai;
+              var t = Math.min(lewat / durasi, 1);
+              // easeOutExpo: melambat dramatis di akhir
+              var ease = t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+              el.textContent = formatID(ease * target);
+              if (t < 1) requestAnimationFrame(langkah);
+            }
+            requestAnimationFrame(langkah);
+          }
+
+          var ioHero = new IntersectionObserver(function (entri) {
+            entri.forEach(function (e) {
+              if (e.isIntersecting) {
+                animasiHitung(e.target);
+                ioHero.unobserve(e.target);
+              }
+            });
+          }, { threshold: 0.3 });
+          angkaHero.forEach(function (el) { ioHero.observe(el); });
+        }
+
         // ── Service worker: setelah satu kali dibuka, halaman terbuka penuh
         //    tanpa jaringan. Dilewati ketika berkas dibuka langsung dari USB
         //    (protokol file:), karena di sana halaman memang sudah lokal.
