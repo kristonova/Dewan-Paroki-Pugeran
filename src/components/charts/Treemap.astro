@@ -28,6 +28,8 @@ interface Props {
   penyebutLabel: string;
   satuan?: string;
   kelompok?: KelompokInfo[];
+  /** Bila true, kelompok wilayah dipisah menjadi kolom/irisan terpisah. Baku: false (seluruh kategori disusun langsung menurut ukuran dari terbesar ke terkecil). */
+  grupPerKelompok?: boolean;
   sorot?: string[];
   /** Kategori lipatan ("… lainnya") yang digambar lebih redup. */
   redup?: string[];
@@ -42,6 +44,7 @@ const {
   penyebutLabel,
   satuan = "jiwa",
   kelompok,
+  grupPerKelompok = false,
   sorot = [],
   redup = [],
   ekstra = {},
@@ -73,7 +76,7 @@ interface Grup {
 }
 
 function tataLetak(g: Geo): Grup[] {
-  if (kelompok?.length) {
+  if (grupPerKelompok && kelompok?.length) {
     const grup = kelompok.map((k) => ({
       nilai: digambar.filter((r) => r.kelompok === k.label).reduce((s, r) => s + r.n, 0),
       data: k,
@@ -98,7 +101,8 @@ function tataLetak(g: Geo): Grup[] {
       };
     });
   }
-  const kotak = squarify(digambar.map((r) => ({ nilai: r.n, data: r })), 0, 0, g.W, g.H);
+  const urut = [...digambar].sort((a, b) => b.n - a.n);
+  const kotak = squarify(urut.map((r) => ({ nilai: r.n, data: r })), 0, 0, g.W, g.H);
   return [
     {
       x: 0,

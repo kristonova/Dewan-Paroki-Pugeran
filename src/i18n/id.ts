@@ -160,7 +160,7 @@ const teks: Record<string, TeksAdegan> = {
       `${n(objek<{ n: number }>("1.2", "terendah").n)} jiwa. Perbedaan antara wilayah dengan umat terbanyak dan paling sedikit mencapai ` +
       `${d(objek<{ n: number }>("1.2", "tertinggi").n / objek<{ n: number }>("1.2", "terendah").n, 1)} kali lipat.`,
     caption:
-      `Proporsi jumlah umat di ${n(meta.wilayah_total)} wilayah, terbagi ke dalam ` +
+      `Proporsi jumlah umat di ${n(meta.wilayah_total)} wilayah, diurutkan dari jumlah terbesar ke terkecil dengan penanda warna ` +
       `${n(meta.kelompok.length)} kelompok kewilayahan. Sebanyak ${n(meta.baris_paroki_lain)} baris data berkode di luar paroki ` +
       "tidak disertakan dalam grafik ini dan dicatat secara terbuka pada bagian penutup.",
     label: "Sebaran jumlah umat menurut wilayah",
