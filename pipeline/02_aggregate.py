@@ -322,8 +322,8 @@ def main() -> int:
     wb = u["waktu_baptis"].value_counts()
     p3["3.2"] = scene("3.2", penyebut=N, rows=cat_rows(wb, N),
                       sumber=src("umat.dbf", "KET9", "12.614 jiwa terdaftar"),
-                      sebagai_anak=int(wb.get("Dibaptis sebagai anak", 0)),
-                      sebagai_anak_pct=pct(int(wb.get("Dibaptis sebagai anak", 0)), N))
+                      sebagai_anak=int(wb.get("Baptis Bayi / Anak", 0)),
+                      sebagai_anak_pct=pct(int(wb.get("Baptis Bayi / Anak", 0)), N))
 
     bp, kp = int(u["baptis_di_pugeran"].sum()), int(u["krisma_di_pugeran"].sum())
     p3["3.3"] = scene("3.3", penyebut=N, rows=[

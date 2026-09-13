@@ -294,13 +294,13 @@ const teks: Record<string, TeksAdegan> = {
     label: "Tahapan penerimaan sakramen inisiasi: Baptis, Komuni Pertama, dan Krisma",
   },
   "3.2": {
-    pertanyaan: "Kapan dan melalui jalur apa umat menerima Sakramen Baptis?",
+    pertanyaan: "Bagaimana latar belakang penerimaan Sakramen Baptis umat?",
     tafsir:
-      `Sebanyak ${b(n(angka("3.2", "sebagai_anak")) + " umat")} (${p(angka("3.2", "sebagai_anak_pct"))}) dibaptis ` +
-      "sejak masa kanak-kanak (baptis bayi/anak). Selebihnya menerima baptisan saat usia remaja atau dewasa, diterima dari gereja Kristen lain, " +
-      "berasal dari agama lain, masih berstatus katekumen, atau belum terlengkapi catatannya.",
-    caption: `Waktu dan jalur penerimaan Sakramen Baptis. Basis data: ${n(meta.umat_total)} jiwa terdaftar.`,
-    label: "Waktu dan jalur penerimaan Sakramen Baptis umat",
+      `Sebanyak ${b(n(angka("3.2", "sebagai_anak")) + " umat")} (${p(angka("3.2", "sebagai_anak_pct"))}) menerima ` +
+      "Baptis Bayi / Anak sejak masa kanak-kanak. Selebihnya menerima Sakramen Baptis saat usia remaja atau dewasa, diterima dari gereja Kristen lain, " +
+      "berasal dari agama lain, masih berstatus katekumen, atau belum memiliki catatan lengkap.",
+    caption: `Waktu dan latar belakang penerimaan Sakramen Baptis. Basis data: ${n(meta.umat_total)} jiwa terdaftar.`,
+    label: "Latar belakang penerimaan Sakramen Baptis umat",
   },
   "3.3": {
     pertanyaan: "Berapa banyak umat yang menerima sakramen inisiasi di Paroki Pugeran?",

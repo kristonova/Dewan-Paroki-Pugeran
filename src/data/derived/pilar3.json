@@ -36,13 +36,13 @@
     "penyebut": 12614,
     "rows": [
       {
-        "label": "Dibaptis sebagai anak",
+        "label": "Baptis Bayi / Anak",
         "n": 10240,
         "pct": 81.2,
         "disamarkan": false
       },
       {
-        "label": "Dibaptis sebagai remaja atau dewasa",
+        "label": "Baptis Remaja / Dewasa",
         "n": 855,
         "pct": 6.8,
         "disamarkan": false
@@ -60,7 +60,7 @@
         "disamarkan": false
       },
       {
-        "label": "Jalan lain",
+        "label": "Lainnya",
         "n": 339,
         "pct": 2.7,
         "disamarkan": false

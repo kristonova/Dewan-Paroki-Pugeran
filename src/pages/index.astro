@@ -79,7 +79,7 @@ const rincianSuku = adegan("1.6").rows.filter((r) => r.label !== sukuTerbesar.la
 const AGAMA_SEBELUMNYA = adegan("3.2").rows
   .filter((r) => r.label.startsWith("Sebelumnya ") && r.n !== null)
   .map((r) => r.label);
-const JALAN_LAIN_32 = ["Jalan lain", "Masih katekumen", "Belum dibaptis", "Diterima dari gereja Kristen lain"];
+const STATUS_LAIN_32 = ["Lainnya", "Masih katekumen", "Belum dibaptis", "Diterima dari gereja Kristen lain"];
 const SAMAR_32 = adegan("3.2").rows.filter((r) => r.n === null).map((r) => r.label);
 
 // Berkas unduhan data agregat untuk perencanaan karya reksa pastoral Dewan Paroki.
@@ -96,7 +96,7 @@ const unduhan = [
   ["status_gereja.csv", "Tingkat keaktifan umat di gereja paroki dan lingkungan"],
   ["status_kesehatan.csv", "Catatan kebutuhan kesehatan khusus umat"],
   ["golongan_darah.csv", "Distribusi golongan darah untuk kesiapsiagaan kemanusiaan"],
-  ["waktu_baptis.csv", "Waktu dan jalur penerimaan Sakramen Baptis"],
+  ["waktu_baptis.csv", "Waktu dan latar belakang penerimaan Sakramen Baptis"],
   ["agama.csv", "Komposisi agama seluruh anggota keluarga"],
   ["keterlibatan.csv", "Ragam keterlibatan tugas pelayanan pastoral"],
   ["tempat_tinggal.csv", "Persebaran tempat tinggal dan domisili perantauan umat"],
@@ -453,17 +453,17 @@ const unduhan = [
         total={meta.umat_total}
         penyebutLabel={PENYEBUT_UMAT}
         kategori={[
-          { label: "Dibaptis sebagai anak", n: nilai("3.2", "Dibaptis sebagai anak"), slot: 1 },
-          { label: "Dibaptis sebagai remaja atau dewasa", n: nilai("3.2", "Dibaptis sebagai remaja atau dewasa"), slot: 2 },
+          { label: "Baptis Bayi / Anak", n: nilai("3.2", "Baptis Bayi / Anak"), slot: 1 },
+          { label: "Baptis Remaja / Dewasa", n: nilai("3.2", "Baptis Remaja / Dewasa"), slot: 2 },
           { label: "Sebelumnya beragama lain", n: jumlahBaris("3.2", AGAMA_SEBELUMNYA), slot: 3,
             ket: AGAMA_SEBELUMNYA.map((l) => l.replace("Sebelumnya ", "")).join(", ") },
-          { label: "Jalan lain", n: jumlahBaris("3.2", JALAN_LAIN_32), slot: 4,
-            ket: `termasuk ${JALAN_LAIN_32.slice(1).join(", ").toLowerCase().replace("kristen", "Kristen")}` },
+          { label: "Penerimaan & status lain", n: jumlahBaris("3.2", STATUS_LAIN_32), slot: 4,
+            ket: "termasuk diterima dari gereja Kristen lain, masih katekumen, belum dibaptis, dan lainnya" },
           { label: "Tidak tercatat", n: nilai("3.2", "Tidak tercatat"), celah: true },
         ]}
         catatan={SAMAR_32.length ? `${SAMAR_32.join(", ")}: 1–4 jiwa, disamarkan dan tidak disertakan dalam visualisasi.` : undefined}
       />
-      <TabelAlt slot="tabel" judul="waktu dan jalur penerimaan Sakramen Baptis" keterangan={a("3.2").caption}
+      <TabelAlt slot="tabel" judul="waktu dan latar belakang penerimaan Sakramen Baptis" keterangan={a("3.2").caption}
         kolom={KOLOM_BAKU} baris={tabelBaris(adegan("3.2").rows)} />
     </Adegan>
 

@@ -93,7 +93,7 @@
       "temuan": "Perbedaan pencatatan jumlah keluarga antarsumber",
       "jumlah": 75,
       "kelompok": null,
-      "perlakuan": "Berkas umat.dbf mencatat 4.403 keluarga, sedangkan berkas umatkk.dbf mencatat 4.328 keluarga. Analisis profil paroki secara konsisten mengacu pada data umat.dbf (4.403 keluarga), dan setiap grafik yang merujuk berkas kepala keluarga mencantumkan penyebutnya secara jelas."
+      "perlakuan": "Berkas umat.dbf mencatat 4403 keluarga, sedangkan berkas umatkk.dbf mencatat 4328 keluarga. Analisis profil paroki secara konsisten mengacu pada data umat.dbf (4403 keluarga), dan setiap grafik yang merujuk berkas kepala keluarga mencantumkan penyebutnya secara jelas."
     },
     {
       "temuan": "Catatan tanggal lahir tidak wajar",
@@ -105,13 +105,13 @@
       "temuan": "Catatan tahun perkawinan tidak wajar",
       "jumlah": 8,
       "kelompok": null,
-      "perlakuan": "Dikeluarkan dari analisis dan dicatat sebagai temuan anomali penanggalan. Tahun yang tertera: 965, 992, 1008, 1011, 1020, 2970, 2995, 2997."
+      "perlakuan": "Dikeluarkan dari analisis dan dicatat sebagai anomali penanggalan. Tahun yang tertera: 965, 992, 1008, 1011, 1020, 2970, 2995, 2997."
     },
     {
       "temuan": "Kepala keluarga tanpa catatan jenis kelamin",
       "jumlah": 94,
       "kelompok": null,
-      "perlakuan": "Perhitungan proporsi pada Adegan 1.5 menggunakan penyebut 4.234 kepala keluarga yang memiliki catatan jenis kelamin lengkap, dengan keterangan terbuka pada grafik."
+      "perlakuan": "Perhitungan proporsi pada Adegan 1.5 menggunakan penyebut 4234 kepala keluarga yang memiliki catatan jenis kelamin lengkap, dengan keterangan terbuka pada grafik."
     },
     {
       "temuan": "Baris data dengan kode di luar Paroki Pugeran",
@@ -159,4 +159,3 @@
     }
   ]
 }
-
