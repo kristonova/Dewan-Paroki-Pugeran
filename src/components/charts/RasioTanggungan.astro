@@ -41,23 +41,61 @@ const kotakLansia = Math.round(rasioLansia);
     </p>
 
     <div class="rasio__bidang">
-      <div class="rasio__sisi">
+      <div class="rasio__sisi rasio__sisi--kiri">
+        <div class="rasio__subhead">
+          <span class="rasio__subhead-label">Kelompok Penopang</span>
+          <span class="rasio__subhead-nilai">100 Jiwa</span>
+        </div>
         <div class="rasio__grid" aria-hidden="true">
           {Array.from({ length: 100 }, () => <i class="k k--produktif" data-g="produktif" />)}
         </div>
-        <p class="rasio__cap">100 jiwa usia produktif</p>
+        <p class="rasio__cap">
+          100 jiwa usia produktif
+          <span class="rasio__subcap">Rentang usia 15–64 tahun sebagai basis pembanding</span>
+        </p>
       </div>
 
       <div class="rasio__panah" aria-hidden="true">
-        <span>menanggung</span>
+        <div class="rasio__panah-garis"></div>
+        <div class="rasio__panah-badge">
+          <span>menanggung</span>
+          <svg class="rasio__panah-icon" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="rasio__panah-garis"></div>
       </div>
 
-      <div class="rasio__sisi">
+      <div class="rasio__sisi rasio__sisi--kanan">
+        <div class="rasio__subhead">
+          <span class="rasio__subhead-label">Beban Tanggungan</span>
+          <span class="rasio__subhead-nilai">{d(rasioTotal, 1)} Jiwa</span>
+        </div>
         <div class="rasio__grid" aria-hidden="true">
           {Array.from({ length: kotakAnak }, () => <i class="k k--anak" data-g="anak" data-kat="3" />)}
           {Array.from({ length: kotakLansia }, () => <i class="k k--lansia" data-g="lansia" data-kat="4" />)}
         </div>
-        <p class="rasio__cap">{d(rasioAnak, 1)} anak + {d(rasioLansia, 1)} lansia</p>
+        <p class="rasio__cap">
+          {d(rasioTotal, 1)} jiwa usia nonproduktif
+          <span class="rasio__subcap">{d(rasioAnak, 1)} anak-anak + {d(rasioLansia, 1)} warga lanjut usia</span>
+        </p>
+
+        <div class="rasio__rincian">
+          <div class="rincian__kartu" data-g="anak">
+            <span class="rincian__sw" style="background:var(--kat-3)" aria-hidden="true"></span>
+            <div class="rincian__info">
+              <span class="rincian__judul">Anak (0–14 tahun)</span>
+              <span class="rincian__angka"><b>{d(rasioAnak, 1)}</b> per 100 ({kotakAnak} kotak)</span>
+            </div>
+          </div>
+          <div class="rincian__kartu" data-g="lansia">
+            <span class="rincian__sw" style="background:var(--kat-4)" aria-hidden="true"></span>
+            <div class="rincian__info">
+              <span class="rincian__judul">Lansia (65+ tahun)</span>
+              <span class="rincian__angka"><b>{d(rasioLansia, 1)}</b> per 100 ({kotakLansia} kotak)</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -116,36 +154,74 @@ const kotakLansia = Math.round(rasioLansia);
     margin: 0 0 var(--space-6);
   }
   .rasio__angka {
-    font-size: clamp(2.5rem, 6vw, 3.25rem);
+    font-size: clamp(2.75rem, 6vw, 3.75rem);
     font-weight: var(--fw-black);
     letter-spacing: var(--tracking-display);
     line-height: var(--lh-tight);
     color: var(--accent);
   }
   .rasio__ket {
-    max-width: 26ch;
+    max-width: 32ch;
     font-size: var(--size-body);
     color: var(--text-body);
+    line-height: var(--lh-snug);
   }
   .rasio__ket b {
     color: var(--text-strong);
   }
   .rasio__bidang {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-4) clamp(var(--space-3), 2.5vw, var(--space-6));
+    width: 100%;
+    margin: var(--space-6) 0;
+  }
+  .rasio__sisi {
     display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: var(--space-5) var(--space-6);
+    flex-direction: column;
+    width: 100%;
+    max-width: 380px;
+  }
+  .rasio__sisi--kiri {
+    justify-self: start;
+  }
+  .rasio__sisi--kanan {
+    justify-self: end;
+  }
+  .rasio__subhead {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--space-2);
+    padding-bottom: var(--space-1);
+    border-bottom: 1px dashed var(--border-hairline);
+  }
+  .rasio__subhead-label {
+    font-family: var(--font-mono);
+    font-size: var(--size-micro);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .rasio__subhead-nilai {
+    font-family: var(--font-mono);
+    font-size: var(--size-caption);
+    font-weight: var(--fw-bold);
+    color: var(--text-strong);
   }
   .rasio__grid {
     display: grid;
-    grid-template-columns: repeat(10, 14px);
-    gap: 3px;
+    grid-template-columns: repeat(10, 1fr);
+    gap: clamp(3px, 0.5vw, 6px);
+    width: 100%;
   }
   .k {
     display: block;
-    width: 14px;
-    height: 14px;
-    border-radius: 2px;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: clamp(2px, 0.3vw, 4px);
+    transition: transform var(--duration-fast) var(--ease-out), filter var(--duration-fast) var(--ease-out);
   }
   .k--produktif {
     background: var(--mark-muted);
@@ -158,25 +234,99 @@ const kotakLansia = Math.round(rasioLansia);
   }
   .rasio__cap {
     margin-top: var(--space-3);
+    font-size: var(--size-body-sm);
+    font-weight: var(--fw-medium);
+    color: var(--text-strong);
+    line-height: var(--lh-snug);
+  }
+  .rasio__subcap {
+    display: block;
     font-size: var(--size-caption);
+    font-weight: var(--fw-regular);
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .rasio__rincian {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+  }
+  .rincian__kartu {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 10px;
+    background: var(--surface-sunken);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-sm);
+    transition: border-color var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out);
+  }
+  .rincian__kartu.is-aktif {
+    border-color: var(--border-strong);
+    background: var(--surface-card);
+  }
+  .rincian__sw {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+  .rincian__info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    line-height: 1.25;
+  }
+  .rincian__judul {
+    font-size: var(--size-micro);
     color: var(--text-muted);
   }
+  .rincian__angka {
+    font-size: var(--size-caption);
+    color: var(--text-strong);
+    font-variant-numeric: tabular-nums;
+  }
+  .rincian__angka b {
+    font-weight: var(--fw-bold);
+    color: var(--text-strong);
+  }
   .rasio__panah {
-    align-self: center;
     display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: var(--space-2);
+    padding: 0 var(--space-1);
+    color: var(--text-subtle);
+  }
+  .rasio__panah-garis {
+    width: 1px;
+    height: 36px;
+    background: var(--border-hairline);
+  }
+  .rasio__panah-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--surface-sunken);
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius-pill);
     font-family: var(--font-mono);
     font-size: var(--size-micro);
     letter-spacing: var(--tracking-wide);
     text-transform: uppercase;
-    color: var(--text-subtle);
+    color: var(--text-muted);
+    font-weight: var(--fw-medium);
+    white-space: nowrap;
   }
-  .rasio__panah::after {
-    content: "";
-    width: 36px;
-    height: 1px;
-    background: var(--text-subtle);
+  .rasio__panah-icon {
+    width: 14px;
+    height: 14px;
+    color: var(--accent);
+    flex-shrink: 0;
   }
   .rasio__legenda {
     list-style: none;
@@ -193,6 +343,7 @@ const kotakLansia = Math.round(rasioLansia);
     align-items: center;
     gap: var(--space-2);
     color: var(--text-body);
+    cursor: pointer;
   }
   .rasio__legenda .k {
     width: 10px;
@@ -203,17 +354,31 @@ const kotakLansia = Math.round(rasioLansia);
     font-weight: var(--fw-medium);
     color: var(--text-strong);
   }
-  @media (max-width: 600px) {
+  @media (max-width: 768px) {
+    .rasio__bidang {
+      grid-template-columns: 1fr;
+      gap: var(--space-5);
+    }
+    .rasio__sisi {
+      max-width: 320px;
+    }
+    .rasio__sisi--kiri,
+    .rasio__sisi--kanan {
+      justify-self: center;
+    }
     .rasio__panah {
-      width: 100%;
+      flex-direction: row;
+      margin: var(--space-1) 0;
     }
-    .rasio__grid {
-      grid-template-columns: repeat(10, 12px);
-      gap: 2.5px;
+    .rasio__panah-garis {
+      width: 36px;
+      height: 1px;
     }
-    .rasio__grid .k {
-      width: 12px;
-      height: 12px;
+    .rasio__panah-icon {
+      transform: rotate(90deg);
+    }
+    .rasio__rincian {
+      grid-template-columns: 1fr;
     }
   }
 </style>
